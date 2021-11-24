@@ -1,0 +1,22 @@
+<?php
+/**
+ * Contains definitions for all participant requests in system.
+ *
+ * @author Mikael Mkrtchyan
+ * @site http://naghashyan.com
+ * @mail levon@naghashyan.com
+ * @year 2021
+ * @package ngs.NgsAdminTools.security
+ * @version 1.0
+ *
+ */
+
+namespace ngs\NgsAdminTools\security;
+
+class RequestGroups
+{
+
+    public static $adminsRequest = 0;
+    public static $apiRequest = 1;
+    public static $guestRequest = 2;
+}

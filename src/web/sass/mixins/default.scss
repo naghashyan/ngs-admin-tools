@@ -1,0 +1,151 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Default
+// Here are the styles for default styles.
+
+
+.no-scroll-bar {
+	-ms-overflow-style: none; // IE and Edge /
+	scrollbar-width: none; // Firefox /
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+body 														{ min-width: 320px; max-width: 2500px; position: relative; margin: 0 auto !important;}
+body, table, input, select, textarea						{ color: glob-map-deep-get($bgweb, "colors", "color"); @each $prop, $value in $default { #{$prop}: $value; } }
+address														{ font-style: normal; }
+hr															{ display: none; }
+
+h1, h2, h3, h4, h5, h6,
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a							{ margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; text-decoration: none; font-size: 20px; line-height: 35px; font-weight: normal; }
+
+a, body .link, body .owl-dots .owl-dot.active div.usplist	{ color: glob-map-deep-get($bgweb, "link", "default", "color"); text-decoration: glob-map-deep-get($bgweb, "link", "default", "text-decoration"); cursor: glob-map-deep-get($bgweb, "link", "default", "cursor"); }
+a:hover, body .link:hover									{ color: glob-map-deep-get($bgweb, "link", "hover", "color"); }
+
+/*-----------------------------------*/
+/*------------font sizes-------------*/
+/*-----------------------------------*/
+
+.morelink													{ @each $prop, $value in $morelink { #{$prop}: $value; } }
+
+.default													{ @each $prop, $value in $default { #{$prop}: $value; } }
+small, .small1												{ @each $prop, $value in $small { #{$prop}: $value; } }
+.medium1													{ @each $prop, $value in $medium { #{$prop}: $value; } }
+.large1														{ @each $prop, $value in $large { #{$prop}: $value; } }
+
+@each $class, $properties in $headings {
+	.#{$class}, .#{$class} a								{ @each $prop, $value in $properties { #{$prop}: $value; } }
+}
+
+@each $class, $properties in $buttons {
+	.#{$class}												{ @each $prop, $value in $properties { #{$prop}: $value; } }
+}
+
+
+/*-----------------------------------*/
+/*------------bg collors-------------*/
+/*-----------------------------------*/
+
+body {
+	@include glob-map-get-sectionColors(bgweb);
+	@include glob-map-get-sectionColors(bg-aside);
+}
+.bgweb, .insideClass.bgweb {
+	@include glob-map-get-sectionColors(bgweb);
+}
+
+@each $bgClass, $properties in $bgSectionColors {
+	.#{$bgClass}, .insideClass.#{$bgClass} {
+		@include glob-map-get-sectionColors(#{$bgClass});
+	}
+}
+
+/*-----------------------------------*/
+/*------------Bg colors end-------------*/
+/*-----------------------------------*/
+
+@include media-breakpoint-down(lg) {
+
+	body 														{ @each $prop, $value in map-get($fontSizesTablet, "default") { #{$prop}: $value; } }
+
+	@each $class, $properties in $headingsTablet {
+
+		.#{$class}, .#{$class} a 								{ @each $prop, $value in $properties { #{$prop}: $value; } }
+
+	}
+
+	@each $class, $properties in $fontSizesTablet {
+
+		.#{$class} 												{ @each $prop, $value in $properties { #{$prop}: $value; } }
+
+	}
+
+	.morelink													{ @each $prop, $value in $morelinkTablet { #{$prop}: $value; } }
+}
+
+@include media-breakpoint-down(sm) {
+
+	body 														{ @each $prop, $value in map-get($fontSizesMobile, "default") { #{$prop}: $value; } }
+
+	@each $class, $properties in $headingsMobile {
+
+		.#{$class}, .#{$class} a 								{ @each $prop, $value in $properties { #{$prop}: $value; } }
+
+	}
+
+	@each $class, $properties in $fontSizesMobile {
+
+		.#{$class} 												{ @each $prop, $value in $properties { #{$prop}: $value; } }
+
+	}
+
+	.morelink													{ @each $prop, $value in $morelinkMobile { #{$prop}: $value; } }
+
+	@each $class, $properties in $buttonsMobile {
+
+		.#{$class}, .#{$class} a								{ @each $prop, $value in $properties { #{$prop}: $value; } }
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

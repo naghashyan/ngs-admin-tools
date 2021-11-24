@@ -1,0 +1,401 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Tables
+// Here are the styles for tables. For more customisation need to change in current project!
+
+// Table types - default, "small-table"
+// Table row types - default(row-even,row-odd), "temporary", "pending", "inactive", "deleted", "active"
+// Table cell types - default, "clickable", "mobile-view"
+// Table cell size types - default, "id", "num", "duration", "action", "date", "check-items", "description(span tag inner)"
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-table($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  .table                                                  { @each $prop, $value in glob-map-deep-get($bgtype, "table", "body") { #{$prop}: $value; } }
+
+  .table .table-row li                                    { @each $prop, $value in glob-map-deep-get($bgtype, "table", "cell", "default") { #{$prop}: $value; } }
+  .table .table-row:hover li                              { @each $prop, $value in glob-map-deep-get($bgtype, "table", "cell", "hover") { #{$prop}: $value; } }
+
+  .table .table-row                                       { @each $prop, $value in glob-map-deep-get($bgtype, "table", "row", "default") { #{$prop}: $value; } }
+  .table .table-row:hover                                 { @each $prop, $value in glob-map-deep-get($bgtype, "table", "row", "hover") { #{$prop}: $value; } }
+
+  .table .table-row:nth-child(2n+1),
+  .table .table-row:nth-child(2n+1) .left-align,
+  .table .table-row:nth-child(2n+1) .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "row-even", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "row-even", "hover") {
+    .table .table-row:nth-child(2n+1):hover,
+    .table .table-row:nth-child(2n+1):hover .left-align,
+    .table .table-row:nth-child(2n+1):hover .right-align    { @each $prop, $value in glob-map-deep-get($bgtype, "table", "row-even", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row:nth-child(2n),
+  .table .table-row:nth-child(2n) .left-align,
+  .table .table-row:nth-child(2n) .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "row-odd", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "row-odd", "hover") {
+    .table .table-row:nth-child(2n):hover,
+    .table .table-row:nth-child(2n):hover .left-align,
+    .table .table-row:nth-child(2n):hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "row-odd", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row.temporary,
+  .table .table-row.temporary .left-align,
+  .table .table-row.temporary .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "temporary", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "temporary", "hover") {
+    .table .table-row.temporary:hover,
+    .table .table-row.temporary:hover .left-align,
+    .table .table-row.temporary:hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "temporary", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row.pending,
+  .table .table-row.pending .left-align,
+  .table .table-row.pending .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "pending", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "pending", "hover") {
+    .table .table-row.pending:hover,
+    .table .table-row.pending:hover .left-align,
+    .table .table-row.pending:hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "pending", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row.inactive,
+  .table .table-row.inactive .left-align,
+  .table .table-row.inactive .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "inactive", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "inactive", "hover") {
+    .table .table-row.inactive:hover,
+    .table .table-row.inactive:hover .left-align,
+    .table .table-row.inactive:hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "inactive", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row.deleted,
+  .table .table-row.deleted .left-align,
+  .table .table-row.deleted .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "deleted", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "deleted", "hover") {
+    .table .table-row.deleted:hover,
+    .table .table-row.deleted:hover .left-align,
+    .table .table-row.deleted:hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "deleted", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row.success,
+  .table .table-row.success .left-align,
+  .table .table-row.success .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "success", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "success", "hover") {
+    .table .table-row.success:hover,
+    .table .table-row.success:hover .left-align,
+    .table .table-row.success:hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "success", "hover") { #{$prop}: $value; } }
+  }
+
+  .table .table-row.active,
+  .table .table-row.active .left-align,
+  .table .table-row.active .right-align            { @each $prop, $value in glob-map-deep-get($bgtype, "table", "active", "default") { #{$prop}: $value; } }
+  @if glob-map-deep-get($bgtype, "table", "active", "hover") {
+    .table .table-row.active:hover,
+    .table .table-row.active:hover .left-align,
+    .table .table-row.active:hover .right-align      { @each $prop, $value in glob-map-deep-get($bgtype, "table", "active", "hover") { #{$prop}: $value; } }
+  }
+
+
+  .table .table-head,
+  .table .table-head.table-row .left-align,
+  .table .table-head.table-row .right-align               { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header", "default") { #{$prop}: $value; } }
+  .table .table-head:hover,
+  .table .table-head.table-row:hover .left-align,
+  .table .table-head.table-row:hover .right-align         { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header", "hover") { #{$prop}: $value; } }
+  .table .table-head li                                   { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header-cell", "default") { #{$prop}: $value; } }
+  .table .table-head li:hover                             { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header-cell", "hover") { #{$prop}: $value; } }
+
+}
+
+
+
+
+/*-------------------------------------------*/
+
+table {
+  border-collapse: collapse;
+}
+.table-row-group {
+  display: table-row-group;
+}
+
+.table-box {
+  min-height: 356px;
+  width: 100%;
+
+  .table-header {
+    padding-bottom: 16px;
+    display: flex;
+  }
+  .table-box-inner {
+    min-height: 255px;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+  }
+}
+
+.table {
+  background: transparent;
+  display: table;
+  font-size: 13px;
+  width: 100%;
+  border: 0;
+  position: relative;
+
+  &.small-table {
+    .table-row {
+      & > li {
+        padding-top: 0;
+        padding-bottom: 0;
+        height: 32px;
+      }
+
+      .right-align {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  .table-row {
+    display: table-row;
+    table-layout: fixed;
+    cursor: pointer;
+
+    &:hover {
+      .actions-box {
+        opacity: 1;
+      }
+      .right-align {
+        opacity: 1;
+      }
+      .left-align {
+        opacity: 1;
+      }
+    }
+
+    .right-align {
+      position: sticky;
+      right: 0;
+      padding: 0 8px 0 8px;
+      z-index: 1;
+    }
+    .left-align {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+    }
+
+    &:last-child {
+      & > li {
+        border-bottom: 0;
+      }
+    }
+
+    &.edit-mode {
+      .show-field {
+        display: none;
+      }
+
+      .edit-field {
+        display: initial;
+
+        &.edit-artists-field {
+          display: block;
+        }
+      }
+    }
+
+
+
+    &.table-head {
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: $zindex-sticky;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      li {
+        font-weight: 700;
+        text-transform: uppercase;
+        user-select: none;
+        padding: 7px 25px 6px 10px;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        &.sorted {
+          &:after {
+            content: '\ea1c';
+            font-family: 'icomoon' !important;
+            position: absolute;
+            right: 10px;
+            color: inherit;
+            margin-left: 0;
+            font-weight: 600;
+            top: 50%;
+            transform: translate(0, -50%);
+          }
+
+          &.asc {
+            &:after {
+              content: '\e910';
+            }
+          }
+
+          &.desc {
+            &:after {
+              content: '\e903';
+            }
+          }
+        }
+
+        .column-resize-line {
+          cursor:e-resize;
+          position:absolute;
+          right: 0;
+          top: 50%;
+          transform: translate(0, -50%);
+          width: 10px;
+          text-align: center;
+          display: inline-block;
+        }
+      }
+    }
+
+    & > li {
+      position: relative;
+      display: table-cell;
+      padding: 2px 10px 2px 10px;
+      vertical-align: middle;
+      height: 31px;
+      font-size: 14px;
+      font-weight: 400;
+      min-width: 40px;
+
+      .elipsis-box {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+        overflow-y: visible;
+        width: 100%;
+        display: block;
+      }
+
+      &.image {
+        padding: 2px 12px 2px 12px;
+
+        img {
+          object-fit: contain;
+          width: 23px;
+          height: 23px;
+          display: block;
+        }
+      }
+      &.clickable {
+        cursor: pointer;
+      }
+      &.mobile-view {
+        display: none;
+      }
+      &.id {
+        min-width: 100px;
+        max-width: 100px;
+      }
+      &.num {
+        min-width: 70px;
+        max-width: 70px;
+      }
+      &.duration {
+        min-width: 80px;
+        max-width: 80px;
+        text-align: center;
+      }
+      &.description {
+        min-width: 180px;
+        max-width: 180px;
+        white-space: normal;
+
+        span {
+          max-height: 64px;
+          overflow: hidden;
+          display: block;
+          margin: 5px 0;
+
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 4;
+          line-clamp: 4;
+          display: -webkit-box;
+        }
+      }
+      &.action {
+        min-width: 70px;
+        max-width: 70px;
+      }
+      &.actions-box {
+        white-space: nowrap;
+      }
+      &.date {
+        min-width: 130px;
+        max-width: 130px;
+      }
+      &.check-items {
+        width: 40px;
+        min-width: 40px;
+        max-width: 40px;
+        padding-right: 0;
+
+        [type="checkbox"] + span:not(.lever) {
+          padding-left: 22px;
+        }
+
+        .checkbox-item {
+          [type="checkbox"] + span {
+            margin-right: 0;
+          }
+        }
+      }
+
+      label {
+        margin: 0;
+        display: block;
+
+        [type="checkbox"] + span:not(.lever) {
+          vertical-align: middle;
+        }
+      }
+      .button-box {
+        justify-content: space-between;
+      }
+    }
+  }
+}
+
+/*-------------table checkbox disabled in parents view mode------------*/
+
+.view-mode {
+  .checkbox-item {
+    &.list-checkbox-item-disable {
+      pointer-events: none;
+      opacity: 0.2;
+    }
+  }
+}

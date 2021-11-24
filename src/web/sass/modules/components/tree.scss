@@ -1,0 +1,40 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Tree box
+// Here are the styles for tree boxes. For more custom need to change in project
+
+
+.categories-tree {
+  .jstree-children {
+    margin-top: 10px;
+  }
+  .jstree-anchor {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    width: 85%;
+    justify-content: space-between;
+    position: relative;
+    margin-left: 26px;
+    margin-bottom: 0;
+
+    .category-name {
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .jstree-node {
+    margin-left: 0;
+  }
+}
+
+.jstree-anchor {
+  margin-bottom: 8px;
+}

@@ -1,0 +1,157 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Switcher
+// Here are the styles for switcher boxes. For more custom need to change in project
+
+// Switcher type - default, "rounded"
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-switcher($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    .switcher-item {
+      label {
+        &:hover {
+          [type="checkbox"] {
+
+            // Unchecked style
+            &:not(:checked) + span:before {
+              @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "inbox", "unchecked", "hover") { #{$prop}: $value; }
+            }
+
+            &:not(:checked) + span:after {
+              @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "outbox", "unchecked", "hover") { #{$prop}: $value; }
+            }
+
+            // Checked style
+            &:checked {
+              + span:before {
+                @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "inbox", "checked", "hover") { #{$prop}: $value; }
+              }
+
+              + span:after {
+                @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "outbox", "checked", "hover") { #{$prop}: $value; }
+              }
+            }
+          }
+        }
+
+        [type="checkbox"] {
+
+          // Unchecked style
+          &:not(:checked) + span:before {
+            @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "inbox", "unchecked", "default") { #{$prop}: $value; }
+          }
+
+          &:not(:checked) + span:after {
+            @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "outbox", "unchecked", "default") { #{$prop}: $value; }
+          }
+
+          // Checked style
+          &:checked {
+            + span:before {
+              @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "inbox", "checked", "default") { #{$prop}: $value; }
+            }
+
+            + span:after {
+              @each $prop, $value in glob-map-deep-get($bgtype, "switcherbox", "outbox", "checked", "default") { #{$prop}: $value; }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.switcher-item {
+  &.rounded {
+    label {
+      input[type="checkbox"] {
+        & + span {
+
+          &:after {
+            border-radius: 20px;
+          }
+          &:before {
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+  }
+
+  label {
+    position: relative;
+    display: inline-block;
+    width: 41px;
+    height: 21px;
+
+    input[type="checkbox"] {
+      opacity: 0;
+      width: 0;
+      height: 0;
+
+      &:checked + span {
+        &:before {
+          left: 23px;
+        }
+      }
+
+      & + span {
+        width: auto;
+        height: auto;
+        padding-left: 10px;
+        position: relative;
+
+        &:after {
+          content: "";
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          width: 41px;
+          height: 22px;
+          transition: background-color 0.3s ease, border 0.3s ease;
+        }
+        &:before {
+          position: absolute;
+          content: "";
+          height: 14px;
+          width: 14px;
+          left: 4px;
+          top: 4px;
+          z-index: 1;
+          transition: left 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+        }
+      }
+    }
+  }
+}
+
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

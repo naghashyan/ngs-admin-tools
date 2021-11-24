@@ -1,0 +1,97 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Dropdown
+// Here are the styles for dropdowns. For more customisation need to change in current project!
+
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-dropdown($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    .dropdown-box                                                  { @each $prop, $value in glob-map-deep-get($bgtype, "dropdown", "base-box") { #{$prop}: $value; } }
+    .dropdown-box a,.dropdown-box .checkbox-item                   { @each $prop, $value in glob-map-deep-get($bgtype, "dropdown", "items-box", "default") { #{$prop}: $value; } }
+    .dropdown-box a:hover,.dropdown-box .checkbox-item:hover       { @each $prop, $value in glob-map-deep-get($bgtype, "dropdown", "items-box", "hover") { #{$prop}: $value; } }
+  }
+
+}
+
+
+
+.dropdown {
+  position: relative;
+  z-index: $zindex-main-dropdown;
+
+  &.from-right {
+    .dropdown-box {
+      right: 0;
+      left: auto;
+    }
+  }
+}
+
+.dropdown-box {
+  position: absolute;
+  padding: 8px;
+  border-radius: 6px;
+  min-width: 130px;
+  max-width: 250px;
+  z-index: 10;
+  top: 40px;
+  left: 0;
+  z-index: 10;
+  transition: visibility 0s linear .2s,opacity .2s 0s;
+  visibility: hidden;
+  opacity: 0;
+
+  &.show {
+    transition: visibility 0s linear 0s,opacity .2s 0s;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  i {
+    font-size: 17px;
+    margin-right: 10px;
+    position: relative;
+    top: 2px;
+  }
+
+  a, .checkbox-item {
+    display: block;
+    padding: 8px 35px 8px 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 21px;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+
+    .icon-trash {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translate(0, -50%);
+    }
+  }
+}

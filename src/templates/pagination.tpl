@@ -1,0 +1,1 @@
+{ngsPagination page=$ns.page limit=$ns.limit pageCount=$ns.pageCount itemsCount=$ns.itemsCount itemsPerPageOptions=$ns.itemsPerPageOptions end=$ns.pEnd start=$ns.pStart}

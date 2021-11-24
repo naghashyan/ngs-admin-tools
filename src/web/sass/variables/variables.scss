@@ -1,0 +1,340 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Variables
+// A map of breakpoints.
+// Defines the breakpoints for mixins desktop, tablet, mobile
+
+
+//defines the breakpoints for mixins desktopLarge, desktop, tablet, mobile and mobileSmall -> mixins.scss
+$bodyMaxWidth: 2500px;
+
+$mediaDesktopLargeXL: 1900px;
+$mediaDesktopXL: 1280px;
+$mediaTablet: 1024px;
+$mediaMobileSmall: 767px;
+$mediaMobileSmallX: 360px;
+
+
+$mediaDesktopLargeSize: 1900;
+$mediaDesktopSize: 1280;
+$mediaMobileSize: 768;
+$mediaMobileSmallSizeX: 360;
+
+// Fluid functions
+
+@function globFluidSizeValue($max, $min, $maxVP, $minVP) {
+    @return calc(#{$min}px + (#{$max} - #{$min}) * ((100vw - #{$minVP}px) / (#{$maxVP} - #{$minVP})));
+}
+
+@function globFluidSizeValueDeskMob($max, $min) {
+    @return calc(#{$min}px + (#{$max} - #{$min}) * ((100vw - #{$mediaMobileSmallSizeX}px) / (#{$mediaDesktopLargeSize} - #{$mediaMobileSmallSizeX})));
+}
+
+@function globFluidSizeValueDeskDescMin($max, $min) {
+    @return calc(#{$min}px + (#{$max} - #{$min}) * ((100vw - #{$mediaDesktopSize}px) / (#{$mediaDesktopLargeSize} - #{$mediaDesktopSize})));
+}
+
+@function globFluidSizeValueDeskTab($max, $min) {
+    @return calc(#{$min}px + (#{$max} - #{$min}) * ((100vw - #{$mediaMobileSize}px) / (#{$mediaDesktopSize} - #{$mediaMobileSize})));
+}
+
+@function globFluidSizeValueTabMob($max, $min) {
+    @return calc(#{$min}px + (#{$max} - #{$min}) * ((100vw - #{$mediaMobileSmallSizeX}px) / (#{$mediaMobileSize} - #{$mediaMobileSmallSizeX})));
+}
+
+
+
+@mixin glob-map-get-fluid($property, $xl-size, $l-size, $m-size, $s-size) {
+    #{$property}: #{$xl-size}px;
+
+    /*   1900px   */
+    @media only screen and (max-width: $mediaDesktopLargeXL) {
+        @if $xl-size != $l-size {
+            #{$property}: globFluidSizeValueDeskDescMin($xl-size, $l-size);
+        } @else {
+            #{$property}: #{$xl-size}px;
+        }
+    }
+
+    /*   1280px   */
+    @media only screen and (max-width: $mediaDesktopXL) {
+        @if $l-size != $m-size {
+            #{$property}: globFluidSizeValueDeskTab($l-size, $m-size);
+        } @else {
+            #{$property}: #{$l-size}px;
+        }
+    }
+
+    /*        max-width: 767.98px        */
+    @include media-breakpoint-down(sm) {
+        @if $m-size != $s-size {
+            #{$property}: globFluidSizeValueTabMob($m-size, $s-size);
+        } @else {
+            #{$property}: #{$m-size}px;
+        }
+    }
+
+    @if $m-size != $s-size {
+
+        /*   360px   */
+        @media only screen and (max-width: $mediaMobileSmallX) {
+            #{$property}: #{$s-size}px;
+        }
+    }
+}
+
+
+
+/*---------zindex variables-------------*/
+
+$zindex-items:             500 !default;
+$zindex-dropdown:          1000 !default;
+$zindex-sticky:            2000 !default;
+$zindex-main-dropdown:     2500 !default;
+$zindex-fixed:             3000 !default;
+$zindex-modal-backdrop:    4000 !default;
+$zindex-modal:             5000 !default;
+$zindex-popover:           6000 !default;
+$zindex-tooltip:           7000 !default;
+
+/*--------------------------------------*/
+
+$breakpoints: (
+    xs: 576px,
+    sm: 768px,
+    md: 992px,
+    lg: 1200px
+);
+
+/*-------------------------------------------*/
+
+$default: (
+    "font-family": ('Roboto', sans-serif),
+    "font-style": normal,
+    "font-weight": normal,
+    "font-size": 12px,
+    "line-height": 16px,
+    "margin": 0,
+    "padding": 0
+);
+
+$medium: (
+    "font-family": map-get($default, "font-family"),
+    "font-style": map-get($default, "font-style"),
+    "font-weight": 500,
+    "font-size": 15px,
+    "line-height": 20px
+);
+
+$large: (
+    "font-family": map-get($default, "font-family"),
+    "font-style": map-get($default, "font-style"),
+    "font-weight": map-get($default, "font-weight"),
+    "font-size": 16px,
+    "line-height": 26px,
+);
+
+$small: (
+    "font-family": map-get($default, "font-family"),
+    "font-style": map-get($default, "font-style"),
+    "font-weight": map-get($default, "font-weight"),
+    "font-size": 18px,
+    "line-height": 27px,
+    "font-weight": 500
+);
+
+$fontSizesTablet: (
+);
+
+$fontSizesMobile: (
+);
+
+
+//Headings
+
+$headings: (
+    "t1large": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": bold,
+        "font-size": 75px,
+        "line-height": 107px,
+    ),
+    "t1": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": bold,
+        "font-size": 50px,
+        "line-height": 66px
+    ),
+    "t2": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": bold,
+        "font-size": 18px,
+        "line-height": 27px
+    ),
+    "t3": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": bold,
+        "font-size": 34px,
+        "line-height": 44px
+    ),
+    "t4": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": 500,
+        "font-size": 24px,
+        "line-height": 32px
+    ),
+    "t5": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": 500,
+        "font-size": 14px,
+        "line-height": 19px
+    ),
+    "t6": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": 500,
+        "font-size": 12px,
+        "line-height": 16px
+    )
+);
+
+$headingsTablet: (
+);
+
+$headingsMobile: (
+);
+
+
+//Morelink
+
+$morelink: (
+    "font-family": map-get($default, "font-family"),
+    "font-style": map-get($default, "font-style"),
+    "font-weight": map-get($default, "font-weight"),
+    "font-size": 15px,
+    "line-height": 20px
+);
+
+$morelinkTablet: (
+);
+
+$morelinkMobile: (
+);
+
+
+//Light text items for dark background sections
+
+$bgwebInverse: (
+    "fontSizes": (
+        "default": (
+            "line-height": 18px
+        )
+    ),
+    "title": (
+    )
+);
+
+$bgwebInverseTablet: (
+);
+
+$bgwebInverseMobile: (
+);
+
+
+
+//Buttons
+
+$buttons: (
+    "button": (
+        "font-family": map-get($default, "font-family"),
+        "font-style": map-get($default, "font-style"),
+        "font-weight": 500,
+        "border-radius": 4px,
+        "padding": 7px 12px 9px,
+        "font-size": 16px,
+        "line-height": 21px,
+        "min-height": 38px,
+        "min-width": 38px
+    ),
+    "small": (
+        "padding": 6px 8px 5px,
+        "min-height": 30px,
+        "min-width": 36px,
+        "font-size": 14px,
+        "line-height": 17px
+    ),
+    "small-btn": (
+        "padding": 0,
+        "min-height": 26px,
+        "min-width": 26px,
+        "font-size": 14px,
+        "line-height": 16px
+    ),
+    "extrasmall": (
+        "padding": 3px 3px,
+        "min-height": 26px,
+        "min-width": 26px,
+        "font-size": 12px,
+        "line-height": 16px
+    ),
+    "medium": (
+        "padding": 7px 9px 9px
+    ),
+    "large": (
+        "padding": 12px 36px,
+        "min-height": 45px,
+        "min-width": 45px
+    ),
+    "min-width": (
+        "min-width": 120px
+    ),
+    "min-width-small": (
+        "min-width": 80px
+    ),
+    "shadow": (
+        "box-shadow": (0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06))
+    )
+);
+
+$buttonsDescMin: (
+    "button": (
+        "border-radius": 3px,
+        "padding": 4px 12px 5px,
+        "font-size": 14px,
+        "line-height": 18px,
+        "min-height": 33px,
+        "min-width": 33px
+    ),
+    "medium": (
+        "padding": 4px 9px 5px
+    ),
+    "large": (
+        "padding": 8px 36px,
+        "min-height": 35px,
+        "min-width": 35px
+    ),
+    "min-width": (
+        "min-width": 100px
+    ),
+    "min-width-small": (
+        "min-width": 60px
+    )
+);
+
+$buttonsTablet: (
+);
+$buttonsMobile: (
+);
+

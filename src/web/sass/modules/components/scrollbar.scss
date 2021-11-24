@@ -1,0 +1,49 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Scrollbar
+// Here are the styles for checkboxes. For more custom need to change in project
+
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-scrollbar($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-inner-color");
+
+      &::-webkit-scrollbar {
+        width: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-width");
+        height: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-width");
+      }
+
+      &::-webkit-scrollbar-track {
+        background: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-color");
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-inner-color");
+      }
+    }
+  }
+}
+
+
+/*-------------------------------------------*/

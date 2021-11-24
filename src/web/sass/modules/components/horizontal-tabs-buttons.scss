@@ -1,0 +1,172 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// horizontal tabs buttons
+// Here are the styles for buttons. For more customisation need to change in current project!
+
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-horizontal-tabs-btn-box($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    .horizontal-tabs-buttons {
+      li {
+        &:hover {
+          .item-block {
+            @each $prop, $value in glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "item", "hover") {
+              #{$prop}: $value;
+            }
+
+            & + .actions-button {
+              color: glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "item", "hover", "color");
+            }
+          }
+        }
+
+        .item-block {
+          @each $prop, $value in glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "item", "default") { #{$prop}: $value; }
+
+          &.active {
+            @each $prop, $value in glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "item", "active") { #{$prop}: $value; }
+
+            & + .actions-button {
+              color: glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "item", "active", "color");
+            }
+          }
+
+          & + .actions-button {
+            color: glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "item", "default", "color");
+          }
+        }
+      }
+    }
+
+    .horizontal-tabs-action-buttons {
+      @each $prop, $value in glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "switchers", "default") {
+        #{$prop}: $value;
+      }
+
+      &:hover {
+        @each $prop, $value in glob-map-deep-get($bgtype, "horizontal-tabs-buttons", "switchers", "hover") {
+          #{$prop}: $value;
+        }
+      }
+    }
+  }
+}
+
+
+/*-------------------------------------------*/
+
+.horizontal-tabs-container {
+  display: flex;
+  align-items: center;
+}
+.horizontal-tabs-content {
+  border: 1px solid;
+  padding: 11px 12px;
+}
+.horizontal-tabs-action-buttons {
+  display: flex;
+  position: relative;
+  z-index: 10;
+
+  .horizontal-tabs-action-button {
+    height: 37px;
+    width: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+
+    &.is_inactive {
+      opacity: 0.5;
+    }
+  }
+}
+.horizontal-tabs-buttons {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  text-align: left;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-top: 1px;
+
+  @include glob-hide-scrollbar();
+
+  li {
+    margin-right: 5px;
+    position: relative;
+
+    &.item-active {
+      .item-block {
+        text-align: center;
+        padding-right: 10px;
+      }
+    }
+
+    .item-block {
+      text-align: left;
+      cursor: pointer;
+      padding: 9px 25px 9px 10px;
+      min-width: 100px;
+    }
+    .actions-button {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translate(0, -50%);
+      width: 22px;
+      height: 30px;
+      align-items: center;
+      display: flex;
+      padding-right: 5px;
+
+      .dropdown-toggle {
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+      }
+      .dropdown-box {
+        right: 0;
+        left: auto;
+      }
+    }
+    span {
+      margin: 0;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

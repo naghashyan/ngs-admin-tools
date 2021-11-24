@@ -1,0 +1,218 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// mixin used classes
+// Here are the styles for mixin used classes styles.
+
+
+
+.ilyov_validate {
+  color: $dangerColor !important;
+  margin-top: 5px;
+  font-size: 11px;
+  width: 100%;
+}
+
+
+/*-------------Text-colors--------------*/
+// classes - text-primary, text-secondary, text-success, text-info, text-warning, text-danger, text-light
+
+.text-primary {
+  color: $primaryColor !important;
+}
+a.text-primary:hover, a.text-primary:focus {
+  color: $primaryHoverColor !important;
+}
+
+.text-secondary {
+  color: $secondaryColor !important;
+}
+a.text-secondary:hover, a.text-secondary:focus {
+  color: $secondaryHoverColor !important;
+}
+
+.text-success {
+  color: $successColor !important;
+}
+a.text-success:hover, a.text-success:focus {
+  color: $successHoverColor !important;
+}
+
+.text-info {
+  color: $infoColor !important;
+}
+a.text-info:hover, a.text-info:focus {
+  color: $infoHoverColor !important;
+}
+
+.text-warning {
+  color: $warningColor !important;
+}
+a.text-warning:hover, a.text-warning:focus {
+  color: $warningHoverColor !important;
+}
+
+.text-danger {
+  color: $dangerColor !important;
+}
+a.text-danger:hover, a.text-danger:focus {
+  color: $dangerHoverColor !important;
+}
+
+.text-light {
+  opacity: 0.7;
+}
+
+a.text-light:hover, a.text-light:focus {
+  opacity: 0.5;
+}
+
+
+/*---------------spaces-------------*/
+
+.clear {
+  clear: both;
+}
+
+.space {
+  height: 8px;
+}
+
+.half-space {
+  height: 5px;
+}
+
+.double-space {
+  clear: both;
+  height: 40px;
+  width: 100%;
+}
+
+/*-------------classes-------------*/
+
+.no-hover {
+  pointer-events: none;
+}
+.no-scroll {
+  overflow: hidden;
+}
+.no-visible {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+[hidden] {
+  display: none !important;
+}
+.left-align {
+  text-align: left;
+}
+.right-align {
+  text-align: right
+}
+.center, .center-align {
+  text-align: center;
+}
+.left {
+  float: left !important;
+}
+.right {
+  float: right !important;
+}
+.hide {
+  display: none !important;
+}
+.is_hidden {
+  display: none !important;
+}
+
+//todo: need to check
+.main-overlay-for-all-purposes {
+  background-color: #000000;
+  opacity: 0.7;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 99000;
+}
+
+
+.is_visibility-hidden {
+  visibility: hidden;
+}
+.is_disabled {
+  pointer-events: none;
+  opacity: .3;
+}
+
+.is_relative {
+  position: relative;
+}
+.no-event {
+  pointer-events: none;
+}
+
+.invalid-criteria-item {
+  border: 1px solid red !important;
+}
+
+
+/**--------unset paddings---------*/
+
+.no-ptb {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+.no-plr {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.no-p {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.no-pt {
+  padding-top: 0 !important;
+}
+.no-pb {
+  padding-bottom: 0 !important;
+}
+.no-pl {
+  padding-left: 0 !important;
+}
+.no-pr {
+  padding-right: 0 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

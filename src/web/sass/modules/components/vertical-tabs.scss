@@ -1,0 +1,123 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Vertical Tabs
+// Here are the styles for vertical tabs. For more customisation need to change in current project!
+
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-vertical-tabs($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    .v-tabs {
+      .tab {
+        &.disabled a,
+        &.disabled a:hover {
+          cursor: default;
+
+          @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "disabled") { #{$prop}: $value; }
+        }
+
+        a {
+          @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "default") { #{$prop}: $value; }
+
+          &:hover {
+            @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "hover") { #{$prop}: $value; }
+          }
+          &.error,
+          &.error:hover {
+            @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "error") { #{$prop}: $value; }
+          }
+          &.active, &.security-active,
+          &.active:hover, &.security-active:hover {
+            @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "active") { #{$prop}: $value; }
+          }
+        }
+      }
+    }
+  }
+}
+
+/*-------------------------------------------*/
+
+.v-tabs {
+  min-height: 380px;
+
+  .tab {
+    padding: 0;
+
+    &.is_last {
+      a {
+        border-bottom: 0;
+      }
+    }
+
+    &.disabled a,
+    &.disabled a:hover {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    a {
+      padding: 8px 12px 8px;
+      position: relative;
+      display: block;
+      transition: color 0.3s ease, background .3s ease;
+
+      &:focus, &:focus.active, &:focus.security-active {
+        background-color: transparent;
+        outline: none;
+      }
+
+      i {
+        display: none;
+        position: absolute;
+        right: 12px;
+        top: 15px;
+      }
+
+      &.error {
+        i {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .indicator {
+    left: auto !important;
+    right: 30px !important;
+    width: 4px;
+    height: 48px;
+    position: absolute;
+    top: 0;
+    transition: top ease 0.5s;
+    display: none;
+  }
+}
+
+
+
+
+
+
+
+
+
+

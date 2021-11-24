@@ -1,0 +1,85 @@
+.existing-rules-section {
+  margin-bottom: 20px;
+
+  .actual-rule-item {
+    margin-bottom: 5px;
+    position: relative;
+    border-left: 1px solid #F6821F;
+    background-color: #F8F9FB;
+    padding: 10px 36px 10px 16px;
+    justify-content: space-between;
+
+    &.active {
+      background-color: $successColor;
+    }
+
+    .delete-rule  {
+      color: $buttonDangerColor;
+      position: absolute;
+      top: 50%;
+      transform: translate(0,-50%);
+      right: 10px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+  }
+}
+
+.rule-creator-panel {
+  .rule-creation-header {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+
+    .filter-favorite-box {
+      width: auto;
+
+      .button {
+        margin: 0;
+      }
+    }
+  }
+  .action-formula {
+    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .rule-actions {
+    .action-field-name {
+      select {
+        width: 100%;
+      }
+    }
+
+    .action-section {
+      .action-part {
+          width: 48%;
+          display: inline-block;
+          vertical-align: middle;
+      }
+
+      .description-for-action {
+        width: 50%;
+
+        display: inline-block;
+        vertical-align: middle;
+
+
+        .description-title {
+          font-weight: 800;
+          display: block;
+          margin-bottom: 5px;
+        }
+
+        .details {
+          overflow-y: scroll;
+          height: 90px;
+        }
+      }
+    }
+  }
+
+}
+

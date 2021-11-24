@@ -1,0 +1,30 @@
+{
+  "name": "naghashyan/ngs-admin-tools",
+  "type": "library",
+  "description": "NGS framework admin panel",
+  "keywords": [
+    "framework",
+    "admin-tools"
+  ],
+  "homepage": "https://ngsframework.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Naghashyan Solutions LLC",
+      "email": "info@naghashyan.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "naghashyan/ngs-php-framework": "*",
+    "phpoffice/phpspreadsheet": "^1.14",
+    "phpoffice/phpexcel": "^1.8.2",
+    "monolog/monolog": "^2.1.1",
+    "denissimon/formula-parser": "^2.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "ngs\\NgsAdminTools\\": "src/"
+    }
+  }
+}

@@ -1,0 +1,398 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Functions
+// Here are the styles for functions.
+
+@function glob-map-deep-get($map, $keys...) {
+	@each $key in $keys {
+		@if (map-get($map, $key)) {
+			$map: map-get($map, $key);
+		} @else {
+			@return "";
+		}
+	}
+	@return $map;
+}
+
+
+/*--------------------------------*/
+/*        Headlines elements      */
+/*--------------------------------*/
+
+@mixin glob-map-get-headlines($key) {
+	@each $prop, $value in glob-map-deep-get($headings, $key) {
+		#{$prop}: $value;
+	}
+
+	@include media-breakpoint-down(lg) {
+		@each $prop, $value in glob-map-deep-get($headingsTablet, $key) {
+			#{$prop}: $value;
+		}
+	}
+
+	@include media-breakpoint-down(sm) {
+		@each $prop, $value in glob-map-deep-get($headingsMobile, $key) {
+			#{$prop}: $value;
+		}
+	}
+
+}
+@mixin glob-map-get-headlines-desktop($key) {
+	@each $prop, $value in glob-map-deep-get($headings, $key) {
+		#{$prop}: $value;
+	}
+}
+@mixin glob-map-get-headlines-tablet($key) {
+	@each $prop, $value in glob-map-deep-get($headingsTablet, $key) {
+		#{$prop}: $value;
+	}
+}
+@mixin glob-map-get-headlines-mobile($key) {
+	@each $prop, $value in glob-map-deep-get($headingsMobile, $key) {
+		#{$prop}: $value;
+	}
+}
+
+
+/*--------------------------------*/
+/*          Text elements         */
+/*--------------------------------*/
+
+@mixin glob-map-get-text($key) {
+	@if $key == default {
+		@each $prop, $value in $default { #{$prop}: $value; }
+	} @else if $key == large1 {
+		@each $prop, $value in $large { #{$prop}: $value; }
+	} @else if $key == medium1 {
+		@each $prop, $value in $medium { #{$prop}: $value; }
+	} @else if $key == small {
+		@each $prop, $value in $small { #{$prop}: $value; }
+	} @else if $key == extrasmall {
+		@each $prop, $value in $extrasmall { #{$prop}: $value; }
+	}
+
+	@include media-breakpoint-down(lg) {
+		@if $key == default {
+			@each $prop, $value in glob-map-deep-get($fontSizesTablet, "default") { #{$prop}: $value; }
+		} @else if $key == large1 {
+			@each $prop, $value in glob-map-deep-get($fontSizesTablet, "large1") { #{$prop}: $value; }
+		} @else if $key == medium1 {
+			@each $prop, $value in glob-map-deep-get($fontSizesTablet, "medium1") { #{$prop}: $value; }
+		} @else if $key == small {
+			@each $prop, $value in glob-map-deep-get($fontSizesTablet, "small") { #{$prop}: $value; }
+		} @else if $key == extrasmall {
+			@each $prop, $value in glob-map-deep-get($fontSizesTablet, "extrasmall") { #{$prop}: $value; }
+		}
+	}
+
+	@include media-breakpoint-down(sm) {
+		@if $key == default {
+			@each $prop, $value in glob-map-deep-get($fontSizesMobile, "default") { #{$prop}: $value; }
+		} @else if $key == large1 {
+			@each $prop, $value in glob-map-deep-get($fontSizesMobile, "large1") { #{$prop}: $value; }
+		} @else if $key == medium1 {
+			@each $prop, $value in glob-map-deep-get($fontSizesMobile, "medium1") { #{$prop}: $value; }
+		} @else if $key == small {
+			@each $prop, $value in glob-map-deep-get($fontSizesMobile, "small") { #{$prop}: $value; }
+		} @else if $key == extrasmall {
+			@each $prop, $value in glob-map-deep-get($fontSizesMobile, "extrasmall") { #{$prop}: $value; }
+		}
+	}
+
+}
+
+@mixin glob-map-get-text-desktop($key) {
+	@if $key == default {
+		@each $prop, $value in $default { #{$prop}: $value; }
+	} @else if $key == large1 {
+		@each $prop, $value in $large { #{$prop}: $value; }
+	} @else if $key == medium1 {
+		@each $prop, $value in $medium { #{$prop}: $value; }
+	} @else if $key == small {
+		@each $prop, $value in $small { #{$prop}: $value; }
+	} @else if $key == extrasmall {
+		@each $prop, $value in $extrasmall { #{$prop}: $value; }
+	}
+}
+@mixin glob-map-get-text-tablet($key) {
+	@if $key == default {
+		@each $prop, $value in glob-map-deep-get($fontSizesTablet, "default") { #{$prop}: $value; }
+	} @else if $key == large1 {
+		@each $prop, $value in glob-map-deep-get($fontSizesTablet, "large1") { #{$prop}: $value; }
+	} @else if $key == medium1 {
+		@each $prop, $value in glob-map-deep-get($fontSizesTablet, "medium1") { #{$prop}: $value; }
+	} @else if $key == small {
+		@each $prop, $value in glob-map-deep-get($fontSizesTablet, "small") { #{$prop}: $value; }
+	} @else if $key == extrasmall {
+		@each $prop, $value in glob-map-deep-get($fontSizesTablet, "extrasmall") { #{$prop}: $value; }
+	}
+}
+@mixin glob-map-get-text-mobile($key) {
+	@if $key == default {
+		@each $prop, $value in glob-map-deep-get($fontSizesMobile, "default") { #{$prop}: $value; }
+	} @else if $key == large1 {
+		@each $prop, $value in glob-map-deep-get($fontSizesMobile, "large1") { #{$prop}: $value; }
+	} @else if $key == medium1 {
+		@each $prop, $value in glob-map-deep-get($fontSizesMobile, "medium1") { #{$prop}: $value; }
+	} @else if $key == small {
+		@each $prop, $value in glob-map-deep-get($fontSizesMobile, "small") { #{$prop}: $value; }
+	} @else if $key == extrasmall {
+		@each $prop, $value in glob-map-deep-get($fontSizesMobile, "extrasmall") { #{$prop}: $value; }
+	}
+}
+
+
+/*--------------------------------*/
+/*            More link           */
+/*--------------------------------*/
+
+@mixin glob-map-get-moreLink() {
+	@each $prop, $value in $morelink { #{$prop}: $value; }
+
+	@include media-breakpoint-down(lg) {
+		@each $prop, $value in $morelinkTablet { #{$prop}: $value; }
+	}
+
+	@include media-breakpoint-down(sm) {
+		@each $prop, $value in $morelinkMobile { #{$prop}: $value; }
+	}
+}
+
+
+
+
+
+/*-----------------------------------------------------*/
+/*                    Section Color                    */
+/*-----------------------------------------------------*/
+
+@mixin glob-map-get-sectionColors($key) {
+	$bgtype: false;
+
+	@if $key == bgweb {
+		$bgtype: $bgweb;
+	} @else {
+		@if glob-map-deep-get($bgSectionColors, "#{$key}") {
+			$bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+		}
+	}
+
+	@if $bgtype {
+		@each $prop, $value in glob-map-deep-get($bgtype, "colors") {
+			#{$prop}: $value;
+		}
+
+		.default, .default a:not(.button),
+		.small1, .small1 a:not(.button),
+		.medium1, .medium1 a:not(.button),
+		.large1, .large1 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "default") {
+				#{$prop}: $value;
+			}
+		}
+
+		.border {
+			@each $prop, $value in glob-map-deep-get($bgtype, "border") { #{$prop}: $value; }
+		}
+
+		.link {
+			@each $prop, $value in glob-map-deep-get($bgtype, "link", "default") {
+				#{$prop}: $value;
+			}
+		}
+		.link:hover {
+			@each $prop, $value in glob-map-deep-get($bgtype, "link", "hover") {
+				#{$prop}: $value;
+			}
+		}
+
+		.morelink {
+			@each $prop, $value in glob-map-deep-get($bgtype, "morelink", "default") {
+				#{$prop}: $value;
+			}
+		}
+		.morelink:hover {
+			@each $prop, $value in glob-map-deep-get($bgtype, "morelink", "hover") {
+				#{$prop}: $value;
+			}
+		}
+
+		.t1large {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t1large") {
+				#{$prop}: $value;
+			}
+		}
+		.t1, .t1 a:not(.button), h1, h1 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t1") {
+				#{$prop}: $value;
+			}
+		}
+		.t2, .t2 a:not(.button), h2, h2 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t2") {
+				#{$prop}: $value;
+			}
+		}
+		.t3, .t3 a:not(.button), h3, h3 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t3") {
+				#{$prop}: $value;
+			}
+		}
+		.t4, .t4 a:not(.button), h4, h4 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t4") {
+				#{$prop}: $value;
+			}
+		}
+		.t5, .t5 a:not(.button), h5, h5 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t5") {
+				#{$prop}: $value;
+			}
+		}
+		.t6, .t6 a:not(.button), h6, h6 a:not(.button) {
+			@each $prop, $value in glob-map-deep-get($bgtype, "title", "t6") {
+				#{$prop}: $value;
+			}
+		}
+
+		@each $btnClass, $btnProperties in glob-map-deep-get($bgtype, "buttons") {
+			.#{$btnClass} {
+				@each $prop, $value in glob-map-deep-get($bgtype, "buttons", "#{$btnClass}", "default") {
+					#{$prop}: $value;
+				}
+			}
+			.#{$btnClass}:hover {
+				@each $prop, $value in glob-map-deep-get($bgtype, "buttons", "#{$btnClass}", "hover") {
+					#{$prop}: $value;
+				}
+			}
+		}
+
+		@if glob-map-deep-get($bgtype, "colors", "color") {
+			svg.icon {
+				fill: glob-map-deep-get($bgtype, "colors", "color");
+				color: glob-map-deep-get($bgtype, "colors", "color");
+			}
+		}
+
+		@if glob-map-deep-get($bgtype, "scrollbar") {
+			* {
+				scrollbar-width: thin;
+				scrollbar-color: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-inner-color");
+
+				&::-webkit-scrollbar {
+					width: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-width");
+					height: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-width");
+				}
+
+				&::-webkit-scrollbar-track {
+					background: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-color");
+				}
+
+				&::-webkit-scrollbar-thumb {
+					background: glob-map-deep-get($bgtype, "scrollbar", "scrollbar-inner-color");
+				}
+			}
+		}
+
+
+		/*---------------------------------------------*/
+		/*---------bgInverce including in bgWeb--------*/
+		/*---------------------------------------------*/
+
+
+		@if glob-map-deep-get($bgtype, "inverce") {
+
+			/*      min-width: 992px          */
+			@include media-breakpoint-up(md) {
+				@if map-get($bgwebInverse, "fontSizes") {
+					@each $class, $properties in map-get($bgwebInverse, "fontSizes") {
+						.#{$class}, .#{$class} a:not(.button)				            { @each $prop, $value in $properties { #{$prop}: $value; } }
+					}
+				}
+
+				@if map-get($bgwebInverse, "fontSizes") {
+					@each $class, $properties in map-get($bgwebInverse, "title") {
+						.#{$class}, .#{$class} a:not(.button)							{ @each $prop, $value in $properties { #{$prop}: $value; } }
+					}
+				}
+			}
+
+
+			@include media-breakpoint-down(lg) {
+
+				/*      min-width: 768px         */
+				@include media-breakpoint-up(sm) {
+					@if map-get($bgwebInverseTablet, "fontSizes") {
+						@each $class, $properties in map-get($bgwebInverseTablet, "fontSizes") {
+							.#{$class}, .#{$class} a:not(.button)				            { @each $prop, $value in $properties { #{$prop}: $value; } }
+						}
+					}
+
+					@if map-get($bgwebInverseTablet, "title") {
+						@each $class, $properties in map-get($bgwebInverseTablet, "title") {
+							.#{$class}, .#{$class} a:not(.button)							{ @each $prop, $value in $properties { #{$prop}: $value; } }
+						}
+					}
+				}
+			}
+
+			@include media-breakpoint-down(sm) {
+				@if $bgwebInverseMobile {
+					@if map-get($bgwebInverseMobile, "fontSizes") {
+						@each $class, $properties in map-get($bgwebInverseMobile, "fontSizes") {
+							.#{$class}, .#{$class} a:not(.button)				            { @each $prop, $value in $properties { #{$prop}: $value; } }
+						}
+					}
+
+					@if map-get($bgwebInverseMobile, "title") {
+						@each $class, $properties in map-get($bgwebInverseMobile, "title") {
+							.#{$class}, .#{$class} a:not(.button)							{ @each $prop, $value in $properties { #{$prop}: $value; } }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/*--------------------------------*/
+/*         Scrollbar hide         */
+/*--------------------------------*/
+
+
+@mixin glob-hide-scrollbar() {
+	-ms-overflow-style: none; // IE and Edge /
+	scrollbar-width: none; // Firefox /
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+/*--------------------------------*/
+/*      Dots in current line      */
+/*--------------------------------*/
+
+@mixin glob-dots-in-current-line($key) {
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: $key;
+	line-clamp: $key;
+	display: -webkit-box;
+}
+
+
+/*--------------------------------*/
+/*          Column count          */
+/*--------------------------------*/
+
+@mixin glob-column-count($key) {
+	-moz-column-count: $key;
+	column-count: $key;
+}
+
+

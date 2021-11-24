@@ -1,0 +1,26 @@
+{
+  "VERSION": "1.0.0",
+  "DB": {
+    "mysql": {
+      "host": "",
+      "user": "",
+      "pass": "",
+      "name": ""
+    }
+  },
+  "smtp": {
+    "host": "",
+    "user": "",
+    "password": "",
+    "port": 465,
+    "secure": "ssl",
+    "auth": true,
+    "XMailer": ""
+  },
+  "static_content": {
+    "default": {
+      "title": "",
+      "description": ""
+    }
+  }
+}

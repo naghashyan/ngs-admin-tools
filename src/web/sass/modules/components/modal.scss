@@ -1,0 +1,210 @@
+.modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  background-color: #afafaf;
+  padding: 0;
+  max-height: 80%;
+  width: 55%;
+  margin: auto;
+  overflow-y: auto;
+  border-radius: 2px;
+  will-change: top, opacity;
+
+  &:focus {
+    outline: none;
+  }
+
+  @media only screen and (max-width : 992px) {
+    width: 80%;
+  }
+
+
+  &.ngs-modal {
+    background-color: transparent;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    position: fixed;
+    top: 0 !important;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: $zindex-modal !important;
+
+    &.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .edit-box {
+      max-width: 870px;
+      margin: 100px auto 80px;
+      border-radius: 8px;
+
+      @include glob-map-get-sectionColors(bgweb);
+
+
+      .modal-title-box {
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        margin-bottom: 20px;
+        padding: 24px 19px 12px;
+      }
+      .modal-content-box {
+        margin: 0 26px;
+      }
+      .modal-action-box {
+        padding: 30px 26px 26px;
+        text-align: right;
+
+        button {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+
+  h1,h2,h3,h4 {
+    margin-top: 0;
+  }
+
+  .title {
+    padding: 15px 50px 15px 30px;
+    font-size: 20px;
+    margin-bottom: 0;
+    color: #afafaf;
+  }
+
+  .modal-content {
+    padding: 24px;
+  }
+  .modal-close {
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: #afafaf;
+    font-size: 20px;
+  }
+
+  .modal-footer {
+    border-radius: 0 0 2px 2px;
+    background-color: #afafaf;
+    padding: 4px 6px;
+    height: 56px;
+    width: 100%;
+    text-align: right;
+
+    .btn, .btn-flat {
+      margin: 6px 0;
+    }
+  }
+
+  .cms-main-block {
+    .left-box {
+      max-height: 390px;
+    }
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  z-index: $zindex-modal-backdrop !important;
+  top: -25%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 125%;
+  width: 100%;
+  background: #000000;
+  display: none;
+  will-change: opacity;
+
+  &.active {
+    display: block;
+    opacity: 0.5;
+  }
+}
+
+.modal.modal-fixed-footer {
+  padding: 0;
+  height: 70%;
+
+  .modal-content {
+    position: absolute;
+    height: calc(100% - 56px);
+    max-height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    border-top: 1px solid rgba(0,0,0,.1);
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+.modal.bottom-sheet {
+  top: auto;
+  bottom: -100%;
+  margin: 0;
+  width: 100%;
+  max-height: 45%;
+  border-radius: 0;
+  will-change: bottom, opacity;
+}
+
+.edit-form {
+  .popup-close-btn {
+    position: absolute;
+    right: 0;
+  }
+}
+
+/*----------flexible height popup----------*/
+
+.flexible-height-popup {
+  min-height: 400px;
+  position: fixed;
+  z-index: $zindex-modal;
+  max-width: 630px;
+  width: 90%;
+  top: 50% !important;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  opacity: 1;
+  border-radius: 6px;
+  padding: 20px;
+  max-height: 90%;
+  overflow: auto;
+  display: flex;
+  flex-flow: column;
+
+  .toast-header-box {
+    padding: 0 20px 20px;
+    margin: 0 -20px;
+    border-bottom: 1px solid #e2e8f0;
+    position: relative;
+
+    h4 {
+      margin-bottom: 0;
+    }
+  }
+  .toast-content-box {
+    flex: 1;
+  }
+  .toast-buttons {
+    text-align: right;
+  }
+  .form-content-item {
+    padding: 0;
+    margin: 20px 0 20px;
+  }
+  .popup-buttons {
+    margin-top: 20px;
+  }
+}

@@ -1,0 +1,627 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Colors variables
+// Here are the properties for colors variables.
+
+
+$primaryColor: #F6821F;
+$primaryHoverColor: #E3771B;
+
+$secondaryColor: #A8A8A8;
+$secondaryHoverColor: #333333;
+
+$successColor: #49D69A;
+$successHoverColor: #36B881;
+
+$infoColor: #17a2b8;
+$infoHoverColor: #0f6674;
+
+$warningColor: #FFDC68;
+$warningHoverColor: #E2BF49;
+
+$dangerColor: #FB6565;
+$dangerHoverColor: #E23939;
+
+
+/*------------button-colors------------*/
+
+$buttonPrimaryColor: $primaryColor;
+$buttonPrimaryHoverColor: $primaryHoverColor;
+
+$buttonSecondaryColor: $secondaryColor;
+$buttonSecondaryHoverColor: $secondaryHoverColor;
+
+$buttonSuccessColor: $successColor;
+$buttonSuccessHoverColor: $successHoverColor;
+
+$buttonInfoColor: $infoColor;
+$buttonInfoHoverColor: $infoHoverColor;
+
+$buttonWarningColor: $warningColor;
+$buttonWarningHoverColor: $warningHoverColor;
+
+$buttonDangerColor: $dangerColor;
+$buttonDangerHoverColor: $dangerHoverColor;
+
+$buttonLightColor: #E2E8F0;
+$buttonLightHoverColor: #cbd3da;
+$buttonLightTextColor: #444444;
+
+$buttonDarkColor: #333333;
+$buttonDarkHoverColor: #292929;
+
+
+$buttonOutlineTypeBgColor: #ffffff;
+
+$buttonBasicTypeTextColor: #ffffff;
+
+
+//Colors
+
+$bgweb: (
+        "colors": (
+                "background-color": #ffffff,
+                "color": #0A0A0A
+        ),
+        "title": (
+                "default": (
+                        "color": #0A0A0A
+                ),
+                "t1large": (
+                        "color": #0A0A0A
+                ),
+                "t1": (
+                        "color": #0A0A0A
+                ),
+                "t2": (
+                        "color": #0A0A0A
+                ),
+                "t3": (
+                        "color": #0A0A0A
+                ),
+                "t4": (
+                        "color": #0A0A0A
+                ),
+                "t5": (
+                        "color": #0A0A0A
+                ),
+                "t6": (
+                        "color": #0A0A0A
+                )
+        ),
+        "border": (
+                "border-color": #DEDEDE
+        ),
+        "link": (
+                "default": (
+                        "color": $primaryColor,
+                        "text-decoration": none,
+                        "cursor": pointer
+                ),
+                "hover": (
+                        "color": $primaryHoverColor
+                )
+        ),
+        "table": (
+                "body": (
+                        "background": #ffffff
+                ),
+                "header": (
+                        "default": (
+                                "background": #E5E5E5
+                        ),
+                        "hover": (
+                                "opacity": 0.8
+                        )
+                ),
+                "header-cell": (
+                        "default": (
+                                "border-bottom": 1px solid #E5E5E5,
+                                "background": #E5E5E5
+                        ),
+                        "hover": (
+                                "background": #D5D5D5
+                        )
+                ),
+                "cell": (
+                        "default": (
+                                "border-bottom": 1px solid #E5E5E5,
+                        ),
+                        "hover": (
+                                "opacity": 0.8
+                        )
+                ),
+                "row": (
+                        "default": (
+                                "background": #ffffff
+                        ),
+                        "hover": (
+                        )
+                ),
+                "row-even": (
+                        "default": (
+                                "background": #ffffff
+                        )
+                ),
+                "row-odd": (
+                        "default": (
+                                "background": #F6F6F6
+                        )
+                ),
+                "temporary": (
+                        "default": (
+                                "background": #F8F9FB
+                        )
+                ),
+                "pending": (
+                        "default": (
+                                "background": #FEF5EC
+                        )
+                ),
+                "inactive": (
+                        "default": (
+                                "background": #E8E8E8
+                        )
+                ),
+                "success": (
+                        "default": (
+                                "background": #9AD4A9
+                        )
+                ),
+                "deleted": (
+                        "default": (
+                                "background": #FFF3F3
+                        )
+                ),
+                "active": (
+                        "default": (
+                        )
+                )
+        ),
+        "scrollbar": (
+                "scrollbar-color": #dddddd,
+                "scrollbar-inner-color": #c8c8c8,
+                "scrollbar-width": 5px
+        ),
+        "checkbox": (
+                "outbox": (
+                        "unchecked": (
+                                "default": (
+                                        "background-color": transparent,
+                                        "border": 1px solid #C6C6C6
+                                ),
+                                "hover": (
+                                        "border": 1px solid #b0b0b0
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "background-color":$primaryColor,
+                                        "border": 2px solid $primaryColor
+                                ),
+                                "hover": (
+                                        "border": 2px solid $primaryHoverColor
+                                )
+                        )
+                ),
+                "inbox": (
+                        "unchecked": (
+                                "default": (
+                                        "border": 3px solid transparent
+                                ),
+                                "hover": (
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "border-top": 2px solid transparent,
+                                        "border-left": 2px solid transparent,
+                                        "border-right": 2px solid #ffffff,
+                                        "border-bottom": 2px solid #ffffff
+                                ),
+                                "hover": (
+                                )
+                        )
+                )
+        ),
+        "checkbox-view": (
+                "outbox": (
+                        "unchecked": (
+                                "default": (
+                                        "background-color": transparent,
+                                        "border": 1px solid #C6C6C6
+                                ),
+                                "hover": (
+                                        "border": 1px solid #b0b0b0
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "background-color":$primaryColor,
+                                        "border": 2px solid $primaryColor
+                                ),
+                                "hover": (
+                                        "border": 2px solid $primaryHoverColor
+                                )
+                        )
+                ),
+                "inbox": (
+                        "unchecked": (
+                                "default": (
+                                        "border": 3px solid transparent
+                                ),
+                                "hover": (
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "border-top": 2px solid transparent,
+                                        "border-left": 2px solid transparent,
+                                        "border-right": 2px solid #ffffff,
+                                        "border-bottom": 2px solid #ffffff
+                                ),
+                                "hover": (
+                                )
+                        )
+                )
+        ),
+        "radiobox": (
+                "outbox": (
+                        "unchecked": (
+                                "default": (
+                                        "background-color": transparent,
+                                        "border": 1px solid #C6C6C6
+                                ),
+                                "hover": (
+                                        "border": 1px solid #b0b0b0
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "background-color": #ffffff,
+                                        "border": 2px solid $primaryColor
+                                ),
+                                "hover": (
+                                        "border": 2px solid $primaryHoverColor
+                                )
+                        )
+                ),
+                "inbox": (
+                        "unchecked": (
+                                "default": (
+                                        "background": transparent
+                                ),
+                                "hover": (
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "background": $primaryColor
+                                ),
+                                "hover": (
+                                        "background": $primaryHoverColor
+                                )
+                        )
+                )
+        ),
+        "switcherbox": (
+                "outbox": (
+                        "unchecked": (
+                                "default": (
+                                        "background-color": transparent,
+                                        "border": 1px solid #C6C6C6
+                                ),
+                                "hover": (
+                                        "border": 1px solid #b0b0b0
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "background-color": #ffffff,
+                                        "border": 2px solid $primaryColor
+                                ),
+                                "hover": (
+                                        "border": 2px solid $primaryHoverColor
+                                )
+                        )
+                ),
+                "inbox": (
+                        "unchecked": (
+                                "default": (
+                                        "background": #C6C6C6
+                                ),
+                                "hover": (
+                                )
+                        ),
+                        "checked": (
+                                "default": (
+                                        "background": $primaryColor
+                                ),
+                                "hover": (
+                                        "background": $primaryHoverColor
+                                )
+                        )
+                )
+        ),
+        "dropdown": (
+                "base-box": (
+                        "background": #ffffff,
+                        "box-shadow": 0 3px 6px rgba(0, 0, 0, 0.16)
+                ),
+                "items-box": (
+                        "default": (
+                                "background": transparent
+                        ),
+                        "hover": (
+                                "background": #edf2f7
+                        )
+                )
+        ),
+        "viewbox": (
+                "default": (
+                        "background": #F8F9FB,
+                        "border-left": 1px solid $primaryColor
+                ),
+                "checkbox": (
+                        "unchecked": (
+                                "background": #A9A9A9,
+                                "color": #F4F4F4
+                        ),
+                        "checked": (
+                                "background": $primaryColor,
+                                "color": #F4F4F4
+                        )
+                )
+        ),
+        "horizontal-tabs-buttons": (
+                "item": (
+                        "default": (
+                                "background": #F3F3F3,
+                                "border": 1px solid #F3F3F3,
+                                "color": #333333,
+                                "border-bottom": 0,
+                                "border-radius": 4px 4px 0 0,
+                        ),
+                        "hover": (
+                                "background": #F3F3F3,
+                                "border": 1px solid #C6C6C6,
+                                "border-bottom": 0,
+                        ),
+                        "active": (
+                                "background": #ffffff,
+                                "border-top": 2px solid $primaryHoverColor,
+                                "border-left": 1px solid #DFDFDF,
+                                "border-right": 1px solid #DFDFDF,
+                                "border-bottom": 0,
+                                "margin-bottom": -1px,
+                                "color": #333333,
+                        )
+                ),
+                "switchers": (
+                        "default": (
+                                "background": #fff,
+                                "border": 1px solid #E1E2E5,
+                                "box-shadow": -3px 0 8px rgba(0,0,0,0.13),
+                                "color": #000,
+                                "border-radius": 0 4px 0 0,
+                        ),
+                        "hover": (
+                        )
+                )
+        ),
+        "vertical-tabs": (
+                "item": (
+                        "default": (
+                                "background": transparent,
+                                "color": #333333,
+                                "border-bottom": 1px solid #E5E5E5,
+                        ),
+                        "hover": (
+                                "background": transparent,
+                                "color": $primaryColor
+                        ),
+                        "active": (
+                                "background": $primaryColor !important,
+                                "color": #FFFFFF,
+                                "border-radius": 4px
+                        ),
+                        "disabled": (
+                                "opacity": 0.7
+                        ),
+                        "error": (
+                                "color": $dangerColor,
+                                "background": rgba($dangerColor, 0.04)
+                        )
+                )
+        ),
+        "input-field": (
+                "item": (
+                        "default": (
+                                "background": #ffffff,
+                                "color": #2d3748,
+                                "border": 1px solid #E5E5E5
+                        ),
+                        "hover": (
+                                "border": 1px solid #DEDEDE
+                        ),
+                        "active": (
+                                "border": 1px solid #DEDEDE
+                        ),
+                        "disabled": (
+                                "opacity": 0.7
+                        ),
+                        "error": (
+                                "border": 1px solid $dangerColor
+                        )
+                ),
+                "label": (
+                        "color": #2d3748
+                ),
+                "plus-minus": (
+                        "default": (
+                                "border": 1px solid #E5E5E5
+                        ),
+                        "hover": (
+                                "border": 1px solid #DEDEDE
+                        )
+                )
+        )
+);
+
+$bgSectionColors: (
+        "bgweb2": (
+                "colors": (
+                        "background-color": #F8F9FB,
+                        "color": #0A0A0A
+                ),
+                "title": (
+                        "default": (
+                                "color": #0A0A0A
+                        )
+                )
+        ),
+        "bgweb3": (
+                "colors": (
+                        "background-color": #ffffff,
+                        "color": #0A0A0A,
+                        "box-shadow": 0 4px 15px rgba(0, 0, 0, 0.04)
+                ),
+                "title": (
+                        "default": (
+                                "color": #0A0A0A
+                        )
+                )
+        ),
+        "bgweb4": (
+                "colors": (
+                        "background-color": #ffffff,
+                        "color": #0A0A0A
+                ),
+                "title": (
+                        "default": (
+                                "color": #0A0A0A
+                        ),
+                        "t1large": (
+                                "color": #0A0A0A
+                        ),
+                        "t1": (
+                                "color": #0A0A0A
+                        ),
+                        "t2": (
+                                "color": #0A0A0A
+                        ),
+                        "t3": (
+                                "color": #0A0A0A
+                        ),
+                        "t4": (
+                                "color": #0A0A0A
+                        ),
+                        "t5": (
+                                "color": #0A0A0A
+                        ),
+                        "t6": (
+                                "color": #0A0A0A
+                        )
+                )
+        ),
+        "bg-aside": (
+                "colors": (
+                        "background-color": #1E1E1D,
+                        "color": #ffffff
+                ),
+                "title": (
+                        "default": (
+                                "color": #ffffff
+                        )
+                )
+        ),
+        "bg-login": (
+                "colors": (
+                        "background-color": #1E1E1D,
+                        "color": #ffffff
+                ),
+                "title": (
+                        "default": (
+                                "color": #ffffff
+                        ),
+                        "t1large": (
+                                "color": #ffffff
+                        ),
+                        "t1": (
+                                "color": #ffffff
+                        ),
+                        "t2": (
+                                "color": #ffffff
+                        ),
+                        "t3": (
+                                "color": #ffffff
+                        ),
+                        "t4": (
+                                "color": #ffffff
+                        ),
+                        "t5": (
+                                "color": #ffffff
+                        ),
+                        "t6": (
+                                "color": #ffffff
+                        )
+                )
+        ),
+        "bg-highlighted": (
+                "colors": (
+                        "background-color": #FFF8F1
+                ),
+                "border": (
+                        "border-color": #FFF8F1
+                )
+        ),
+        "bg-error": (
+                "colors": (
+                        "background-color": #FB6565,
+                        "color": #ffffff
+                ),
+                "title": (
+                        "default": (
+                                "color": #ffffff
+                        ),
+                        "t1large": (
+                                "color": #ffffff
+                        ),
+                        "t1": (
+                                "color": #ffffff
+                        ),
+                        "t2": (
+                                "color": #ffffff
+                        ),
+                        "t3": (
+                                "color": #ffffff
+                        ),
+                        "t4": (
+                                "color": #ffffff
+                        ),
+                        "t5": (
+                                "color": #ffffff
+                        ),
+                        "t6": (
+                                "color": #ffffff
+                        )
+                ),
+                "border": (
+                        "border-color": #FB6565
+                ),
+        ),
+        "bg-success": (
+                "colors": (
+                        "background-color": #EEFCF7
+                ),
+                "border": (
+                        "border-color": #49D69A
+                ),
+        )
+);

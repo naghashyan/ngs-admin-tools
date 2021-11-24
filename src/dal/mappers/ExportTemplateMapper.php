@@ -1,0 +1,122 @@
+<?php
+/**
+ *
+ * FilterMapper class is extended class from AbstractMysqlMapper.
+ * It contatins all read and write functions which are working with saved_filters table.
+ *
+ * @author Mikael Mkrtchyan
+ * @site https://naghashyan.com
+ * @mail mikael.mkrtchyan@naghashyan.com
+ * @year 2020
+ * @package ngs.NgsAdminTools.dal.mappers
+ * @version 1.0.0
+ *
+ */
+
+namespace ngs\NgsAdminTools\dal\mappers;
+
+use ngs\NgsAdminTools\dal\dto\ExportTemplateDto;
+use ngs\dal\mappers\AbstractMysqlMapper;
+
+class ExportTemplateMapper extends AbstractMysqlMapper
+{
+
+    //! Private members.
+
+    private static $instance;
+    private $tableName = 'ngs_saved_export_templates';
+
+    //! A constructor.
+    /*!	\brief	Brief description.
+     *			Initializes DBMC pointers and table name private
+     *			class member.
+     */
+    function __construct()
+    {
+        // Initialize the dbmc pointer.
+        AbstractMysqlMapper::__construct();
+    }
+
+    /**
+     * Returns an singleton instance of this class
+     *
+     * @return ExportTemplateMapper
+     */
+    public static function getInstance(): ExportTemplateMapper
+    {
+        if (self::$instance === null) {
+            self::$instance = new ExportTemplateMapper();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * @see AbstractMysqlMapper::createDto()
+     */
+    public function createDto(): ExportTemplateDto
+    {
+        return new ExportTemplateDto();
+    }
+
+    /**
+     * @see AbstractMysqlMapper::getPKFieldName()
+     */
+    public function getPKFieldName(): string
+    {
+        return 'id';
+    }
+
+    /**
+     * @see AbstractMysqlMapper::getTableName()
+     */
+    public function getTableName(): string
+    {
+        return $this->tableName;
+    }
+
+    private $GET_USER_SAVED_TEMPLATE_BY_ID = 'SELECT * FROM `%s` WHERE `id` = :id';
+
+    /**
+     * get template by id
+     * @param $id
+     *
+     * @return ExportTemplateDto[]
+     *
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function getSavedTemplateById($id)
+    {
+        $sqlQuery = sprintf($this->GET_USER_SAVED_TEMPLATE_BY_ID, $this->getTableName());
+        return $this->fetchRow($sqlQuery, ['id' => $id]);
+    }
+
+
+    private $GET_USER_SAVED_TEMPLATES_BY_TYPE = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type`=:itemType ORDER BY `id` DESC';
+
+    /**
+     * get user saved templates by type
+     *
+     * @param int $userId
+     * @param string $itemType
+     *
+     * @return ExportTemplateDto[]
+     *
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function getUserSavedTemplatesByType(int $userId, string $itemType)
+    {
+        $sqlQuery = sprintf($this->GET_USER_SAVED_TEMPLATES_BY_TYPE, $this->getTableName());
+        return $this->fetchRows($sqlQuery, ['userId' => $userId, 'itemType' => $itemType]);
+    }
+
+
+    private $GET_USER_SAVED_TEMPLATE_BY_NAME = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type` = :itemType AND `name`=:name';
+
+    public function getUserSavedTemplateByItemTypeAndName(int $userId, string $itemType, string $name)
+    {
+        $sqlQuery = sprintf($this->GET_USER_SAVED_TEMPLATE_BY_NAME, $this->getTableName());
+        return $this->fetchRow($sqlQuery, ['userId' => $userId, 'name' => $name, 'itemType' => $itemType]);
+    }
+
+
+}

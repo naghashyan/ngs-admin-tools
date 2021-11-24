@@ -1,0 +1,200 @@
+.page_main {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.pac-container {
+  z-index: 5000;
+}
+
+.inplace-box.edit-box {
+  padding-top: 0;
+
+  .edit-form {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+
+.edit-box {
+  width: 100%;
+
+  .form-action {
+    margin-bottom: 0;
+
+    @include glob-map-get-fluid(margin-bottom, 11, 5, 0, 0);
+    @include glob-map-get-fluid(margin-top, 23, 10, 5, 5);
+  }
+  .panel-body {
+    padding: 20px 20px;
+
+    .medium1 {
+      margin-bottom: 10px;
+    }
+    .table {
+      margin-bottom: 19px;
+    }
+  }
+}
+
+
+/*---------------*/
+
+.select-box {
+  select {
+    display: block;
+    cursor: pointer;
+    min-height: 26px;
+    padding: 6px 8px;
+    color: #2d3748;
+    background-color: #ffffff;
+    border: 1px solid #DEDEDE;
+    border-radius: 6px;
+    min-width: 170px;
+    text-align: left;
+    overflow-y: auto;
+  }
+}
+
+.items-main-identifier {
+  .form-item {
+    .input-field {
+      display: flex;
+      padding: 10px 0;
+
+      label, span {
+        font-size: 14px;
+        line-height: 21px;
+      }
+
+      label {
+        &:after {
+          content: ':';
+          position: absolute;
+          right: -6px;
+          bottom: 0;
+          font-size: 14px;
+        }
+      }
+
+      span {
+        margin-left: 12px;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+
+//////////TODO need to delete///////////
+///////////////////////////////////
+
+
+.edit-form {
+  .form-content-item {
+    .form-item {
+      max-width: 49%;
+
+      &.translated {
+        border: 1px solid $successColor;
+      }
+
+      &.no-translation {
+        border: 1px solid $dangerColor;
+      }
+
+      &.full-box {
+        max-width: none;
+      }
+    }
+  }
+
+  .form-content {
+    &.profile {
+      .form-content-item {
+        margin-bottom: 20px;
+      }
+    }
+  }
+
+  .form-content-item {
+    margin: 0 0 16px;
+    padding: 0;
+
+    &.no-style {
+      box-shadow: none;
+      background-color: transparent;
+
+      .form-items-container {
+        padding: 0;
+        box-shadow: none;
+        background-color: transparent;
+
+        & > div {
+          width: 100%;
+        }
+      }
+    }
+
+    &.form-content-count-0 {
+      .form-items-container {
+        & > div {
+          width: 100%;
+        }
+      }
+    }
+
+    .form-item-group-name {
+      margin: 0 0 0;
+      padding: 0 13px;
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+      font-weight: 700;
+      height: 48px;
+      line-height: 51px;
+    }
+
+    .form-items-container {
+      padding: 13px 12px 16px;
+      justify-content: space-between;
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      border-radius: 6px;
+      align-items: flex-start;
+
+      //todo: Avo, please check this
+      .addItemBtn {
+        position: absolute;
+        right: 0;
+        top: -46px;
+      }
+
+      .view-mode {
+        .table-header {
+          .dropdown-box {
+            a[data-type="delete"] {
+              display: none !important;
+            }
+          }
+        }
+      }
+
+      &.no-flex-wrap {
+        flex-wrap: nowrap;
+
+        .upload-image-left {
+          width: auto;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+

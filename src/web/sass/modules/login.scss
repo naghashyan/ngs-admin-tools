@@ -1,0 +1,213 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Login
+// Here are the login page styles.
+
+
+.login-box-inner {
+  height: 100vh;
+  min-height: 490px;
+  overflow: hidden;
+
+  .login-box-left, .login-box-right {
+    width: 39%;
+    padding-top: 20px;
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    vertical-align: top;
+  }
+
+  .login-box-left {
+    padding-left: 10%;
+
+    .login-about {
+      position: absolute;
+      top: 50%;
+      transform: translate(0,-50%);
+
+      h4 {
+        font-weight: 600;
+        font-size: 36px;
+      }
+
+      span {
+        margin-top: 20px;
+        display: block;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .login-box-right {
+    width: 60%;
+    right: -20px;
+    background-image: url('data:image/png;base64,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');
+    background-size: cover;
+
+    .login-title {
+      margin-bottom: 16px;
+    }
+
+    .checkbox-item {
+      width: 50%;
+      margin-bottom: 10px;
+
+      [type="checkbox"] {
+        & + span {
+          margin-top: -3px;
+        }
+      }
+    }
+    .button {
+      margin-top: 32px;
+      min-width: 125px;
+    }
+  }
+}
+
+.overlay {
+  position: fixed;
+  z-index: $zindex-modal-backdrop;
+  top: -25%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 125%;
+  width: 100%;
+  background: rgba(0,0,0,0.6);
+  will-change: opacity;
+}
+
+.login-popup {
+  .toast-content-box {
+    .forgot-box {
+      display: flex;
+      margin-top: 4px;
+      margin-bottom: 4px;
+
+      input {
+        height: 38px;
+        width: 100%;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.forget-password-message {
+  color: $successColor;
+  display: block;
+  font-size: 12px;
+
+  &.error {
+    color: $dangerColor;
+  }
+}
+
+.login-content {
+  width: 100%;
+  max-width: 350px;
+  position: absolute;
+  left: 30%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.login-logo-box {
+  max-width: 250px;
+  padding-top: 20px;
+
+  img {
+    width: 100%;
+    max-width: 240px;
+  }
+}
+
+
+/*      max-width: 991.98px         */
+@include media-breakpoint-down(md) {
+  .login-box-inner {
+    .login-box-left {
+      .login-about {
+        display: none;
+      }
+    }
+  }
+  .login-box-inner {
+    display: flex;
+    flex-direction: column;
+
+    .login-box-right {
+      width: 100%;
+      right: 0;
+      height: auto;
+      flex: 1;
+      display: flex;
+      padding: 0;
+
+      .login-content {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-width: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .login-box {
+          max-width: 300px;
+          width: 100%;
+        }
+      }
+    }
+    .login-box-left {
+      width: 100%;
+      height: 70px;
+      padding-top: 0;
+      padding-left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+
+      .login-logo-box {
+        padding-top: 0;
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

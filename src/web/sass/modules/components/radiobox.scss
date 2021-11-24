@@ -1,0 +1,181 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Radio
+// Here are the styles for radio boxes. For more custom need to change in project
+
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-radiobox($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    .radiobox-item {
+      label {
+        &:hover {
+          [type="radio"] {
+
+            // Unchecked style
+            &:not(:checked) + span:before {
+              @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "inbox", "unchecked", "hover") { #{$prop}: $value; }
+            }
+
+            &:not(:checked) + span:after {
+              @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "outbox", "unchecked", "hover") { #{$prop}: $value; }
+            }
+
+            // Checked style
+            &:checked {
+              + span:before {
+                @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "inbox", "checked", "hover") { #{$prop}: $value; }
+              }
+
+              + span:after {
+                @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "outbox", "checked", "hover") { #{$prop}: $value; }
+              }
+            }
+          }
+        }
+
+        [type="radio"] {
+
+          // Unchecked style
+          &:not(:checked) + span:before {
+            @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "inbox", "unchecked", "default") { #{$prop}: $value; }
+          }
+
+          &:not(:checked) + span:after {
+            @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "outbox", "unchecked", "default") { #{$prop}: $value; }
+          }
+
+          // Checked style
+          &:checked {
+            + span:before {
+              @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "inbox", "checked", "default") { #{$prop}: $value; }
+            }
+
+            + span:after {
+              @each $prop, $value in glob-map-deep-get($bgtype, "radiobox", "outbox", "checked", "default") { #{$prop}: $value; }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/*-------------------------------------------*/
+
+
+.radiobox-item {
+  margin-bottom: 5px;
+  position: relative;
+  cursor: pointer;
+
+  label {
+    display: flex;
+    align-items: center;
+  }
+
+  .text-item-box {
+    display: inline-block;
+  }
+
+  [type="radio"]:not(:checked),
+  [type="radio"]:checked {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [type="radio"]:not(:checked) + span:not(.lever):before {
+    top: 3px;
+  }
+
+  [type="radio"] {
+    + span {
+      position: relative;
+      cursor: pointer;
+      display: inline-block;
+      height: 25px;
+      width: 20px;
+      padding-left: 0;
+      line-height: 20px;
+      font-size: 1rem;
+      user-select: none;
+      float: left;
+      margin-right: 12px;
+    }
+
+    + span:before,
+    + span:after {
+      content: '';
+      left: 0;
+      position: absolute;
+      /* .1s delay is for check animation */
+      transition: background .20s .1s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+      z-index: 1;
+      border-radius: 50%;
+    }
+
+    // Unchecked style
+    &:not(:checked) + span:before {
+      top: 12px;
+      left: 10px;
+      width: 1px;
+      height: 1px;
+    }
+
+    &:not(:checked) + span:after {
+      height: 20px;
+      width: 20px;
+      top: 3px;
+      z-index: 0;
+    }
+
+    // Checked style
+    &:checked {
+      + span:before {
+        top: 7px;
+        left: 4px;
+        width: 12px;
+        height: 12px;
+      }
+
+      + span:after {
+        top: 3px;
+        width: 20px;
+        height: 20px;
+        z-index: 0;
+      }
+    }
+
+    &:disabled {
+      cursor: initial;
+    }
+
+    &:disabled + span:not(.lever):before {
+      opacity: 0.3;
+    }
+
+    &:disabled + span:not(.lever):after {
+      opacity: 0.3;
+    }
+  }
+}

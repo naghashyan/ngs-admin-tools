@@ -1,0 +1,92 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Components
+// Here are the styles for components styles including.
+
+
+@include glob-map-get-checkbox(bgweb);
+@include glob-map-get-radiobox(bgweb);
+@include glob-map-get-switcher(bgweb);
+@include glob-map-get-table(bgweb);
+@include glob-map-get-dropdown(bgweb);
+@include glob-map-get-view-box(bgweb);
+@include glob-map-get-horizontal-tabs-btn-box(bgweb);
+@include glob-map-get-scrollbar(bgweb);
+@include glob-map-get-vertical-tabs(bgweb);
+@include glob-map-get-input-field-box(bgweb);
+
+
+
+@each $bgClass, $properties in $bgSectionColors {
+	.#{$bgClass}, .insideClass.#{$bgClass} {
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "checkbox") {
+			@include glob-map-get-checkbox(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "radiobox") {
+			@include glob-map-get-radiobox(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "switcherbox") {
+			@include glob-map-get-switcher(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "table") {
+			@include glob-map-get-table(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "dropdown") {
+			@include glob-map-get-dropdown(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "viewbox") {
+			@include glob-map-get-view-box(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "horizontal-tabs-buttons") {
+			@include glob-map-get-horizontal-tabs-btn-box(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "scrollbar") {
+			@include glob-map-get-scrollbar(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "vertical-tabs") {
+			@include glob-map-get-vertical-tabs(#{$bgClass});
+		}
+		@if glob-map-deep-get($bgSectionColors, "#{$bgClass}", "input-field") {
+			@include glob-map-get-input-field-box(#{$bgClass});
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

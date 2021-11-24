@@ -1,0 +1,323 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// Input field
+// Here are the styles for input fields. For more custom need to change in project
+
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-input-field-box($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+    .input-field {
+      label {
+        @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "label") { #{$prop}: $value; }
+      }
+
+      .plus, .minus{
+        @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "plus-minus", "default") { #{$prop}: $value; }
+
+        &:hover {
+          @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "plus-minus", "hover") { #{$prop}: $value; }
+        }
+      }
+
+      input, textarea {
+        @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "item", "default") { #{$prop}: $value; }
+
+        &:hover {
+          @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "item", "default") { #{$prop}: $value; }
+        }
+        &.invalid, &.invalid:hover {
+          @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "item", "error") { #{$prop}: $value; }
+        }
+      }
+
+
+      /*---------------tinymce---------------*/
+
+      .tox-tinymce {
+        &.invalid {
+          @each $prop, $value in glob-map-deep-get($bgtype, "input-field", "item", "error") { #{$prop}: $value; }
+        }
+      }
+    }
+  }
+}
+
+
+/*-------------------------------------------*/
+
+.attach-file {
+  & + .upload-files-box {
+    .input-field {
+      &.upload-files {
+        label {
+          .chose-file {
+            margin: 0;
+          }
+          .attached-files-names-container {
+            margin: 10px 0 0;
+          }
+          .text-box {
+            width: 50%;
+            margin-top: 0;
+
+            .no-file-text-box {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.input-field {
+  font-size: 14px;
+
+  label {
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+
+  .icon-input {
+    position: relative;
+
+    input, textarea {
+      padding-left: 40px;
+    }
+    i {
+      position: absolute;
+      left: 10px;
+      opacity: 0.7;
+      z-index: 10;
+      font-size: 21px;
+      top: 9px;
+    }
+  }
+  .plus, .minus{
+    position: absolute;
+    right: 0;
+    height: 20px;
+    line-height: 20px;
+    top: 22px;
+    width: 30px;
+    background: transparent;
+    border-radius: 0 5px 0 0;
+    text-align: center;
+  }
+  .minus{
+    height: 19px;
+    line-height: 19px;
+    top: 41px;
+    border-radius: 0 0 5px 0;
+  }
+
+  &.upload-files {
+    input {
+      border-color: transparent;
+      padding: 2px 0 0;
+      opacity: 0;
+      position: absolute;
+      width: 2px;
+      height: 2px;
+    }
+    label {
+      display: block;
+
+      .attached-files-names-container {
+        flex: 1;
+        margin: 30px auto 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        li {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+      }
+      .text-box {
+        margin-bottom: 20px;
+        margin-top: 30px;
+        width: 100%;
+
+        .no-file-text-box {
+          display: flex;
+          align-items: center;
+          flex-flow: column;
+          margin: 0 auto;
+          width: 100%;
+
+          i {
+            font-size: 45px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+          }
+        }
+
+        button {
+          vertical-align: middle;
+        }
+      }
+      .chose-file {
+        margin: 0 auto;
+        display: table;
+        text-align: center;
+      }
+    }
+  }
+
+  .error {
+    font-size: 12px;
+    margin-right: 0;
+    display: inline-block;
+    height: auto;
+    padding-top: 5px;
+  }
+
+  &.col {
+    padding: 0;
+  }
+
+  .textarea {
+    .materialize-textarea {
+      border: none;
+      font-size: 14px;
+      height: 38px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      margin-top: 9px;
+      padding-left: 8px;
+      margin-bottom: 14px;
+    }
+  }
+
+  input, textarea {
+    font-size: 14px;
+    height: 36px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding-left: 8px;
+    padding-right: 34px;
+    width: 100%;
+    resize: none;
+    display: block;
+
+    &.no-right-padding {
+      padding-right: 6px;
+    }
+    &.small {
+      height: 31px;
+    }
+  }
+  textarea {
+    height: 144px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .not-translatable-field {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+}
+
+.form-item {
+  .input-field.col-3 {
+
+    input {
+      height: 38px;
+    }
+
+    .plus,.minus {
+      right: 5px;
+    }
+  }
+
+  .input-field {
+
+    input {
+      height: 38px;
+    }
+
+    .plus,.minus {
+      right: 0;
+    }
+  }
+}
+
+textarea:disabled {
+  opacity: 0.3;
+}
+
+input:disabled {
+  opacity: 0.3;
+}
+
+
+/*-------remove arrows number box---------*/
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

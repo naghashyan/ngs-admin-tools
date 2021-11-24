@@ -1,0 +1,63 @@
+{
+  "builders": [
+    {
+      "include": "ngs"
+    },
+    {
+      "source_dir": "",
+      "out_dir": "ngs/cms",
+      "module": "ngs-cms",
+      "files": [
+        "actions/AbstractAddUpdateAction.js",
+        "actions/AbstractExportAction.js",
+        "actions/AbstractDeleteAction.js",
+        "actions/filters/ListAction.js",
+        "actions/rules/SaveAction.js",
+        "actions/rules/RemoveAction.js",
+        "loads/AbstractCmsAddUpdateLoad.js",
+        "loads/AbstractCmsListLoad.js",
+        "loads/AbstractCmsLoad.js",
+        "loads/CmsListLoad.js",
+        "loads/MainCmsLoad.js",
+        "loads/rules/RulesLoad.js",
+        "loads/pagination/ShowLoad.js",
+        "lib/materialize.min.js",
+        "lib/moment.min.js",
+        "lib/rome.js",
+        "lib/choices.min.js",
+        "lib/material-datetime-picker.min.js",
+        "lib/dropzone.min.js",
+        "lib/flatpickr.min.js",
+        "util/MaterialsUtils.js",
+        "util/DialogUtility.js",
+        "util/CookiesUtils.js",
+        "util/FilterManager.js",
+        "util/ExportTemplatesManager.js",
+        "util/ExcelExportUtil.js",
+        "util/NgsFormValidator.js",
+        "util/ValidationUtility.js",
+        "util/PaginationUtility.js",
+        "util/SearchOnTypingUtility.js",
+        "util/FilesUploadingUtility.js",
+        "util/SelectionUtility.js",
+        "util/StringUtility.js",
+        "managers/PagingManager.js",
+        "managers/GridManager.js",
+        "managers/PageManager.js",
+        "managers/ChoiceManager.js",
+        "managers/RowsListManager.js",
+        "validators/BaseValidator.js",
+        "validators/TextValidator.js",
+        "validators/NumberValidator.js",
+        "validators/DateValidator.js",
+        "validators/DateIntervalValidator.js",
+        "validators/PhoneValidator.js",
+        "validators/RegexValidator.js",
+        "validators/FaxValidator.js",
+        "validators/EmailValidator.js",
+        "validators/UniqueValueValidator.js",
+        "validators/ArrayValidator.js"
+      ]
+    }
+  ]
+}

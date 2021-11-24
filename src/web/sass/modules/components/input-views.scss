@@ -1,0 +1,152 @@
+/**
+ * @author Avetis Sahakyan
+ * @site http://naghashyan.com
+ * @mail avetis.sahakyan@naghashyan.com
+ * @year 2021
+ * @version 1.0.0
+ */
+
+// view mode
+// Here are the styles for view mode boxes. For more custom need to change in project
+
+// Types - default, "no-border"
+
+
+/********   colors include from variables   ***********/
+
+@mixin glob-map-get-view-box($key) {
+  $bgtype: false;
+
+  @if $key == bgweb {
+    $bgtype: $bgweb;
+  } @else {
+    @if glob-map-deep-get($bgSectionColors, "#{$key}") {
+      $bgtype: glob-map-deep-get($bgSectionColors, "#{$key}");
+    }
+  }
+
+  @if $bgtype {
+
+    .form-item {
+      &.view-mode {
+        @each $prop, $value in glob-map-deep-get($bgtype, "viewbox", "default") { #{$prop}: $value; }
+      }
+    }
+
+    .view-checkbox {
+      @each $prop, $value in glob-map-deep-get($bgtype, "viewbox", "checkbox", "unchecked") { #{$prop}: $value; }
+
+      &.checked {
+        @each $prop, $value in glob-map-deep-get($bgtype, "viewbox", "checkbox", "checked") { #{$prop}: $value; }
+      }
+    }
+
+  }
+}
+
+
+/*-------------------------------------------*/
+
+.form-item {
+  &.view-mode {
+    padding: 5px 36px 7px 16px;
+    min-height: 60px;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+
+    &.no-border {
+      border-left: 0;
+    }
+
+    .checkbox-item {
+      margin-top: 5px;
+      margin-bottom: 0;
+    }
+
+    .input-field {
+      height: auto;
+
+      label {
+        font-size: 12px;
+        line-height: 16px;
+        margin-bottom: 3px;
+      }
+    }
+
+    .icon-tooltip {
+      top: 50%;
+      transform: translate(0,-50%);
+    }
+    .actions-box, .action{
+      display: none !important;
+    }
+  }
+}
+
+
+//todo: please dont remove this, or if remove check the actions box should be not visible in parents view mode;
+.view-mode {
+  .table-row .actions-box, .action{
+    display: none !important;
+  }
+}
+
+.view-checkbox {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  vertical-align: middle;
+  margin-right: 5px;
+  top: -2px;
+  position: relative;
+
+  i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: inherit;
+  }
+
+  &.checked {
+    &:after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 3px;
+      width: 6px;
+      height: 10px;
+      border-top: 2px solid transparent;
+      border-left: 2px solid transparent;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+      transform: rotateZ(37deg);
+      transform-origin: 100% 100%;
+    }
+
+    i {
+      display: none;
+    }
+  }
+}
+
+.view-text, .view-textarea {
+  display: block;
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
