@@ -270,7 +270,7 @@ class JobsManager extends AbstractManager {
      */
     private function runJobAsync(int $jobId) {
         $os = substr(php_uname(), 0, 7);
-        $backgroundExecutor = 'php ' .  __DIR__ . '/../../../bin/run_job_in_background.php -job_id=' . $jobId . ' -env=' . NGS()->getEnvironment();
+        $backgroundExecutor = 'php ' .  __DIR__ . '/../../bin/run_job_in_background.php -job_id=' . $jobId . ' -env=' . NGS()->getEnvironment();
         if ($os == "Windows"){
             pclose(popen("start /B ". $backgroundExecutor, "r"));
         }

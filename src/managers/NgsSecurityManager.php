@@ -34,7 +34,7 @@ abstract class NgsSecurityManager extends AbstractManager
      */
     public static function getInstance(): NgsSecurityManager {
         if (self::$instance == null){
-            $managerName = 'ngs\cms\managers\Ngs' . self::$securityMode . 'SecurityManager';
+            $managerName = 'ngs\NgsAdminTools\managers\Ngs' . self::$securityMode . 'SecurityManager';
             self::$instance = new $managerName();
         }
         return self::$instance;

@@ -15,6 +15,9 @@ export default class FilterManager {
 
             if (filterBoxId === 'mainFilter') {
                 var oldElement = document.getElementById(filterBoxId);
+                if(!oldElement) {
+                    return;
+                }
                 var newElement = oldElement.cloneNode(true);
                 oldElement.parentNode.replaceChild(newElement, oldElement);
             }

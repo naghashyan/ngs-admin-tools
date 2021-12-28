@@ -1,7 +1,7 @@
 <?php
 $_dir = str_replace("/bin", "", __DIR__);
 $_dir = str_replace("\bin", "", $_dir);
-chdir(__DIR__ . '/../../../htdocs');
+chdir(__DIR__ . '/../../../../../htdocs');
 
 $options = [];
 if (count($argv) <= 0){
