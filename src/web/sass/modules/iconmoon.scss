@@ -9,8 +9,8 @@
 // iconmoon app
 // for changes use subject.json
 
-$iconmoon-font-path: $NGS_MODULE_PATH+"/fonts/iconmoon/" !default;
-$iconmoon-font-prop: "9lk519";
+$iconmoon-font-path: $NGS_MODULE_PATH+"/fonts/iconmoon/fonts/" !default;
+$iconmoon-font-prop: "mky5db";
 
 @font-face {
   font-family: 'icomoon';
@@ -39,6 +39,15 @@ $iconmoon-font-prop: "9lk519";
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-arrows-up-down-feel:before {
+  content: "\ea27";
+}
+.icon-arrows-up-feel:before {
+  content: "\ea28";
+}
+.icon-arrows-down-feel:before {
+  content: "\ea29";
+}
 .icon-atom:before {
   content: "\ea25";
 }
@@ -161,9 +170,6 @@ $iconmoon-font-prop: "9lk519";
 }
 .icon-svg9:before {
   content: "\e909";
-}
-.icon-svg10:before {
-  content: "\e90a";
 }
 .icon-svg11:before {
   content: "\e90b";

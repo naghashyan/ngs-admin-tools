@@ -47,6 +47,9 @@ class RulesLoad extends AbstractCmsLoad
 
         $this->addJsonParam('possibleActions', $this->getPossibleActions($filterValues));
 
+        $this->addParam('isViewMode', $this->args()->isViewMode === 'true');
+        $this->addJsonParam('isViewMode', $this->args()->isViewMode === 'true');
+
     }
 
 

@@ -6,17 +6,13 @@ import MaterialsUtils from '../util/MaterialsUtils.js';
 import ValidationUtility from '../util/ValidationUtility.js';
 import Choices from "../lib/choices.min.js";
 import flatpickr from "../lib/flatpickr.min.js";
-import Dropzone from "../../../ngs/cms/lib/dropzone.min.js";
 import RowsListManager from "../managers/RowsListManager.js";
+import ImageDropzoneUtil from "../util/ImageDropzoneUtil.js"
 
 
 export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
-    images = [];
-    existingImagesIds = [];
     currentTabId = "";
-    dropzones = {};
-
 
 
     constructor() {
@@ -305,7 +301,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         if(dataForSelection.hasOwnProperty('isMultiple') && dataForSelection.isMultiple) {
             select.setAttribute('multiple', 'multiple');
         }
-        select.innerHTML = '<option value="">Please select</option>';
+
+        //todo: this line was before, but on country-state selection, it should not be; need to check it was exist and if no need - delete
+        // select.innerHTML = '<option value="">Please select</option>';
 
         for (let i = 0; i < data.length; i++) {
             let option = document.createElement('option');
@@ -383,7 +381,6 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             if(!popupForm.querySelector('.f_saveItem') && !popupForm.querySelector('.f_cancel')) {
 
                 const popupOpen = function(e) {
-                    e.stopPropagation();
                     e.preventDefault();
 
                     if(!e.target.closest('form')) {
@@ -931,31 +928,40 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     _initDropzone() {
-        if (this.args()['imageUrl']) {
-            this.existingImagesIds = this.args()['imageUrl'].map((item) => {
+        ImageDropzoneUtil.existingImagesIds = [];
+        ImageDropzoneUtil.images = [];
+
+        if (this.args()['imagesUrls']) {
+            ImageDropzoneUtil.existingImagesIds = this.args()['imagesUrls'].map((item) => {
                 if (item.url.original) {
                     return item.url.original.substring(item.url.original.lastIndexOf('/') + 1);
                 }
             });
         }
 
-        let anyDropzoneElement = document.querySelector('.f_all-dropzones-container');
+        let anyDropzoneElement = document.querySelector('#' + this.getContainer() + ' .f_all-dropzones-container');
         if(anyDropzoneElement) {
             let hasWriteAccess = anyDropzoneElement.getAttribute('data-write-access') === 'true';
             let isDropzoneMultiple = !!anyDropzoneElement.querySelector('.f_multipleDropzone');
             this.imagesHasWritePermission = hasWriteAccess;
 
-            if(!hasWriteAccess) {
-                const _this = this;
-                var dropzone = new Dropzone('.dropzone', {
-                    url: "/target-url", // Set the url
-                    init: function () {
-                        _this.showExistingImages(this, isDropzoneMultiple);
-                    }
-                });
+
+
+            ImageDropzoneUtil.initVariables({
+                imagesUrls: this.args()['imagesUrls'],
+                isViewMode: this.isViewMode(),
+                imagesHasWritePermission: hasWriteAccess,
+                container: this.getContainer(),
+                onlyOneDefaultImage: !!this.args().onlyDefaultImage
+
+            });
+
+
+            if(!hasWriteAccess || this.isViewMode()) {
+                ImageDropzoneUtil.initDropzoneForViewMode(isDropzoneMultiple);
             }else {
-                this._initMultipleDropzone();
-                this._initSingleDropzone();
+                ImageDropzoneUtil.initSingleDropzoneForAddEditMode();
+                ImageDropzoneUtil.initMultipleDropzoneForAddEditMode();
             }
         }
 
@@ -979,15 +985,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             formData.append('imageDescriptionId[]', id);
         });
 
-
-        this.images.forEach(image => {
+        ImageDropzoneUtil.images.forEach(image => {
             for (let key in image) {
                 if (image.hasOwnProperty(key)) {
                     formData.append('image[]', image[key]);
                 }
             }
         });
-        formData.append('oldImages', this.existingImagesIds);
+        formData.append('oldImages', ImageDropzoneUtil.existingImagesIds);
 
         formData = this.addInfoAboutMainImageToFormData(formData);
 
@@ -1038,629 +1043,27 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         return formData;
     }
 
-
-    _initSingleDropzone() {
-        try {
-            if ((document.querySelectorAll('.f_singleDropzone')).length === 0) {
-                return;
-            }
-            const _this = this;
-
-            var dropzone = new Dropzone('.f_singleDropzone', {
-
-                url: "/target-url", // Set the url
-                parallelUploads: 1,
-                thumbnailHeight: 120,
-                thumbnailWidth: 120,
-                addRemoveLinks: true,
-                dictDefaultMessage: "Upload Image",
-                maxFilesize: 3,
-                maxFiles: 1,
-                filesizeBase: 1000,
-                thumbnail: function (file, dataUrl) {
-                    if (file.previewElement) {
-                        file.previewElement.classList.remove("dz-file-preview");
-                        var images = file.previewElement.querySelectorAll("[data-dz-thumbnail]");
-                        for (var i = 0; i < images.length; i++) {
-                            var thumbnailElement = images[i];
-                            thumbnailElement.alt = file.name;
-                            thumbnailElement.src = dataUrl;
-                        }
-                        setTimeout(function () {
-                            file.previewElement.classList.add("dz-image-preview");
-                        }, 1);
-                    }
-                },
-                init: function () {
-                    let index = 0;
-                    _this.showExistingImages(this, false);
-
-                    this.on("maxfilesexceeded", function (file) {
-                        this.removeAllFiles();
-                        this.addFile(file);
-                    });
-                    _this._initRemoveButtonForSingle();
-                    this.on("complete", function (file) {
-
-                        if (_this.images.length) {
-                            _this.images.splice(0, 1);
-                        }
-
-                        let removeButton = file.previewElement.querySelector('.dz-remove');
-                        let attributeValue = String((++index) + (new Date()).getTime());
-                        removeButton.setAttribute('data-unique-id', attributeValue);
-                        let currentImage = {
-                            [attributeValue]: file
-                        };
-                        _this.images.push(currentImage);
-                    });
-                }
-
-            });
-        } catch (e) {
-
-        }
-    }
-
-    _initMultipleDropzone(f_class = 'f_1', editMode = null) {
-        try {
-            if ((document.querySelectorAll('#' + this.getContainer() + ' .f_multipleDropzone')).length === 0) {
-                return;
-            }
-
-            //todo: do the next lines not here
-            document.querySelector('.upload-image-left').classList.add('multiple-upload');
-            document.querySelector('.form-items-container').classList.remove('no-flex-wrap');
-
-
-            const _this = this;
-            this.dropzones[f_class] = new Dropzone('.' + f_class, {
-                url: "/target-url", // Set the url
-                parallelUploads: 100,
-                thumbnailHeight: 120,
-                thumbnailWidth: 120,
-                addRemoveLinks: true,
-                dictDefaultMessage: "Upload Multiple Images",
-                maxFilesize: 3,
-                filesizeBase: 1000,
-                uploadMultiple: true,
-                acceptedFiles: ".jpeg,.jpg,.png,.gif",
-                thumbnail: function (file, dataUrl) {
-                    if (file.previewElement) {
-                        file.previewElement.classList.remove("dz-file-preview");
-                        var images = file.previewElement.querySelectorAll("[data-dz-thumbnail]");
-                        for (var i = 0; i < images.length; i++) {
-                            var thumbnailElement = images[i];
-                            thumbnailElement.alt = file.name;
-                            thumbnailElement.src = dataUrl;
-                        }
-                        setTimeout(function () {
-                            file.previewElement.classList.add("dz-image-preview");
-                        }, 1);
-                    }
-                },
-                init: function () {
-
-                    if (!editMode && !_this._imagesAreAlreadyShown()) {
-                        _this.showExistingImages(this, true, _this.dropzones[f_class]);
-                    }
-
-                    this.on("queuecomplete", function() {
-                        let files = this.files;
-                        if(!files.length) {
-                            return;
-                        }
-                        let successFiles = 0;
-                        for (let i = 0; i < files.length; i++) {
-                            if(files[i].status === 'error') {
-                                continue;
-                            }
-                            successFiles++;
-                            let currentImage = _this._setCurrentImageProperties(i, files[i]);
-                            _this.images.push(currentImage);
-                            let identifier = Object.keys(currentImage)[0];
-                            _this.showImageTitleInputBoxForEachImageInAddMode(identifier, f_class);
-                        }
-
-                        this.removeEventListeners();
-                        _this._initNewDropzoneAppearingUnderLastOne(f_class);
-                    });
-
-                    this.on("error", function(file, errormessage) {
-                        this.removeFile(file);
-                        //todo: implement error reason should be shown , maybe some popup or smth else
-                        console.log(errormessage);
-                    });
-
-                    _this._initRemoveButtonsForMultiple();
-
-                }
-
-            });
-
-            // if (!editMode && !_this._imagesAreAlreadyShown()) {
-            //     this.showExistingImages(this.dropzones[f_class], true);
-            // }
-
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-
-    _initNewDropzoneAppearingUnderLastOne(f_class, editMode = null) {
-        let newDropzone = this._createNewDropzone(f_class);
-        let newClass = this._createNewClass(f_class);
-        let allNewImages = document.querySelectorAll('.f_image-element-main-box');
-        let allElements = document.querySelectorAll('.f_prevent-click');
-
-        let previousElement = allElements[0];
-        allNewImages.forEach((newImage) => {
-            previousElement.appendChild(newImage);
-        });
-
-        for (let i = 1; i < allElements.length; i++) {
-            allElements[i].remove();
-        }
-
-        document.querySelector(".f_all-dropzones-container").appendChild(newDropzone);
-
-        this._initMultipleDropzone(newClass, editMode);
-        this._putAllImagesToNotClickableContainer();
-    }
-
-
-    _imagesAreAlreadyShown() {
-        let images = document.querySelectorAll('.f_1 .f_image-element-main-box .dz-image-preview .dz-image');
-        if (images.length !== 0) {
-            return true;
-        }
-        return false;
-    }
-
-
-    _isReadyToAddDropzoneInEditMode() {
-
-        if (this.isViewMode() || !this.imagesHasWritePermission) {
-            return false;
-        }
-
-        let images = this.args()['imageUrl'];
-        if (!this._arrayIsNotEmpty(images)) {
-            return false;
-        }
-        let countOfImages = images.length;
-
-        if (countOfImages === 1) {
-            if (this._isThereOnlyOneDefaultImage()) {
-                return false;
-            }
-        }
-        let countOfImagesAlreadyDisplaying = document.querySelectorAll('.f_prevent-click .f_image-element-main-box').length;
-        if (countOfImagesAlreadyDisplaying === 0 || countOfImages === 0) {
-            return false;
-        }
-        if (countOfImagesAlreadyDisplaying === countOfImages) {
-            return true;
-        }
-        return false;
-    }
-
-
-    //todo: create good names for functions and variables
-    showImageTitleInputBoxForEachImageInAddMode(identifier, f_class, index) {
-        let titleBox = this.createTitleBox(identifier);
-        let box = document.createElement('div');
-        box.classList.add('image-upload-multiple-box', 'f_image-element-main-box', 'f_newAddedImage');
-
-        let dzPreview = document.querySelector('.' + f_class).querySelector('.dz-preview.dz-success');
-        let dropzone = document.querySelector('.' + f_class);
-
-
-        box.appendChild(dzPreview);
-        box.appendChild(titleBox);
-        dropzone.appendChild(box);
-
-    }
-
-    //todo: create good names for functions and variables
-    showImageTitleAndUrlBoxForEachImageShowingInEditMode(f_class, i) {
-        let titleBox = this.createTitleBox(null, f_class, i);
-
-        let box = document.createElement('div');
-        box.classList.add('image-upload-multiple-box', 'f_image-element-main-box', 'f_oldImage');
-
-        let dzPreview = f_class;
-        let dropzone = dzPreview.closest('.element-field');
-
-        box.appendChild(dzPreview);
-        box.appendChild(titleBox);
-
-        dropzone.appendChild(box);
-    }
-
-
-    //todo: divide to functions
-    createTitleBox(identifier, f_class = null, i = null) {
-        let titleBox = document.createElement('div');
-        titleBox.classList.add('info-box');
-
-        let formItem = document.createElement('div');
-
-        let formItem2 = document.createElement('div');
-        formItem2.classList.add('form-item', 'full-box');
-
-        let inputField = document.createElement('div');
-        inputField.classList.add('input-field');
-
-        formItem.classList.add('col-4');
-        formItem.appendChild(this.createIsMainRadioButton(i));
-
-        formItem2.appendChild(inputField);
-
-        let label = document.createElement('label');
-        label.classList.add('active');
-        label.innerText = "Image Title";
-        inputField.appendChild(label);
-        let input = document.createElement('input');
-        input.setAttribute('name', 'imageDescription');
-        if (!identifier) {
-            let imageId = f_class.querySelector('.f_hidden-input-image-id').value;
-            input.setAttribute('image-id', 'old_' + imageId);
-        } else {
-            let imageId = 'new_' + identifier;
-            input.setAttribute('image-id', imageId);
-        }
-        inputField.appendChild(input);
-        titleBox.appendChild(formItem2);
-        titleBox.appendChild(formItem);
-        let existingImagesPaths = this.args()['imageUrl'];
-
-        if (i !== null) {
-            if (this._arrayIsNotEmpty(existingImagesPaths)) {
-                let urlContainer = document.createElement('div');
-                urlContainer.classList.add('url-box', 'col-8');
-
-                let urlTextBox = document.createElement('div');
-                urlTextBox.classList.add('url-text-item');
-
-                let urlText = document.createElement('span');
-                urlText.classList.add('url-text', 'medium1');
-                let urlTextInner = document.createElement('a');
-                urlTextInner.classList.add('url-text-inner');
-                urlTextInner.setAttribute('href', existingImagesPaths[i].url.original);
-                urlTextInner.setAttribute('target', '_blank');
-                urlTextInner.innerText = existingImagesPaths[i].url.original;
-
-                urlText.appendChild(urlTextInner);
-
-                input.value = existingImagesPaths[i].description;
-
-
-                let labelForUrlLabel = document.createElement('div');
-                labelForUrlLabel.classList.add('url-label', 't5');
-                labelForUrlLabel.innerText = 'Link';
-
-                urlTextBox.appendChild(labelForUrlLabel);
-                urlTextBox.appendChild(urlText);
-
-                urlContainer.appendChild(urlTextBox);
-                titleBox.appendChild(urlContainer);
-            }
-        }
-        return titleBox;
-    }
-
-
-    /**
-     * near each image should be a radio button for set current image to main image
-     * @param index
-     * @returns {HTMLDivElement}
-     */
-    createIsMainRadioButton(index) {
-        let isMainRadioButtonContainer = document.createElement('div');
-        isMainRadioButtonContainer.classList.add('radiobox-item');
-        let labelForIsMainRadioTextBox = document.createElement('div');
-        labelForIsMainRadioTextBox.classList.add('text-item-box', 'medium1');
-        labelForIsMainRadioTextBox.innerText = 'Main Image';
-
-        if(this.isViewMode() || !this.imagesHasWritePermission) {
-            if(index !== null) {
-                if(this.args()['imageUrl'][index].isMain) {
-                    isMainRadioButtonContainer.classList.add('checkbox-item');
-                    let isMainRadioButtonLabel = document.createElement('label');
-                    let isMainRadioButtonSpan = document.createElement('span');
-                    isMainRadioButtonSpan.classList.add('view-checkbox', 'checked');
-                    let isMainRadioButtonIcon = document.createElement('i');
-                    isMainRadioButtonIcon.classList.add('icon-svg257', 'not-checked');
-
-                    isMainRadioButtonSpan.appendChild(isMainRadioButtonIcon);
-                    isMainRadioButtonLabel.appendChild(isMainRadioButtonSpan);
-                    isMainRadioButtonLabel.appendChild(labelForIsMainRadioTextBox);
-                    isMainRadioButtonContainer.appendChild(isMainRadioButtonLabel);
-                }
-            }
-        }else {
-
-            let isMainRadioButton = document.createElement('input');
-            isMainRadioButton.classList.add('f_isMainRadioButton');
-            isMainRadioButton.setAttribute('type', 'radio');
-            isMainRadioButton.setAttribute('name', 'isMainImage');
-            let labelForIsMainRadioCheckBox = document.createElement('span');
-
-            let labelForIsMainRadio = document.createElement('label');
-            labelForIsMainRadio.appendChild(isMainRadioButton);
-            labelForIsMainRadio.appendChild(labelForIsMainRadioCheckBox);
-            labelForIsMainRadio.appendChild(labelForIsMainRadioTextBox);
-
-            let labelForIsMainRadioBoxLabel = document.createElement('div');
-            labelForIsMainRadioBoxLabel.classList.add('radio-label', 't5');
-            labelForIsMainRadioBoxLabel.innerText = 'Use as';
-
-            isMainRadioButtonContainer.appendChild(labelForIsMainRadioBoxLabel);
-            isMainRadioButtonContainer.appendChild(labelForIsMainRadio);
-
-            if(index !== null) {
-                if(this.args()['imageUrl'][index].isMain) {
-                    isMainRadioButton.checked = true;
-                }
-            }
-        }
-
-        return isMainRadioButtonContainer;
-
-    }
-
     /**
      * if any image is not set to main image the first image will be set to main
      * @private
      */
     _setMainImageIfNoExist() {
-        if(this.args()['imageUrl']) {
-            for(let image in this.args()['imageUrl']) {
-                if(!this.args()['imageUrl'].hasOwnProperty(image)) {
+        if(this.args()['imagesUrls']) {
+            for(let image in this.args()['imagesUrls']) {
+                if(!this.args()['imagesUrls'].hasOwnProperty(image)) {
                     continue;
                 }
-                if(this.args()['imageUrl'][image].hasOwnProperty('isMain') && this.args()['imageUrl'][image].isMain) {
+                if(this.args()['imagesUrls'][image].hasOwnProperty('isMain') && this.args()['imagesUrls'][image].isMain) {
                     return;
                 }
             }
-            this.args()['imageUrl'][0].isMain = true;
+            this.args()['imagesUrls'][0].isMain = true;
         }
     }
 
-
-    _createNewDropzone(f_class) {
-        let newDropzone = document.createElement('div');
-        let newClass = this._createNewClass(f_class);
-        newDropzone.classList.add('element-field', 'image-select-box', 'dropzone', newClass, 'f_multipleDropzone');
-        return newDropzone;
-    }
-
-    _setCurrentImageProperties(index, file) {
-        let removeButton = file.previewElement.querySelector('.dz-remove');
-        let attributeValue = String((index) + (new Date()).getTime());
-        removeButton.setAttribute('data-unique-id', attributeValue);
-        return {
-            [attributeValue]: file
-        };
-    }
-
-
-    showExistingImages(_this, isMultiple, dropzone = null) {
-        let isOnlyDefaultImage = false;
-        let existingImagesPaths = this.args()['imageUrl'];
-        if (this._arrayIsNotEmpty(existingImagesPaths)) {
-            if (this._isThereOnlyOneDefaultImage()) {
-                isOnlyDefaultImage = true;
-            }
-            for (let i = 0; i < existingImagesPaths.length; ++i) {
-                let image = {'url': existingImagesPaths[i].url.original};
-
-                _this.options.addedfile.call(_this, image);
-                _this.options.thumbnail.call(_this, image, image.url);
-
-                //todo: divide to functions
-                let idInput = document.createElement('input');
-                let currentImage = document.querySelector('img[src="' + existingImagesPaths[i].url.original + '"]');
-                let id = existingImagesPaths[i].url.original.substring(existingImagesPaths[i].url.original.lastIndexOf('/') + 1);
-                let info = {};
-                if (!this._isThereOnlyOneDefaultImage()) {
-                    info.original = existingImagesPaths[i].url.original;
-                }
-                if (existingImagesPaths[i].url.small) {
-                    info.small = existingImagesPaths[i].url.small;
-                }
-                if (existingImagesPaths[i].url.medium) {
-                    info.medium = existingImagesPaths[i].url.medium;
-                }
-                if (existingImagesPaths[i].url.big) {
-                    info.big = existingImagesPaths[i].url.big;
-                }
-                idInput.setAttribute('type', 'hidden');
-                idInput.setAttribute('value', id);
-                idInput.setAttribute('thumbsInfo', JSON.stringify(info));
-                idInput.classList.add('f_hidden-input-image-id');
-                if (currentImage.closest('.dz-image')) {
-                    currentImage.closest('.dz-image').appendChild(idInput);
-                }
-
-                let progress = document.querySelector('.dz-progress');
-                let el = progress.closest('.dz-preview');
-                if (isMultiple) {
-                    this.showImageTitleAndUrlBoxForEachImageShowingInEditMode(el, i);
-                } else {
-                    this.removeDefaultImageIfHasNoWritePermission();
-                }
-                progress.remove();
-            }
-            if (isOnlyDefaultImage) {
-                let clickBtn = document.querySelector('.element-field .dz-remove');
-                if (clickBtn) {
-                    setTimeout(() => {
-                        clickBtn.click();
-                    }, 0);
-                }else if(!this.imagesHasWritePermission) {
-                    let defaultImage = document.querySelector('.f_image-element-main-box');
-                    if(defaultImage) {
-                        defaultImage.remove();
-                    }
-                }
-            }
-        }
-        if (isMultiple) {
-            this._putAllImagesToNotClickableContainer();
-        }
-        if (this._isReadyToAddDropzoneInEditMode()) {
-            if(dropzone) {
-                dropzone.removeEventListeners();
-            }
-            this._initNewDropzoneAppearingUnderLastOne('f_1', true);
-
-        }
-
-    }
-
-
-    /**
-     * in case if there is no image, and only default one is set, but user has no write permission, the default image should not be;
-     */
-    removeDefaultImageIfHasNoWritePermission() {
-        if(this._isThereOnlyOneDefaultImage() && !this.imagesHasWritePermission) {
-            let imageContainer = document.querySelector('.f_all-dropzones-container');
-            if(imageContainer) {
-                let containerParent = imageContainer.closest('.form-item');
-                if(containerParent) {
-                    containerParent.remove();
-                }else {
-                    imageContainer.remove();
-                }
-            }
-        }
-    }
-
-    _isThereOnlyOneDefaultImage() {
-
-        return !!this.args().onlyDefaultImage;
-
-
-    }
-
-
-    _putAllImagesToNotClickableContainer() {
-        let dropzoneContainer = document.querySelector('.f_1.f_multipleDropzone');
-        let allMultipleBoxes = dropzoneContainer.querySelectorAll('.f_image-element-main-box');
-        if (!dropzoneContainer.querySelector('.f_prevent-click')) {
-            let notClickableDiv = document.createElement('div');
-            notClickableDiv.classList.add('f_prevent-click', 'prevent-click');
-            dropzoneContainer.appendChild(notClickableDiv);
-        }
-        let notClickableDiv = dropzoneContainer.querySelector('.f_prevent-click');
-        allMultipleBoxes.forEach((el) => {
-            if (!el.classList.contains('f_prevent-click')) {
-                notClickableDiv.appendChild(el);
-            }
-        })
-    }
-
-
-    _createNewClass(f_class) {
-        let index = f_class.indexOf('_');
-        let increment = +f_class.substr(index + 1) + 1;
-        return 'f_' + increment;
-    }
-
-    _initRemoveButtonsForMultiple() {
-
-        let removeBtn = document.querySelectorAll('.dz-remove');
-        let uploadBoxes = [];
-
-        for (let i = 0; i < removeBtn.length; i++) {
-            uploadBoxes[i] = removeBtn[i].closest('.f_image-element-main-box');
-        }
-
-        let existingImagesPaths = this.args()['imageUrl'];
-
-        for (let i = 0; i < removeBtn.length; ++i) {
-            removeBtn[i].addEventListener('click', (evt) => {
-
-                if (evt.target.closest('.dz-image-preview') && evt.target.closest('.dz-image-preview').querySelector('.f_hidden-input-image-id')) {
-                    let clickedImageId = evt.target.closest('.dz-image-preview').querySelector('.f_hidden-input-image-id').value;
-                    let j = this.existingImagesIds.findIndex((i) => i == clickedImageId);
-                    this.existingImagesIds[j] = null;
-                }
-                uploadBoxes[i].remove();
-                if (this._arrayIsNotEmpty(existingImagesPaths)) {
-                    existingImagesPaths[i] = undefined;
-                }
-
-                let imgKey = evt.target.getAttribute('data-unique-id');
-                this.images.forEach((image) => {
-                    if (imgKey in image) {
-                        let i = this.images.indexOf(image);
-                        this.images.splice(i, 1);
-                    }
-                });
-
-
-                if (!document.querySelectorAll('.element-field')[0].classList.contains('dz-started')) {
-                    document.querySelectorAll('.element-field')[0].classList.add('dz-started');
-                }
-
-                if (!document.querySelector('.f_image-element-main-box')) {
-                    let allDropzones = document.querySelectorAll('.f_multipleDropzone');
-                    allDropzones.forEach((elem) => {
-                        elem.remove();
-                    });
-                    let dropzone = document.createElement('div');
-                    dropzone.classList.add('element-field', 'image-select-box', 'dropzone', 'f_1', 'f_multipleDropzone');
-
-                    document.querySelector('.f_all-dropzones-container').appendChild(dropzone);
-                    this._initMultipleDropzone('f_1');
-                }
-
-            });
-            this._putAllImagesToNotClickableContainer();
-
-        }
-
-        let allDropzonesToRemove = document.querySelectorAll('.f_multipleDropzone.dz-started');
-        allDropzonesToRemove.forEach((dropzoneElement) => {
-            if (!dropzoneElement.querySelector('.prevent-click')) {
-                dropzoneElement.remove();
-            }
-        })
-
-    }
-
-    _initRemoveButtonForSingle() {
-        let removeButton = document.querySelector('.dz-remove');
-        if (removeButton) {
-            removeButton.addEventListener('click', () => {
-                this.existingImagesIds[0] = null;
-            })
-        }
-
-
-    }
-
-
-    _changeInputsIntoSpanInViewModeOnly() {
-        let allDescriptionInputsFormItems = document.querySelectorAll('.f_multipleDropzone .f_prevent-click .f_image-element-main-box .info-box .form-item');
-        let allValuesOfInputs = [...allDescriptionInputsFormItems].map((item) => item.querySelector('.input-field input[name="imageDescription"]').value);
-        allValuesOfInputs.forEach((input, i) => {
-            allDescriptionInputsFormItems[i].classList.add('view-mode');
-            let inputField = allDescriptionInputsFormItems[i].querySelector('.input-field');
-            allDescriptionInputsFormItems[i].querySelector('input[name="imageDescription"]').remove();
-            let span = document.createElement('span');
-            span.classList.add('view-text', 'f_image-description');
-            span.innerText = input;
-            inputField.appendChild(span);
-        });
-    }
 
     _removeImageDescriptionIfItsDefault() {
-        if (this._isThereOnlyOneDefaultImage()) {
+        if (ImageDropzoneUtil.variables.onlyOneDefaultImage) {
             if (document.querySelector('.f_multipleDropzone .info-box')) {
                 // we can either remove just the description of the image or remove the default image too
 
@@ -1668,16 +1071,6 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 document.querySelector('.f_multipleDropzone').remove();
             }
         }
-    }
-
-    _arrayIsNotEmpty(existingImagesPaths) {
-        if (existingImagesPaths === undefined || existingImagesPaths === [undefined] || existingImagesPaths[0] === undefined || existingImagesPaths[0] === [undefined]) {
-            return false;
-        }
-        if (existingImagesPaths.every((i) => i === undefined || i === null)) {
-            return false;
-        }
-        return true;
     }
 
 
@@ -2322,7 +1715,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     _openRuleManagementWindow(ruleName, itemId) {
-        NGS.load("ngs.cms.loads.rules.rules", {ruleName: ruleName, itemId: itemId});
+        NGS.load("ngs.cms.loads.rules.rules", {ruleName: ruleName, itemId: itemId, isViewMode: this.isViewMode()});
     }
 
 

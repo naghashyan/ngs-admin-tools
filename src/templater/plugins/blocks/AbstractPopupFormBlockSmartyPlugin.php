@@ -26,7 +26,7 @@ abstract class AbstractPopupFormBlockSmartyPlugin extends AbstractFormBlockSmart
      */
     protected function getHeaderOfPopupForm($header, $displayName): string {
         if($header) {
-            return '<div class="g_fixed-box modal-title-box border"><div class="t2">' .
+            return '<div class="g_fixed-box modal-title-box border"><div class="t4">' .
                 $displayName .
                 '</div></div>';
         }

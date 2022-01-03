@@ -10,7 +10,6 @@
 // A map of breakpoints.
 // Defines the breakpoints for mixins desktop, tablet, mobile
 
-
 //defines the breakpoints for mixins desktopLarge, desktop, tablet, mobile and mobileSmall -> mixins.scss
 $bodyMaxWidth: 2500px;
 
@@ -19,7 +18,6 @@ $mediaDesktopXL: 1280px;
 $mediaTablet: 1024px;
 $mediaMobileSmall: 767px;
 $mediaMobileSmallX: 360px;
-
 
 $mediaDesktopLargeSize: 1900;
 $mediaDesktopSize: 1280;
@@ -89,8 +87,6 @@ $mediaMobileSmallSizeX: 360;
     }
 }
 
-
-
 /*---------zindex variables-------------*/
 
 $zindex-items:             500 !default;
@@ -128,8 +124,8 @@ $medium: (
     "font-family": map-get($default, "font-family"),
     "font-style": map-get($default, "font-style"),
     "font-weight": 500,
-    "font-size": 15px,
-    "line-height": 20px
+    "font-size": 14px,
+    "line-height": 26px
 );
 
 $large: (
@@ -144,8 +140,8 @@ $small: (
     "font-family": map-get($default, "font-family"),
     "font-style": map-get($default, "font-style"),
     "font-weight": map-get($default, "font-weight"),
-    "font-size": 18px,
-    "line-height": 27px,
+    "font-size": 10px,
+    "line-height": 12px,
     "font-weight": 500
 );
 
@@ -185,14 +181,14 @@ $headings: (
         "font-style": map-get($default, "font-style"),
         "font-weight": bold,
         "font-size": 34px,
-        "line-height": 44px
+        "line-height": 56px
     ),
     "t4": (
         "font-family": map-get($default, "font-family"),
         "font-style": map-get($default, "font-style"),
-        "font-weight": 500,
-        "font-size": 24px,
-        "line-height": 32px
+        "font-weight": bold,
+        "font-size": 16px,
+        "line-height": 21px
     ),
     "t5": (
         "font-family": map-get($default, "font-family"),
@@ -206,7 +202,7 @@ $headings: (
         "font-style": map-get($default, "font-style"),
         "font-weight": 500,
         "font-size": 12px,
-        "line-height": 16px
+        "line-height": 28px
     )
 );
 
@@ -268,31 +264,24 @@ $buttons: (
         "min-height": 38px,
         "min-width": 38px
     ),
-    "small": (
-        "padding": 6px 8px 5px,
-        "min-height": 30px,
-        "min-width": 36px,
-        "font-size": 14px,
-        "line-height": 17px
-    ),
-    "small-btn": (
-        "padding": 0,
+    "small-button": (
+        "padding": 6px 7px 6px,
         "min-height": 26px,
         "min-width": 26px,
         "font-size": 14px,
-        "line-height": 16px
+        "line-height": 16px,
     ),
-    "extrasmall": (
+    "extrasmall-button": (
         "padding": 3px 3px,
         "min-height": 26px,
         "min-width": 26px,
         "font-size": 12px,
         "line-height": 16px
     ),
-    "medium": (
+    "medium-button": (
         "padding": 7px 9px 9px
     ),
-    "large": (
+    "large-button": (
         "padding": 12px 36px,
         "min-height": 45px,
         "min-width": 45px

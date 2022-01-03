@@ -36,6 +36,9 @@ let PaginationUtility = {
    * @returns {ActiveX.IXMLDOMNode | Node}
    */
   replaceChildToRemoveListeners: function (domSelector) {
+    if(!domSelector) {
+      return domSelector;
+    }
     let newElement = domSelector.cloneNode(true);
     domSelector.parentNode.replaceChild(newElement, domSelector);
     return newElement;

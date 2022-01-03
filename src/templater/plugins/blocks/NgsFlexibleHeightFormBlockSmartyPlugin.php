@@ -88,7 +88,7 @@ class NgsFlexibleHeightFormBlockSmartyPlugin extends AbstractPopupFormBlockSmart
     {
         if($header) {
             return '<div class="toast-header-box f_toast-header-box">
-                        <h4 class="t5 f_toast-header-box-title-part">' . $displayName . '</h4>
+                        <h4 class="t4 f_toast-header-box-title-part">' . $displayName . '</h4>
                     </div>';
         }
         return ' ';

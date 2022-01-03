@@ -216,6 +216,7 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             $result .= $this->getCheckboxContent();
         }
         foreach ($paramsForTableContentRow['columns'] as $indexOfColumn => $column) {
+            $withoutTags = isset($column['with_tags']) && $column['with_tags'] ? false : true;
 
             $fieldCamelCaseName = $this->underlinesToCamelCase($column['name']);
             $fieldGetter = 'get' . $fieldCamelCaseName;
@@ -228,6 +229,11 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                 }
             }
 
+            if(isset($column['not_standard_column']) && isset($column['content'])) {
+                $result .= '<li ' . $customAttributesToColumn . $indexOfColumnAsAttribute . ' class="f_' . $fieldCamelCaseName . '">'
+                    . $column['content'] .
+                    '</li>';
+            }
             if(isset($column['is_checkbox']) && $column['is_checkbox']) {
                 $checked = strip_tags($dto->$fieldGetter()) ? ' checked ' : ' ';
                 $classForDisableIfParentInViewMode = $dto->$fieldGetter() ? ' ' : ' list-checkbox-item-disable';
@@ -260,9 +266,15 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             else {
                 $innerText = '';
                 if(isset($column['custom_param_to_getter']) && $column['custom_param_to_getter']) {
-                    $innerText = strip_tags($dto->$fieldGetter($column['custom_param_to_getter']));
+                    $innerText = $dto->$fieldGetter($column['custom_param_to_getter']);
+                    if($withoutTags) {
+                        $innerText = strip_tags($innerText);
+                    }
                 }else {
-                    $innerText = strip_tags($dto->$fieldGetter());
+                    $innerText = $dto->$fieldGetter();
+                    if($withoutTags) {
+                        $innerText = strip_tags($innerText);
+                    }
                 }
                 //dont break the next line to many lines; it should be no spaces between tags;
 
@@ -283,8 +295,8 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                     $actionName = $action;
                     $icon = '<i class="icon-' . $action . '"></i>';
                     if ($action === 'delete') {
-                        $dangerClass = 'danger';
-                        $icon = '<i class="icon-delete"></i>';
+                        $dangerClass = 'dark';
+                        $icon = '<i class="icon-delete-trash"></i>';
                     }
                 }
 

@@ -17,17 +17,23 @@ class LoggerFactory
      * @param $className
      * @return Logger
      */
-    public static function getLogger($name, $className)
+    public static function getLogger($name, $className, string $namespace = "")
     {
-        $loggerKey = md5($name . $className);
+        if(!$namespace) {
+            $loggerKey = md5($name . $className);
+        }
+        else {
+            $loggerKey = md5($name . $className . $namespace);
+        }
+
 
         if (isset(self::$instances[$loggerKey])) {
             return self::$instances[$loggerKey];
         }
 
         $logger = new Logger($name);
-        $logger->pushHandler(new StreamHandler(self::getFile('info'), Logger::INFO));
-        $logger->pushHandler(new StreamHandler(self::getFile('error'), Logger::ERROR));
+        $logger->pushHandler(new StreamHandler(self::getFile('info', $namespace), Logger::INFO));
+        $logger->pushHandler(new StreamHandler(self::getFile('error', $namespace), Logger::ERROR));
         self::$instances[$loggerKey] = $logger;
 
         return $logger;
@@ -39,23 +45,36 @@ class LoggerFactory
      * constant if not then create new one
      *
      * @param string $type
+     * @param string $namespace
      * @return string
      */
-    private static function getFile(string $type): string
+    private static function getFile(string $type, string $namespace): string
     {
         $today = date('Y_m_d');
         $dir = NGS()->get('NGS_ROOT') . '/' . NGS()->get('DATA_DIR') . '/log/';
         if (NGS()->get('NGS_CMS_LOG_DIR')) {
             $dir = NGS()->get('NGS_CMS_LOG_DIR');
         }
-        $file = $dir . '/' . $type . '_ngs_' . $today . '.log';
-        if (file_exists($file)) {
-            return $file;
-        }
+
         if (!is_dir($dir)) {
             if (!mkdir($dir) && !is_dir($dir)) {
                 throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
             }
+        }
+
+        if($namespace) {
+            $dir = $dir . '/' . $namespace . '/';
+        }
+
+        if (!is_dir($dir)) {
+            if (!mkdir($dir) && !is_dir($dir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+            }
+        }
+
+        $file = $dir . '/' . $type . '_ngs_' . $today . '.log';
+        if (file_exists($file)) {
+            return $file;
         }
         if (!file_exists($file)) {
             @touch($file);

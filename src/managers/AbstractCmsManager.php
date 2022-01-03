@@ -615,15 +615,23 @@ abstract class AbstractCmsManager extends AbstractManager
      * @param $dtos
      * @param $fieldName
      * @param $value
+     * @param bool $caseInsensitive
      *
      * @return AbstractCmsDto|null
      */
-    public function getDtoFromListByField($dtos, $fieldName, $value)
+    public function getDtoFromListByField($dtos, $fieldName, $value, $caseInsensitive = false)
     {
         $getter = StringUtil::getGetterByDbName($fieldName);
         foreach ($dtos as $dto) {
-            if ($dto->$getter() == $value) {
-                return $dto;
+            if($caseInsensitive) {
+                if (strtolower($dto->$getter()) == strtolower($value)) {
+                    return $dto;
+                }
+            }
+            else {
+                if ($dto->$getter() == $value) {
+                    return $dto;
+                }
             }
         }
 

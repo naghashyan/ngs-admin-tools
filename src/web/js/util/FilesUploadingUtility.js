@@ -75,7 +75,7 @@ let FilesUploadingUtility = {
                 li.textContent = files[i].name;
 
                 let removeButton = document.createElement('button');
-                removeButton.classList.add('f_remove-attached-file', 'button', 'small', 'btn-link', 'outline', 'with-icon');
+                removeButton.classList.add('f_remove-attached-file', 'button', 'small-button', 'btn-link', 'outline', 'with-icon');
 
                 let removeButtonIcon = document.createElement('i');
                 removeButtonIcon.classList.add('icon-delete');
@@ -220,14 +220,14 @@ let FilesUploadingUtility = {
             let span = document.createElement('span');
             let a = document.createElement('a');
             a.href = files[i].url;
-            a.classList.add('button', 'small', 'btn-link', 'outline', 'with-icon');
+            a.classList.add('button', 'small-button', 'btn-link', 'outline', 'with-icon');
             a.setAttribute('title', 'Download the file');
             a.innerHTML = '<i class="icon-svg193"></i>';
             span.innerText = files[i].name;
 
             let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = '<i class="icon-delete"></i>';
-            deleteButton.classList.add('button', 'small', 'btn-link', 'outline', 'with-icon', 'f_file-delete-btn');
+            deleteButton.innerHTML = '<i class="icon-delete-trash"></i>';
+            deleteButton.classList.add('button', 'small-button', 'btn-link', 'outline', 'with-icon', 'f_file-delete-btn');
             deleteButton.setAttribute('file-id', files[i].id);
 
             deleteButton.addEventListener('click', (e) => {

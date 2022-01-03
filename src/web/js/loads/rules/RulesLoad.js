@@ -25,8 +25,12 @@ export default class RulesLoad extends AbstractCmsAddUpdateLoad {
     afterCmsLoad() {
         this.initFilters();
         this.initSaveRule();
-        this.initActionVariableSelection();
-        this.initRemoveRules();
+
+        if(!this.args().isViewMode) {
+            this.initActionVariableSelection();
+            this.initRemoveRules();
+        }
+
     }
 
 

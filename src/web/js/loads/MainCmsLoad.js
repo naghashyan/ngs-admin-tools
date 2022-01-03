@@ -23,32 +23,14 @@ export default class MainCmsLoad extends AbstractLoad {
     this.initNavBarMinimizing();
     this.initMainMenuDropdownsToggling();
 
+    this._addTopMenuListeners();
+
     /* jQuery("#main_nav .nano").nanoScroller({
        flash: true
      });*/
     $("#m_home").click(function () {
       NGS.load("main.home", {});
     }.bind(this));
-
-    let mainContainer = $("#main_container");
-
-    mainContainer.on("click", ".f_doLogout", function () {
-      DialogUtility.showConfirmDialog("Log out", "Are you sure you want to log out ?").then(function (result) {
-        NGS.action("admin.actions.main.admin_logout", {})
-      }).catch(function () {
-        console.log("canceled");
-      });
-    }.bind(this));
-
-    mainContainer.on("click", ".f_goToProfilePage", function () {
-      NGS.load("admin.loads.profilePage.profile_page_main");
-    });
-
-
-    mainContainer.on("click", ".f_goToHelpPage", function () {
-      NGS.load("admin.loads.helpPage.help_page_main");
-    });
-
 
     $(".f_main_menu").click(function () {
       if($(this).closest('.nav-item').hasClass('active')) {
@@ -205,4 +187,75 @@ export default class MainCmsLoad extends AbstractLoad {
 
   afterCmsLoad() {
   }
+
+
+  /**
+   *
+   * todo: this should be modified, should be moved from mainLoad
+   * event listeners to top-right menu buttons
+   * @private
+   */
+  _addTopMenuListeners() {
+    let mainContainer = $("#main_container");
+
+    mainContainer.on("click", ".f_doLogout", function () {
+      DialogUtility.showConfirmDialog("Log out", "Are you sure you want to log out ?").then(function (result) {
+        NGS.action("admin.actions.main.admin_logout", {})
+      }).catch(function () {
+        console.log("canceled");
+      });
+    }.bind(this));
+
+    mainContainer.on("click", ".f_goToProfilePage", function () {
+      NGS.load("admin.loads.profilePage.profile_page_main");
+    });
+
+    mainContainer.on("click", ".f_goToHelpPage", function () {
+      NGS.load("admin.loads.helpPage.help_page_main");
+    });
+
+
+    this._addNotificationFunctionalListeners();
+
+
+  }
+
+
+  //todo: move to mainLoad of project
+  _addNotificationFunctionalListeners() {
+    let mainContainer = $("#main_container");
+    let unreadNotificationsContainer = $("#unread_notifications_container");
+    let deleteAllNotificationsBtn = $("#delete-all-notifications-btn");
+
+    mainContainer.on("click", function (event) {
+
+      if (event.target.closest('.f_notification-icon')) {
+        if ($.trim($("#unread_notifications_content").html()) !== '') {
+          $("#unread_notifications_container").toggleClass('active');
+        }
+      } else {
+
+        if (!event.target.closest('#unread_notifications_container')) {
+          $("#unread_notifications_container").removeClass('active');
+        }
+      }
+    });
+
+    unreadNotificationsContainer.on("click", ".f_delete-all-notifications-btn", function () {
+
+      $("#all-notifications-delete-btn-box").toggleClass('show');
+    });
+
+    deleteAllNotificationsBtn.on('click', function () {
+      NGS.action("admin.actions.notification.mark_as_read", {}, () => {
+        $("#unread_notifications_content").empty();
+        $("#all-notifications-delete-btn-box").removeClass('show');
+        $("#unread_notifications_container").removeClass('active');
+
+      });
+    })
+  }
+
+
+
 }

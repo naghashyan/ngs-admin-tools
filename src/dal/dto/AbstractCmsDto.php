@@ -234,9 +234,25 @@ abstract class AbstractCmsDto extends AbstractSecureDto
         return $result;
     }
 
+    /**
+     * get nested loads tabs
+     * @return array
+     */
     public function getNgsCmsTabsArray(): array
     {
-        return [];
+        $res = [];
+        $additionalTabs = $this->getAdditionalTabsData();
+
+        if($additionalTabs) {
+            foreach ($additionalTabs as $additionalTab) {
+                if($additionalTab['dto']->hasReadAccess('id')) {
+                    unset($additionalTab['dto']);
+                    $res[$additionalTab['key']] = $additionalTab;
+                }
+            }
+        }
+
+        return $res;
     }
 
     /**
@@ -251,6 +267,16 @@ abstract class AbstractCmsDto extends AbstractSecureDto
             $visibleFieldsGetters['get' . ucfirst($key)] = $value;
         }
         return $visibleFieldsGetters;
+    }
+
+
+
+    /**
+     * get data about tabs, that should be nested to some other load
+     * @return array
+     */
+    public function getAdditionalTabsData() {
+        return [];
     }
 
 }

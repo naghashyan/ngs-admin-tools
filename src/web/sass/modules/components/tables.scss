@@ -161,7 +161,6 @@ table {
       & > li {
         padding-top: 0;
         padding-bottom: 0;
-        height: 32px;
       }
 
       .right-align {
@@ -177,6 +176,9 @@ table {
     cursor: pointer;
 
     &:hover {
+      position: relative;
+      z-index: 10;
+
       .actions-box {
         opacity: 1;
       }
@@ -186,23 +188,37 @@ table {
       .left-align {
         opacity: 1;
       }
+      .image {
+        opacity: 1;
+      }
     }
 
-    .right-align {
-      position: sticky;
-      right: 0;
-      padding: 0 8px 0 8px;
-      z-index: 1;
+    &:first-child {
+      & > li {
+        &.image {
+          img {
+            -webkit-transform-origin : 50% 0%;
+            -moz-transform-origin : 50% 0%;
+            -o-transform-origin : 50% 0%;
+            -ms-transform-origin : 50% 0%;
+            transform-origin : 50% 0%;
+          }
+        }
+      }
     }
-    .left-align {
-      position: sticky;
-      left: 0;
-      z-index: 1;
-    }
-
     &:last-child {
       & > li {
         border-bottom: 0;
+
+        &.image {
+          img {
+            -webkit-transform-origin : 50% 100%;
+            -moz-transform-origin : 50% 100%;
+            -o-transform-origin : 50% 100%;
+            -ms-transform-origin : 50% 100%;
+            transform-origin : 50% 100%;
+          }
+        }
       }
     }
 
@@ -220,8 +236,6 @@ table {
       }
     }
 
-
-
     &.table-head {
       font-weight: 600;
       position: sticky;
@@ -230,13 +244,17 @@ table {
 
       &:hover {
         opacity: 1;
+
+        li {
+          opacity: 1;
+        }
       }
 
       li {
         font-weight: 700;
         text-transform: uppercase;
         user-select: none;
-        padding: 7px 25px 6px 10px;
+        padding: 8px 30px 7px 10px;
 
         &:hover {
           cursor: pointer;
@@ -244,7 +262,7 @@ table {
 
         &.sorted {
           &:after {
-            content: '\ea1c';
+            content: '\ea27';
             font-family: 'icomoon' !important;
             position: absolute;
             right: 10px;
@@ -253,17 +271,22 @@ table {
             font-weight: 600;
             top: 50%;
             transform: translate(0, -50%);
+            font-size: 12px;
           }
 
           &.asc {
             &:after {
-              content: '\e910';
+              content: '\ea28';
+              font-size: 8px;
+              color: $primaryColor;
             }
           }
 
           &.desc {
             &:after {
-              content: '\e903';
+              content: '\ea29';
+              font-size: 8px;
+              color: $primaryColor;
             }
           }
         }
@@ -272,13 +295,36 @@ table {
           cursor:e-resize;
           position:absolute;
           right: 0;
-          top: 50%;
-          transform: translate(0, -50%);
+          top: 0;
           width: 10px;
           text-align: center;
           display: inline-block;
+          font-size: 0;
+          height: 100%;
+
+          &:before {
+            content: "";
+            border-left: 1px solid;
+            position: absolute;
+            right: 0;
+            height: 100%;
+            top: 0;
+            opacity: 0.1;
+          }
         }
       }
+    }
+
+    .right-align {
+      position: sticky;
+      right: 0;
+      padding: 0 8px 0 8px;
+      z-index: 1;
+    }
+    .left-align {
+      position: sticky;
+      left: 0;
+      z-index: 1;
     }
 
     & > li {
@@ -286,7 +332,7 @@ table {
       display: table-cell;
       padding: 2px 10px 2px 10px;
       vertical-align: middle;
-      height: 31px;
+      height: 30px;
       font-size: 14px;
       font-weight: 400;
       min-width: 40px;
@@ -308,6 +354,11 @@ table {
           width: 23px;
           height: 23px;
           display: block;
+          transition: transform 0.2s ease;
+
+          &:hover {
+            transform: scale(2);
+          }
         }
       }
       &.clickable {

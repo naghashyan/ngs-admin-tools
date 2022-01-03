@@ -21,6 +21,7 @@ class NgsRuleDto extends AbstractDto
     protected $ruleName;
     protected $itemId;
     protected $priority;
+    protected $isHighPriority;
     protected $conditions;
     protected $actions;
 
@@ -37,6 +38,7 @@ class NgsRuleDto extends AbstractDto
         'rule_name' => 'ruleName',
         'item_id' => 'itemId',
         'priority' => 'priority',
+        'is_high_priority' => 'isHighPriority',
         'conditions' => 'conditions',
         'actions' => 'actions'
     ];
@@ -125,6 +127,22 @@ class NgsRuleDto extends AbstractDto
     public function setPriority($priority): void
     {
         $this->priority = $priority;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsHighPriority()
+    {
+        return $this->isHighPriority;
+    }
+
+    /**
+     * @param mixed $isHighPriority
+     */
+    public function setIsHighPriority($isHighPriority): void
+    {
+        $this->isHighPriority = $isHighPriority;
     }
 
     /**

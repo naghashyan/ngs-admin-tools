@@ -60,16 +60,18 @@ export default class AbstractListLoad extends AbstractLoad {
      * 
      */
     getFilterValuesAndInitFilters() {
-        if(this.getListLoadLevel() === 1) {
-            NGS.action("ngs.cms.actions.filters.list", {manager: this.args().manager}, (data) => {
-                this.initFilters(data.filterValues);
-                this.initPagination();
-                this.initBulkActions(data.exportableFields);
-                this.initChoices();
+
+        NGS.action("ngs.cms.actions.filters.list", {manager: this.args().manager}, (data) => {
+            this.initFilters(data.filterValues);
+            this.initPagination();
+            this.initBulkActions(data.exportableFields);
+            this.initChoices();
+
+            if(this.getListLoadLevel() === 1) {
                 this.setListDataInLocalStorage();
                 this.initFavoriteFilters();
-            });
-        }
+            }
+        });
 
     }
 
@@ -540,7 +542,9 @@ export default class AbstractListLoad extends AbstractLoad {
         document.querySelectorAll('#' + this.getContainer() + ' .f_edit_btn').click(event => {
             event.stopPropagation();
             let itemId = event.currentTarget.attr('data-im-id');
-            let params = this._getNgsParams();
+            //todo: this line was before, and was working wrong (sending page params to backend too). Need to be checked
+            // let params = this._getNgsParams();
+            let params = {};
             params.itemId = itemId;
             params.fromListingPage = true;
             NGS.load(this.args().editLoad, params);
@@ -570,7 +574,7 @@ export default class AbstractListLoad extends AbstractLoad {
             if (!this.hasViewLoad()) {
                 return false;
             }
-            if (event.target.closest(".checkbox-item")) {
+            if (event.target.closest(".f_check-items")) {
                 return false;
             }
             if (!this.args().rowClickLoad || !this.args().rowClickLoad.trim()) {

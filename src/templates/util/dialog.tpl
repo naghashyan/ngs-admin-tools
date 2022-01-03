@@ -6,7 +6,7 @@
         </a>
 
         <div class="toast-header-box hide f_toast-header-box">
-            <h4 class="t5 f_toast-header-box-title-part">
+            <h4 class="t4 f_toast-header-box-title-part">
             </h4>
         </div>
 
@@ -15,7 +15,7 @@
             <i class="icon-success f_success_icon hide"></i>
             <div class="dialogContent-header f_toast-content-box-title-part"></div>
 
-            <div class="large1 f_toast-content-box-main-part"></div>
+            <div class="small f_toast-content-box-main-part"></div>
 
 
             <div class="f_confirmation-message-container">

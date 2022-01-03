@@ -4,7 +4,7 @@
             <input type="hidden" name="tempId" value="">
 
             <div class="g_fixed-box modal-title-box border">
-                <div class="t2">Item Rules Management ({$ns.ruleDisplayName} rules)</div>
+                <div class="t4">Item Rules Management ({$ns.ruleDisplayName} rules)</div>
             </div>
             <div class="g_scrolable-fixed-box modal-content-box">
                 <div class="g_scrolable-fixed-inner-box g-content row">
@@ -19,73 +19,79 @@
                                             {foreach from=$ns.existingRules item=$ruleItem}
                                                 <li class="actual-rule-item f_actual-rule-item {if $ns.appliedRulesIds and in_array($ruleItem->getId(), $ns.appliedRulesIds)}active{/if}">
                                                     <span class="rule-name f-rule-name">{$ruleItem->getRuleName()} - {$ruleItem->getName()}</span>
-                                                    <span class="delete-rule f_delete-rule" data-id="{$ruleItem->getId()}">
-                                                        <i class="icon-delete"></i>
-                                                    </span>
+                                                    {if not $ns.isViewMode}
+                                                        <span class="delete-rule f_delete-rule" data-id="{$ruleItem->getId()}">
+                                                            <i class="icon-delete-trash"></i>
+                                                        </span>
+                                                    {/if}
                                                 </li>
                                             {/foreach}
                                         {/if}
                                     </ul>
                                 </div>
-                                <div class="rule-creator-panel f_rule-creator-panel">
-                                    <h3 class="t5">Create new rule</h3>
-                                    <input type="hidden" id="ruleFilter" value="">
-                                    <div class="rule-creation-header">
-                                        <div class="form-item f_new-rule-name">
-                                            <div class="input-field">
-                                                <label for="newRuleName" class="active">Rule Name</label>
-                                                <input id="newRuleName" value="">
-                                            </div>
-                                        </div>
-                                        <div class="rule-filter ngs-filter" id="{$ns.ruleName}_filter">
-                                            <div class="active-filters f_active-filters">
+                                {if not $ns.isViewMode}
+                                    <div class="rule-creator-panel f_rule-creator-panel">
+                                        <h3 class="t5">Create new rule</h3>
+                                        <input type="hidden" id="ruleFilter" value="">
+                                        <div class="rule-creation-header">
+                                            <div class="form-item f_new-rule-name">
                                                 <div class="input-field">
-                                                    <div class="page-box">
-                                                        <div class="center-box">
-                                                            <div class="active-filters search-box-save f_active-filters">
-                                                                <div class="criteria-box f_criteria-box"></div>
+                                                    <label for="newRuleName" class="active">Rule Name</label>
+                                                    <input id="newRuleName" value="">
+                                                </div>
+                                            </div>
+                                            <div class="rule-filter ngs-filter" id="{$ns.ruleName}_filter">
+                                                <div class="active-filters f_active-filters">
+                                                    <div class="input-field">
+                                                        <div class="page-box">
+                                                            <div class="center-box">
+                                                                <div class="active-filters search-box-save f_active-filters">
+                                                                    <div class="criteria-box f_criteria-box"></div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="filter-favorite-box">
-                                                    <button title="Filter" class="with-icon medium button outline-light-basik primary f_filter-add-criteria">
-                                                        <i class="icon-filter"></i>
-                                                    </button>
+                                                    <div class="filter-favorite-box">
+                                                        <button title="Filter" class="with-icon medium-button button outline-light-basik primary f_filter-add-criteria">
+                                                            <i class="icon-filter"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="rule-actions">
-                                        <h3 class="t5">Rule actions</h3>
+                                        <div class="rule-actions">
+                                            <h3 class="t5">Rule actions</h3>
 
-                                        <div class="form-item">
-                                            <div class="input-field f_variable-selection">
-                                                <label for="customer_requests_submit_orders_type_input">FieldName</label>
-                                                <select data-ngs-searchable="false" data-ngs-remove="false" searchable="Search" class="ngs-choice" id="fieldName">
-                                                    {foreach from=$ns.actionFields item=$actionField}
-                                                        <option value="{$actionField['id']}" data-type="{$actionField['type']}">
-                                                            {$actionField['value']}
-                                                        </option>
-                                                    {/foreach}
-                                                </select>
+                                            <div class="form-item">
+                                                <div class="input-field f_variable-selection">
+                                                    <label for="customer_requests_submit_orders_type_input">FieldName</label>
+                                                    <select data-ngs-searchable="false" data-ngs-remove="false" searchable="Search" class="ngs-choice" id="fieldName">
+                                                        {foreach from=$ns.actionFields item=$actionField}
+                                                            <option value="{$actionField['id']}" data-type="{$actionField['type']}">
+                                                                {$actionField['value']}
+                                                            </option>
+                                                        {/foreach}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="action-section f_action-section">
                                             </div>
                                         </div>
-                                        <div class="action-section f_action-section">
-                                        </div>
-                                    </div>
 
-                                </div>
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="g_fixed-box modal-action-box f_form-actions">
-                <button class="button min-width basic light f_cancel" type="button">
-                    Cancel
-                </button>
-                <button class="button min-width basic primary f_save-filter">Save filter</button>
+                {if not $ns.isViewMode}
+                    <button class="button min-width basic light f_cancel" type="button">Cancel</button>
+                    <button class="button min-width basic primary f_save-filter">Save filter</button>
+                {else}
+                    <button class="button min-width basic light f_cancel" type="button">Close</button>
+                {/if}
             </div>
         </form>
 
@@ -124,6 +130,6 @@
 
 <template id="existingRuleToCopy">
     <li class="actual-rule-item f_actual-rule-item">
-        <span class="rule-name f-rule-name">{literal}${rule_name}{/literal}</span><span class="delete-rule f_delete-rule" data-id="{literal}${rule_id}{/literal}"><i class="icon-delete"></i></span>
+        <span class="rule-name f-rule-name">{literal}${rule_name}{/literal}</span><span class="delete-rule f_delete-rule" data-id="{literal}${rule_id}{/literal}"><i class="icon-delete-trash"></i></span>
     </li>
 </template>

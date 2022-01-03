@@ -25,6 +25,7 @@ use ngs\NgsAdminTools\util\StringUtil;
 class NgsRuleManager extends AbstractManager
 {
 
+    private static $epsilion = 0.001;
     /** @var array $ruleClasses */
     private $ruleClasses = [];
     /** @var array $itemsByRules */
@@ -718,7 +719,7 @@ class NgsRuleManager extends AbstractManager
                 if (count($ruleAdditionalConditions) === 1) {
                     $additionalConditions[] = $ruleAdditionalConditions[0];
                 } else {
-                    $additionalConditions[] = '(' . implode(' OR ', $ruleAdditionalConditions) . ')';
+                    $additionalConditions[] = '(' . implode(' AND ', $ruleAdditionalConditions) . ')';
                 }
             }
         }
@@ -1153,9 +1154,18 @@ class NgsRuleManager extends AbstractManager
                             if ($result) {
                                 $result .= $operator . ' ';
                             }
+
                             $result .= $this->getFieldName($filterItem);
-                            $condition = $this->getConditionByType($filterItem);
-                            $result .= $condition . $this->getSearchValueByType($filterItem);
+
+                            if ($filterItem['conditionType'] == 'number') {
+
+                                $result .= $this->getConditionAndSearchValueForNumberField($result, $filterItem);
+                            } else {
+
+                                $condition = $this->getConditionByType($filterItem);
+                                $searchValue = $this->getSearchValueByType($filterItem);
+                                $result .= $condition . $searchValue;
+                            }
                         }
                     }
                 }
@@ -1233,6 +1243,29 @@ class NgsRuleManager extends AbstractManager
 
 
     /**
+     * number comparisons are not always correct because of float numbers
+     * @param $result
+     * @param $filterItem
+     * @return string
+     */
+    private function getConditionAndSearchValueForNumberField($result, $filterItem)
+    {
+        switch ($filterItem['conditionValue']) {
+            case 'equal' :
+                return ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ';
+            case 'greater' :
+                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' ';
+            case 'less' :
+                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' ';
+            case 'greater_or_equal' :
+                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' OR (' .  $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+            case 'less_or_equal' :
+                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' OR (' .  $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+        }
+    }
+
+
+    /**
      * returns condition type (=, !=, Like, NOT LIKE, >, < , ....) from rule condition item
      *
      * @param $filterItem
@@ -1244,10 +1277,10 @@ class NgsRuleManager extends AbstractManager
         $condition = '';
         if ($filterItem['conditionType'] == 'text') {
             $condition = $this->getTextCondition($filterItem['conditionValue']);
-        } else if ($filterItem['conditionType'] == 'number' || $filterItem['conditionType'] == 'date') {
-            $condition = $this->getNumberCondition($filterItem['conditionValue']);
+        } else if ($filterItem['conditionType'] == 'date') {
+            $condition = $this->getDateCondition($filterItem['conditionValue']);
         } else if ($filterItem['conditionType'] === 'checkbox' || $filterItem['conditionType'] === 'select') {
-            $condition = ' =';
+            $condition = $this->getSelectCondition(isset($filterItem['conditionValue']) ? $filterItem['conditionValue'] : null);
         } else if ($filterItem['conditionType'] === 'in') {
             $condition = ' IN';
         } else if ($filterItem['conditionType'] === 'not_in') {
@@ -1284,12 +1317,12 @@ class NgsRuleManager extends AbstractManager
 
 
     /**
-     * returns condition if type is number
+     * returns condition if type is date
      *
      * @param string $conditionValue
      * @return string
      */
-    private function getNumberCondition(string $conditionValue)
+    private function getDateCondition(string $conditionValue)
     {
         $condition = '';
 
@@ -1312,6 +1345,26 @@ class NgsRuleManager extends AbstractManager
 
 
     /**
+     * returns condition if type is select
+     *
+     * @param string $conditionValue
+     * @return string
+     */
+    private function getSelectCondition(?string $conditionValue)
+    {
+        $condition = '';
+
+        if (!$conditionValue || $conditionValue === 'equal') {
+            $condition = ' =';
+        } else {
+            $condition = ' !=';
+        }
+
+        return $condition;
+    }
+
+
+    /**
      * returns condition value from rule condition item
      *
      * @param $filterItem
@@ -1320,7 +1373,7 @@ class NgsRuleManager extends AbstractManager
      */
     private function getSearchValueByType($filterItem)
     {
-        if ($filterItem['conditionType'] === 'checkbox' || $filterItem['conditionType'] === 'number') {
+        if ($filterItem['conditionType'] === 'checkbox') {
             return ' ' . $filterItem['searchValue'] . ' ';
         } else if ($filterItem['conditionType'] === 'in' || $filterItem['conditionType'] === 'not_in') {
             return is_array($filterItem['searchValue']) ? ' (' . implode(',', $filterItem['searchValue']) . ') ' : ' ' . $filterItem['searchValue'] . ' ';
@@ -1359,7 +1412,7 @@ class NgsRuleManager extends AbstractManager
     /**
      * sorts and filters rules for given item
      *
-     * @param array $rules
+     * @param NgsRuleDto[] $rules
      * @param AbstractCmsDto $dto
      * @return array
      * @throws \Exception
@@ -1371,8 +1424,6 @@ class NgsRuleManager extends AbstractManager
             return $rules;
         }
 
-
-
         $filteredRules = [];
 
         foreach ($rules as $rule) {
@@ -1381,21 +1432,26 @@ class NgsRuleManager extends AbstractManager
                 $filteredRules[] = $rule;
             }
         }
+        /** @var NgsRuleDto[] $rules */
         $rules = $filteredRules;
 
         $field = $ruleClassInfo['additionalPriority']['field'];
         $result = [];
+
+        $orderType = $ruleClassInfo['additionalPriority']['order'];
+        $highPriorityPrefix = strtolower($orderType) === 'desc' ? 'b' : 'a';
+        $lowPriorityPrefix = strtolower($orderType) === 'desc' ? 'a' : 'b';
+
         foreach ($rules as $rule) {
             $dtoToChange = clone $dto;
             $dtoToChange = $this->executeAction($rule, $dtoToChange);
-
             $getterMethod = StringUtil::getGetterByDbName($field);
-            $result[strval($dtoToChange->$getterMethod())] = $rule;
+            $isHighPriority = $rule->getIsHighPriority();
+            $key = $isHighPriority ? $highPriorityPrefix : $lowPriorityPrefix;
+            $key .= strval($dtoToChange->$getterMethod());
+            $result[$key] = $rule;
         }
-
-
-        $orderType = $ruleClassInfo['additionalPriority']['order'];
-
+        
         if (strtolower($orderType) === 'desc') {
             krsort($result);
         } else {

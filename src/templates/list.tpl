@@ -175,14 +175,14 @@
                                         {block name="actions"}
                                             {*<div class="buttons-items-box">*}
                                             {foreach from=$ns.actions item=action name=action}
-                                                <button class="button btn-link outline with-small-icon {$action}-btn f_{$action}_btn {if $action == 'delete'}danger{/if}"
+                                                <button class="button btn-link outline with-small-icon {$action}-btn f_{$action}_btn dark"
                                                         data-im-id="{$itemDto->getId()}">
                                                     {if $action == "play" }
                                                         <i class="icon-play"></i>
                                                     {elseif $action == "reject"}
                                                         cancel
                                                     {elseif $action == "delete"}
-                                                        <i class="icon-delete"></i>
+                                                        <i class="icon-delete-trash"></i>
                                                         {elseif $action == "edit"}
                                                         <i class="icon-edit"></i>
                                                         {elseif $action == "approve"}
@@ -233,11 +233,11 @@
             {/foreach}
             {literal}
                 <li class="right-align">
-                    <button title="Edit" class="button small btn-link outline with-icon edit-btn f_edit_btn" data-im-id="${id}">
+                    <button title="Edit" class="button small btn-link outline with-icon edit-btn f_edit_btn dark" data-im-id="${id}">
                         <i class="icon-edit"></i>
                     </button>
-                    <button title="Delete" class="button small btn-link outline with-icon delete-btn f_delete_btn danger" data-im-id="${id}">
-                        <i class="icon-delete"></i>
+                    <button title="Delete" class="button small btn-link outline with-icon delete-btn f_delete_btn dark" data-im-id="${id}">
+                        <i class="icon-delete-trash"></i>
                     </button>
                 </li>
             {/literal}

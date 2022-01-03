@@ -18,6 +18,8 @@ use ngs\exceptions\DebugException;
 class NgsCmsParamsBin
 {
 
+    private static $epsilion = 0.001;
+
     private $userId = null;
     private $languageId = null;
     private $select = "";
@@ -515,8 +517,19 @@ class NgsCmsParamsBin
                     $fieldNameWithTable = strpos($filterItem['fieldName'], '.') === false ? $localTableName . '.' . $filterItem['fieldName'] : $filterItem['fieldName'];
                     $filterItem['fieldName'] = $fieldNameWithTable;
                     $result .= $this->getFieldName($filterItem);
-                    $condition = $this->getConditionByType($filterItem);
-                    $result .= $condition . $this->getSearchValueByType($filterItem);
+
+
+                    if ($filterItem['conditionType'] == 'number') {
+                        $result .= $this->getConditionAndSearchValueForNumberField($result, $filterItem);
+                    } else {
+
+                        $condition = $this->getConditionByType($filterItem);
+                        $searchValue = $this->getSearchValueByType($filterItem);
+                        $result .= $condition . $searchValue;
+                    }
+
+
+
                 }
             }
         }
@@ -533,9 +546,33 @@ class NgsCmsParamsBin
             }
         }
 
-
         return $finalCondition;
     }
+
+
+    /**
+     * number comparisons are not always correct because of float numbers
+     * @param $result
+     * @param $filterItem
+     * @return string
+     */
+    private function getConditionAndSearchValueForNumberField($result, $filterItem)
+    {
+        switch ($filterItem['conditionValue']) {
+            case 'equal' :
+                return ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ';
+            case 'greater' :
+                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' ';
+            case 'less' :
+                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' ';
+            case 'greater_or_equal' :
+                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' OR (' .  $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+            case 'less_or_equal' :
+                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' OR (' .  $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+        }
+    }
+
+
 
 
     /**
@@ -598,7 +635,7 @@ class NgsCmsParamsBin
             } else if ($filterItem['conditionValue'] === 'not_like') {
                 $condition = ' NOT LIKE';
             }
-        } else if ($filterItem['conditionType'] == 'number' || $filterItem['conditionType'] == 'date') {
+        } else if ($filterItem['conditionType'] == 'date') {
             if ($filterItem['conditionValue'] === 'equal') {
                 $condition = ' =';
             } else if ($filterItem['conditionValue'] === 'not_equal') {
@@ -613,7 +650,13 @@ class NgsCmsParamsBin
                 $condition = ' <=';
             }
         } else if ($filterItem['conditionType'] === 'checkbox' || $filterItem['conditionType'] === 'select') {
-            $condition = ' =';
+            if(!isset($filterItem['conditionValue']) || $filterItem['conditionValue'] === 'equal') {
+                $condition = ' =';
+            }
+            else {
+                $condition = ' !=';
+            }
+
         } else if ($filterItem['conditionType'] === 'in') {
             $condition = ' IN';
         } else if ($filterItem['conditionType'] === 'not_in') {
@@ -630,7 +673,7 @@ class NgsCmsParamsBin
      */
     private function getSearchValueByType($filterItem)
     {
-        if ($filterItem['conditionType'] === 'checkbox' || $filterItem['conditionType'] === 'number') {
+        if ($filterItem['conditionType'] === 'checkbox') {
             return ' ' . $filterItem['searchValue'] . ' ';
         } else if ($filterItem['conditionType'] === 'in' || $filterItem['conditionType'] === 'not_in') {
             return ' (' . implode(',', $filterItem['searchValue']) . ') ';

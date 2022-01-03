@@ -21,6 +21,7 @@ namespace ngs\NgsAdminTools\templater;
 
 use ngs\NgsAdminTools\templater\plugins\AbstractSmartyPlugin;
 use ngs\NgsAdminTools\templater\plugins\blocks\NgsFormBlockSmartyPlugin;
+use ngs\NgsAdminTools\templater\plugins\blocks\NgsFormWithoutContentBlockSmartyPlugin;
 use ngs\NgsAdminTools\templater\plugins\blocks\NgsGroupBlockSmartyPlugin;
 use ngs\NgsAdminTools\templater\plugins\blocks\NgsPopupFormBlockSmartyPlugin;
 use ngs\NgsAdminTools\templater\plugins\blocks\NgsFlexibleHeightFormBlockSmartyPlugin;
@@ -187,6 +188,7 @@ class NgsSmartyTemplater extends \ngs\templater\NgsSmartyTemplater
     private function registerCmsPlugins()
     {
         $this->registerNgsPlugin(NgsFormBlockSmartyPlugin::class);
+        $this->registerNgsPlugin(NgsFormWithoutContentBlockSmartyPlugin::class);
         $this->registerNgsPlugin(NgsPopupFormBlockSmartyPlugin::class);
         $this->registerNgsPlugin(NgsFlexibleHeightFormBlockSmartyPlugin::class);
         $this->registerNgsPlugin(NgsTabbedFormBlockSmartyPlugin::class);

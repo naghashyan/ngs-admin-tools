@@ -33,7 +33,7 @@ use ngs\util\NgsArgs;
 abstract class NgsApiAction extends AbstractAction
 {
 
-    private ?Logger $logger = null;
+    protected ?Logger $logger = null;
 
     protected string $action = "";
     private array $requestValidators = [];

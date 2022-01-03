@@ -60,7 +60,9 @@ abstract class AbstractFunctionSmartyPlugin extends AbstractSmartyPlugin
         }else {
             $allHelpTexts = $this->getHelpTextsFromVariables();
             if($allHelpTexts) {
-                $innerValue = isset($allHelpTexts[$params['name']]) ? $allHelpTexts[$params['name']] : null;
+                $names = explode(",", $params['name']);
+                $name = $names[0];
+                $innerValue = isset($allHelpTexts[$name]) ? $allHelpTexts[$name] : null;
             }
         }
 

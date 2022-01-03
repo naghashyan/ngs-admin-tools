@@ -41,6 +41,7 @@
         "util/FilesUploadingUtility.js",
         "util/SelectionUtility.js",
         "util/StringUtility.js",
+        "util/ImageDropzoneUtil.js",
         "managers/PagingManager.js",
         "managers/GridManager.js",
         "managers/PageManager.js",
