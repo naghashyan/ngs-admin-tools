@@ -52,9 +52,6 @@ class GuestUser extends AdminUser
      * @throws InvalidUserException
      */
     public function validate() {
-        if (UserManager::getInstance()->validateSessionUser($this->getSessionUserId(), $this->getToken())){
-            return true;
-        }
-        throw new InvalidUserException("wrong user");
+        return true;
     }
 }

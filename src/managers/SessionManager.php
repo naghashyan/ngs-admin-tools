@@ -14,6 +14,9 @@
 
 namespace ngs\NgsAdminTools\managers;
 
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Token;
+use ngs\NgsAdminTools\security\UserGroups;
 use ngs\NgsAdminTools\security\users\AdminUser;
 use ngs\NgsAdminTools\security\users\GuestUser;
 use ngs\NgsAdminTools\exceptions\InvalidUserException;
@@ -22,7 +25,6 @@ use ngs\NgsAdminTools\dal\mappers\UserGroupMapper;
 use ngs\exceptions\DebugException;
 use ngs\session\AbstractSessionManager;
 use ngs\util\NgsDynamic;
-use Lcobucci\JWT\Parser;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 
 class SessionManager extends AbstractSessionManager {
@@ -115,11 +117,9 @@ class SessionManager extends AbstractSessionManager {
 
 
         $sessionUser = $this->getSessionUser();
-        //var_dump($sessionUser);exit;
         if ($sessionUser == null){
-            $user = new AdminUser();
-            //TODO: get by name GUEST USER
-            $user->setLevel(3);
+            $user = new GuestUser();
+            $user->setLevel(UserGroups::$GUEST);
             $this->user = $user;
             return $this->user;
         }
@@ -143,16 +143,17 @@ class SessionManager extends AbstractSessionManager {
         $decodedToken = $this->getDecodedToken();
         $sessionUser = new NgsDynamic();
         $sessionUser->setToken($token);
-        $userId = $decodedToken->getClaim('uid');
+        $userId = $decodedToken->claims()->get('uid');
         if ($userId == -1){
             $userId = null;
         }
-        $sessionUser->setUserId($decodedToken->getClaim('uid'));
+        $sessionUser->setUserId($userId);
 
-        $sessionUser->setUserLevel($decodedToken->getClaim('level'));
-        $sessionUser->setSessionUserId($decodedToken->getClaim('sid'));
-        $sessionUser->setApiKeyId($decodedToken->getClaim('apiKeyId'));
-        $sessionUser->setIsExpired($decodedToken->isExpired());
+        $sessionUser->setUserLevel($decodedToken->claims()->get('level'));
+        $sessionUser->setSessionUserId($decodedToken->claims()->get('sid'));
+        $sessionUser->setApiKeyId($decodedToken->claims()->get('apiKeyId'));
+        $now = new \DateTimeImmutable();
+        $sessionUser->setIsExpired($decodedToken->isExpired($now));
         return $sessionUser;
 
     }
@@ -219,11 +220,17 @@ class SessionManager extends AbstractSessionManager {
 
     public function refreshToken() {
         $decodedToken = $this->getDecodedToken();
-        $params = ['userId' => $decodedToken->getClaim('uid'), 'sid' => $decodedToken->getClaim('sid'),
-            'expireDate' => 60, 'userLevel' => $decodedToken->getClaim('level'),
-            'platform' => $decodedToken->getClaim('os'), 'ip' => $_SERVER['REMOTE_ADDR'],
-            'apiKeyId' => $decodedToken->getClaim('apiKeyId'), 'host' => $decodedToken->getClaim('host'),
-            'uuid' => $decodedToken->getClaim('uuid')];
+        $params = [
+            'userId' => $decodedToken->claims()->get('uid'),
+            'sid' => $decodedToken->claims()->get('sid'),
+            'expireDate' => 60,
+            'userLevel' => $decodedToken->claims()->get('level'),
+            'platform' => $decodedToken->claims()->get('os'),
+            'ip' => $_SERVER['REMOTE_ADDR'],
+            'apiKeyId' => $decodedToken->claims()->get('apiKeyId'),
+            'host' => $decodedToken->claims()->get('host'),
+            'uuid' => $decodedToken->claims()->get('uuid')
+        ];
         $token = UserManager::getInstance()->createToken($params);
         return ['token' => $token];
     }
@@ -411,17 +418,21 @@ class SessionManager extends AbstractSessionManager {
      *
      * @throws InvalidUserException
      */
-    private function getDecodedToken($forceDecode = false) {
+    private function getDecodedToken($forceDecode = false) : Token
+    {
         if ($this->decodedToken && !$forceDecode){
             return $this->decodedToken;
         }
         try{
-            $this->decodedToken = (new Parser())->parse((string)$this->getUserToken());
+            if ($this->getUserToken() === null) {
+                throw new InvalidUserException('invalid token');
+            }
+            $config = Configuration::forUnsecuredSigner();
+            $this->decodedToken = $config->parser()->parse($this->getUserToken());
             return $this->decodedToken;
         } catch (\Exception $e){
             throw new InvalidUserException('invalid token');
         }
-
     }
 
 

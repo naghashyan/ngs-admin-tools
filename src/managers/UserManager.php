@@ -13,15 +13,13 @@
 
 namespace ngs\NgsAdminTools\managers;
 
+use Lcobucci\JWT\Configuration;
 use ngs\NgsAdminTools\dal\mappers\ApiKeysMapper;
 use ngs\NgsAdminTools\dal\mappers\UserSessionsMapper;
 use ngs\NgsAdminTools\dal\mappers\UserMapper;
-use ngs\NgsAdminTools\exceptions\InvalidUserException;
-use ngs\NgsAdminTools\security\UserGroups;
-use Lcobucci\JWT\Parser;
 use ngs\exceptions\NgsErrorException;
-use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key;
 
 class UserManager extends \ngs\AbstractManager
 {
@@ -194,28 +192,20 @@ class UserManager extends \ngs\AbstractManager
         $newSessionUserDto->setId($sessionUserId);
         $newSessionUserDto->setLastLoginDate("NOW()");
         $newSessionUserDto->setUserId($userId);
-        try {
-            $token = (new Parser())->parse((string)$sessionUserDto->getAccessToken());
-        } catch (\Exception $e) {
-            throw new InvalidUserException("invalid token");
-        }
         $expireTime = 60;
         if (NGS()->get("IM_MODE") == "api") {
             $expireTime = 400;
         }
 
-        $params = ["userId" => $userId, "sid" => $sessionUserDto->getId(), "expireDate" => $expireTime,
-            "userLevel" => $level, "platform" => $sessionUserDto->getOs(),
-            "ip" => $_SERVER["REMOTE_ADDR"], "apiKeyId" => $sessionUserDto->getApiKeyId(),
-            "host" => $sessionUserDto->getHost(), "uuid" => $sessionUserDto->getUuid()];
+        $params = ['userId' => $userId, 'sid' => $sessionUserDto->getId(), 'expireDate' => $expireTime,
+            'userLevel' => $level, 'platform' => $sessionUserDto->getOs(),
+            'ip' => $_SERVER['REMOTE_ADDR'], 'apiKeyId' => $sessionUserDto->getApiKeyId(),
+            'host' => $sessionUserDto->getHost(), 'uuid' => $sessionUserDto->getUuid()];
+
         $newToken = $this->createToken($params);
-        if (!$token) {
-            throw new NgsErrorException("wrong user");
-        }
         $newSessionUserDto->setAccessToken($newToken);
         UserSessionsMapper::getInstance()->updateByPK($newSessionUserDto);
         return $newToken;
-
     }
 
     public function logout($sessionUserId, $level)
@@ -585,25 +575,26 @@ class UserManager extends \ngs\AbstractManager
 
     public function createToken($params)
     {
-        $signer = new Sha256();
-        $token = (new Builder())->setIssuer('https://naghashyan.com')
-            ->setAudience('https://naghashyan.com')
-            ->setId($params["sid"], true)
-            ->setIssuedAt(time())
-            ->setNotBefore(time() + 60)
-            ->setExpiration(time() + 3600 * $params["expireDate"])
-            ->set('uid', $params["userId"])
-            ->set('sid', $params["sid"])
-            ->set('level', $params["userLevel"])
-            ->set('os', $params["platform"])
-            ->set('ip', $params["ip"])
-            ->set('apiKeyId', $params["apiKeyId"])
-            ->set('host', $params["host"])
-            ->set('uuid', $params["uuid"])
-            ->sign($signer, 'ngs-admin-tools-key')
-            ->getToken();
-        return (string)$token;
+        $key = Key\InMemory::plainText('ngs-admin-tools');
+        $config = Configuration::forSymmetricSigner(new Sha256(), $key);
 
+        $now = new \DateTimeImmutable();
+        $token = $config->builder()->issuedBy('https://naghashyan.com')
+            ->permittedFor('https://naghashyan.com')
+            ->identifiedBy($params['sid'])
+            ->issuedAt($now)
+            ->canOnlyBeUsedAfter($now->modify('+1 minute'))
+            ->expiresAt($now->modify('+3600 hour'))
+            ->withClaim('uid', $params['userId'])
+            ->withClaim('sid', $params['sid'])
+            ->withClaim('level', $params['userLevel'])
+            ->withClaim('os', $params['platform'])
+            ->withClaim('ip', $params['ip'])
+            ->withClaim('apiKeyId', $params['apiKeyId'])
+            ->withClaim('host', $params['host'])
+            ->withClaim('uuid', $params['uuid'])
+            ->getToken($config->signer(), $config->signingKey());
+        return $token->toString();
     }
 
     public function deleteNotActiveSessions()

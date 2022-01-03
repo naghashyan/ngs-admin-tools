@@ -62,7 +62,7 @@ class AdminUser extends AbstractNgsUser
      *
      * @param object $id
      */
-    public function setId(int $id)
+    public function setId(?int $id)
     {
         $this->id = $id;
     }
@@ -158,7 +158,6 @@ class AdminUser extends AbstractNgsUser
      */
     public function login()
     {
-
         return UserManager::getInstance()->login($this->getSessionUserId(), $this->getId(), $this->getLevel());
     }
 
