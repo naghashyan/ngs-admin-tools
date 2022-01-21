@@ -18,7 +18,6 @@
     "php": ">=7.4.0",
     "naghashyan/ngs-php-framework": "*",
     "phpoffice/phpspreadsheet": "^1.14",
-    "phpoffice/phpexcel": "^1.8.2",
     "monolog/monolog": "^2.1.1",
     "denissimon/formula-parser": "^2.7"
   },
