@@ -1,6 +1,6 @@
 <?php
 
-namespace ngs\NgsAdminTools\dal\dto;
+namespace ngs\AdminTools\dal\dto;
 
 use ngs\dal\dto\AbstractDto;
 
@@ -12,7 +12,7 @@ use ngs\dal\dto\AbstractDto;
  * 2. verify item by rule
  * 3. do some actions if item verified by rule
  *
- * @package ngs\cms\dal\dto
+ * @package ngs\AdminTools\dal\dto
  */
 class NgsRuleDto extends AbstractDto
 {

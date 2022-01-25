@@ -1,6 +1,6 @@
 <?php
 
-namespace ngs\NgsAdminTools\validators;
+namespace ngs\AdminTools\validators;
 
 
 class FaxValidator extends BaseValidator

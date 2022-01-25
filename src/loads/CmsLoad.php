@@ -11,10 +11,10 @@
  *
  **/
 
-namespace ngs\NgsAdminTools\loads;
+namespace ngs\AdminTools\loads;
 
 
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\AbstractCmsManager;
 
 abstract class CmsLoad extends AbstractCmsLoad
 {
@@ -31,9 +31,9 @@ abstract class CmsLoad extends AbstractCmsLoad
     public function getTemplate(): string
     {
         if ($this->args()->cmsModal) {
-            //return NGS()->getTemplateDir('ngs-cms') . '/main_modal.tpl';
+            //return NGS()->getTemplateDir('ngs-AdminTools') . '/main_modal.tpl';
         }
-        return NGS()->getTemplateDir('ngs-cms') . '/main_load.tpl';
+        return NGS()->getTemplateDir('ngs-AdminTools') . '/main_load.tpl';
     }
 
     protected function getActiveMenu()

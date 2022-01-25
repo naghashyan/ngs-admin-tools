@@ -7,15 +7,15 @@
  * @site http://naghashyan.com
  * @mail levon@naghashyan.com
  * @year 2009-2015
- * @package ngs.NgsAdminTools.security.users
+ * @package ngs.AdminTools.security.users
  * @version 6.0
  *
  */
 
-namespace ngs\NgsAdminTools\security\users;
+namespace ngs\AdminTools\security\users;
 
-use ngs\NgsAdminTools\managers\UserManager;
-use ngs\NgsAdminTools\security\UserGroups;
+use ngs\AdminTools\managers\UserManager;
+use ngs\AdminTools\security\UserGroups;
 
 class ApiUser
 {

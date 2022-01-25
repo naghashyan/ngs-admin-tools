@@ -17,14 +17,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ngs\NgsAdminTools\templater\plugins;
+namespace ngs\AdminTools\templater\plugins;
 
 
-use ngs\NgsAdminTools\managers\LanguageManager;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\managers\TranslationManager;
-use ngs\NgsAdminTools\templater\NgsSmartyTemplater;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\managers\LanguageManager;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\managers\TranslationManager;
+use ngs\AdminTools\templater\NgsSmartyTemplater;
+use ngs\AdminTools\util\StringUtil;
 
 abstract class AbstractSmartyPlugin
 {

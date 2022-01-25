@@ -7,16 +7,16 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2020
- * @package ngs.NgsAdminTools.managers.executors
+ * @package ngs.AdminTools.managers.executors
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers\executors;
+namespace ngs\AdminTools\managers\executors;
 
 use Closure;
 use Monolog\Logger;
-use ngs\NgsAdminTools\util\LoggerFactory;
+use ngs\AdminTools\util\LoggerFactory;
 
 
 abstract class AbstractJobExecutor

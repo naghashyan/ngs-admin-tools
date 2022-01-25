@@ -4,16 +4,16 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2017
- * @package ngs.NgsAdminTools.dal.dto
+ * @package ngs.AdminTools.dal.dto
  * @version 7.0
  *
  */
 
-namespace ngs\NgsAdminTools\dal\dto;
+namespace ngs\AdminTools\dal\dto;
 
 
-use ngs\NgsAdminTools\dal\dto\AbstractSecureDto;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\dal\dto\AbstractSecureDto;
+use ngs\AdminTools\util\StringUtil;
 
 abstract class AbstractCmsDto extends AbstractSecureDto
 {

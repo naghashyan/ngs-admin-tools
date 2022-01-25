@@ -30,6 +30,6 @@ if (NGS()->getDefinedValue('ENVIRONMENT') != 'production'){
 | DEFINNING DEFAULTS PACKAGES DIRS
 |--------------------------------------------------------------------------
 */
-NGS()->define('SESSION_MANAGER', 'ngs\NgsAdminTools\managers\SessionManager');
-NGS()->define('REQUEST_GROUP', \ngs\NgsAdminTools\security\RequestGroups::$adminsRequest);
-NGS()->define('TEMPLATE_ENGINE', 'ngs\NgsAdminTools\templater\NgsCmsTemplater');
+NGS()->define('SESSION_MANAGER', 'ngs\AdminTools\managers\SessionManager');
+NGS()->define('REQUEST_GROUP', \ngs\AdminTools\security\RequestGroups::$adminsRequest);
+NGS()->define('TEMPLATE_ENGINE', 'ngs\AdminTools\templater\NgsCmsTemplater');

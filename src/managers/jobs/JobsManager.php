@@ -7,18 +7,18 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers.jobs
+ * @package ngs.AdminTools.managers.jobs
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers\jobs;
+namespace ngs\AdminTools\managers\jobs;
 
-use ngs\NgsAdminTools\dal\dto\job\JobDto;
-use ngs\NgsAdminTools\dal\mappers\job\JobMapper;
-use ngs\NgsAdminTools\exceptions\NgsJobException;
-use ngs\NgsAdminTools\managers\executors\AbstractJobExecutor;
-use ngs\NgsAdminTools\managers\notification\NotificationsManager;
+use ngs\AdminTools\dal\dto\job\JobDto;
+use ngs\AdminTools\dal\mappers\job\JobMapper;
+use ngs\AdminTools\exceptions\NgsJobException;
+use ngs\AdminTools\managers\executors\AbstractJobExecutor;
+use ngs\AdminTools\managers\notification\NotificationsManager;
 use ngs\AbstractManager;
 
 class JobsManager extends AbstractManager {

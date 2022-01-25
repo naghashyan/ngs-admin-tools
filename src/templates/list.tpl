@@ -207,7 +207,7 @@
         </div>
         {block name="cms-list-pagination"}
             <div class="g_fixed-box action-bar nomargin">
-                {include file="{ngs cmd=get_template_dir ns='ngs-cms'}/util/paging_box.tpl"}
+                {include file="{ngs cmd=get_template_dir ns='ngs-AdminTools'}/util/paging_box.tpl"}
             </div>
         {/block}
     </div>

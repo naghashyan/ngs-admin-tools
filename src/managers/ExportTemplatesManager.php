@@ -8,15 +8,15 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\mappers\ExportTemplateMapper;
+use ngs\AdminTools\dal\mappers\ExportTemplateMapper;
 use ngs\dal\dto\AbstractDto;
 
 class ExportTemplatesManager extends AbstractManager
@@ -125,7 +125,7 @@ class ExportTemplatesManager extends AbstractManager
 
     /**
      * @param $id
-     * @return \ngs\cms\dal\dto\ExportTemplateDto[]
+     * @return \ngs\AdminTools\dal\dto\ExportTemplateDto[]
      * @throws \ngs\exceptions\DebugException
      */
     public function getSavedTemplateById($id) {

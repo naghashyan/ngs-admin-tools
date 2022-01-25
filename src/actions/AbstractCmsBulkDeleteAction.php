@@ -6,12 +6,12 @@
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
  * @year   2020
- * @package ngs.NgsAdminTools.actions
+ * @package ngs.AdminTools.actions
  * @version 1.0.0
  *
  **/
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
 
 abstract class AbstractCmsBulkDeleteAction extends CmsBulkAction

@@ -17,45 +17,45 @@
  * file that was distributed with this source code.
  */
 
-namespace ngs\NgsAdminTools\templater;
+namespace ngs\AdminTools\templater;
 
-use ngs\NgsAdminTools\templater\plugins\AbstractSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsFormWithoutContentBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsGroupBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsPopupFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsFlexibleHeightFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsTabbedFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsTabBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsTableBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsTableHeaderBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsTableBodyBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\AbstractSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsFormWithoutContentBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsGroupBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsPopupFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsFlexibleHeightFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsTabbedFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsTabBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsTableBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsTableHeaderBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsTableBodyBlockSmartyPlugin;
 
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsViewFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsViewPopupFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsViewTabbedFormBlockSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\blocks\NgsViewTabBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsViewFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsViewPopupFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsViewTabbedFormBlockSmartyPlugin;
+use ngs\AdminTools\templater\plugins\blocks\NgsViewTabBlockSmartyPlugin;
 
-use ngs\NgsAdminTools\templater\plugins\functions\NgsCheckboxFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsAddButtonFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsHiddenFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsListFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsLongTextFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsNewLineFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsTableBulkActionsFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsTableFilterFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsTextFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsNumberFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsSelectFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsEmailFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsDateFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsTimeFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsTextareaFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsPasswordFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsDropzoneFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsPaginationFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsViewDateFunctionSmartyPlugin;
-use ngs\NgsAdminTools\templater\plugins\functions\NgsViewTextareaFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsCheckboxFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsAddButtonFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsHiddenFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsListFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsLongTextFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsNewLineFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsTableBulkActionsFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsTableFilterFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsTextFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsNumberFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsSelectFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsEmailFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsDateFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsTimeFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsTextareaFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsPasswordFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsDropzoneFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsPaginationFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsViewDateFunctionSmartyPlugin;
+use ngs\AdminTools\templater\plugins\functions\NgsViewTextareaFunctionSmartyPlugin;
 
 class NgsSmartyTemplater extends \ngs\templater\NgsSmartyTemplater
 {

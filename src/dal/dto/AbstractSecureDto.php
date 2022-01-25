@@ -7,7 +7,7 @@
  * @author Levon Naghashyan <levon@naghashyan.com>
  * @site https://naghashyan.com
  * @year 2009-2020
- * @package ngs.NgsAdminTools.dal.dto
+ * @package ngs.AdminTools.dal.dto
  * @version 4.0.0
  *
  * This file is part of the NGS package.
@@ -19,10 +19,10 @@
  *
  */
 
-namespace ngs\NgsAdminTools\dal\dto;
+namespace ngs\AdminTools\dal\dto;
 
 
-use ngs\NgsAdminTools\managers\NgsSecurityManager;
+use ngs\AdminTools\managers\NgsSecurityManager;
 use ngs\dal\dto\AbstractDto;
 use ngs\security\users\AbstractNgsUser;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace ngs\NgsAdminTools\dal\dto\notification;
+namespace ngs\AdminTools\dal\dto\notification;
 
 use ngs\dal\dto\AbstractDto;
 

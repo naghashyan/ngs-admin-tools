@@ -1,8 +1,8 @@
 <?php
 
-namespace ngs\NgsAdminTools\validators;
+namespace ngs\AdminTools\validators;
 
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\AbstractCmsManager;
 
 class UniqueValueValidator extends BaseValidator
 {

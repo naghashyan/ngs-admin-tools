@@ -1,9 +1,9 @@
 <?php
 
 
-namespace ngs\NgsAdminTools\dal\mappers\notification;
+namespace ngs\AdminTools\dal\mappers\notification;
 
-use ngs\NgsAdminTools\dal\dto\notification\NotificationDto;
+use ngs\AdminTools\dal\dto\notification\NotificationDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 

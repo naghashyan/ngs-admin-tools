@@ -13,9 +13,9 @@
  *
  */
 
-namespace ngs\NgsAdminTools\dal\mappers;
+namespace ngs\AdminTools\dal\mappers;
 
-use ngs\NgsAdminTools\dal\dto\UserDto;
+use ngs\AdminTools\dal\dto\UserDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 
 class UserMapper extends AbstractMysqlMapper

@@ -7,21 +7,21 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token;
-use ngs\NgsAdminTools\security\UserGroups;
-use ngs\NgsAdminTools\security\users\AdminUser;
-use ngs\NgsAdminTools\security\users\GuestUser;
-use ngs\NgsAdminTools\exceptions\InvalidUserException;
-use ngs\NgsAdminTools\dal\dto\UserDto;
-use ngs\NgsAdminTools\dal\mappers\UserGroupMapper;
+use ngs\AdminTools\security\UserGroups;
+use ngs\AdminTools\security\users\AdminUser;
+use ngs\AdminTools\security\users\GuestUser;
+use ngs\AdminTools\exceptions\InvalidUserException;
+use ngs\AdminTools\dal\dto\UserDto;
+use ngs\AdminTools\dal\mappers\UserGroupMapper;
 use ngs\exceptions\DebugException;
 use ngs\session\AbstractSessionManager;
 use ngs\util\NgsDynamic;

@@ -6,7 +6,7 @@
  * @year 2016-2019
  */
 
-namespace ngs\NgsAdminTools\exceptions;
+namespace ngs\AdminTools\exceptions;
 
 class NoAccessException extends \ngs\exceptions\NoAccessException
 {

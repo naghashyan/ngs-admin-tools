@@ -1,7 +1,7 @@
 <?php
 
 
-namespace ngs\NgsAdminTools\dal\dto;
+namespace ngs\AdminTools\dal\dto;
 
 use ngs\dal\dto\AbstractDto;
 

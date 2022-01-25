@@ -11,12 +11,12 @@
  *
  */
 
-namespace ngs\NgsAdminTools\security;
+namespace ngs\AdminTools\security;
 
-use ngs\NgsAdminTools\exceptions\InvalidUserException;
-use ngs\NgsAdminTools\security\users\AdminUser;
-use ngs\NgsAdminTools\security\users\ApiUser;
-use ngs\NgsAdminTools\security\users\GuestUser;
+use ngs\AdminTools\exceptions\InvalidUserException;
+use ngs\AdminTools\security\users\AdminUser;
+use ngs\AdminTools\security\users\ApiUser;
+use ngs\AdminTools\security\users\GuestUser;
 
 class UserGroups
 {

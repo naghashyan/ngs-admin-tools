@@ -11,12 +11,12 @@
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use Lcobucci\JWT\Configuration;
-use ngs\NgsAdminTools\dal\mappers\ApiKeysMapper;
-use ngs\NgsAdminTools\dal\mappers\UserSessionsMapper;
-use ngs\NgsAdminTools\dal\mappers\UserMapper;
+use ngs\AdminTools\dal\mappers\ApiKeysMapper;
+use ngs\AdminTools\dal\mappers\UserSessionsMapper;
+use ngs\AdminTools\dal\mappers\UserMapper;
 use ngs\exceptions\NgsErrorException;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key;

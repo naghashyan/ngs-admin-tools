@@ -4,10 +4,10 @@
  * all created block type plugins should extend this class
  */
 
-namespace ngs\NgsAdminTools\templater\plugins\blocks;
+namespace ngs\AdminTools\templater\plugins\blocks;
 
 
-use ngs\NgsAdminTools\templater\plugins\AbstractSmartyPlugin;
+use ngs\AdminTools\templater\plugins\AbstractSmartyPlugin;
 
 //TODO: MJ: API docs
 abstract class AbstractBlockSmartyPlugin extends AbstractSmartyPlugin

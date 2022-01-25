@@ -8,15 +8,15 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2020
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\mappers\FilterMapper;
+use ngs\AdminTools\dal\mappers\FilterMapper;
 
 class FilterManager extends AbstractManager
 {

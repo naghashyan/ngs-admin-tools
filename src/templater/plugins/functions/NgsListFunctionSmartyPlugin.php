@@ -4,7 +4,7 @@
  * list function plugin for smarty
  */
 
-namespace ngs\NgsAdminTools\templater\plugins\functions;
+namespace ngs\AdminTools\templater\plugins\functions;
 
 
 class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin

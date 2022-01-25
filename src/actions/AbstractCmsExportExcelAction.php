@@ -11,10 +11,10 @@
  *
  **/
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
-use ngs\NgsAdminTools\managers\executors\ExcelExportExecutor;
-use ngs\NgsAdminTools\managers\jobs\JobsManager;
+use ngs\AdminTools\managers\executors\ExcelExportExecutor;
+use ngs\AdminTools\managers\jobs\JobsManager;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 

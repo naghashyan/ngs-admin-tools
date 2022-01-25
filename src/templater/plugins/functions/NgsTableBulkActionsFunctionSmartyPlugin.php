@@ -4,7 +4,7 @@
  * table bulk actions function plugin for smarty
  */
 
-namespace ngs\NgsAdminTools\templater\plugins\functions;
+namespace ngs\AdminTools\templater\plugins\functions;
 
 
 class NgsTableBulkActionsFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin

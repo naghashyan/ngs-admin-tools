@@ -1,6 +1,6 @@
 <?php
 
-namespace ngs\NgsAdminTools\dal\dto\job;
+namespace ngs\AdminTools\dal\dto\job;
 
 
 use ngs\dal\dto\AbstractDto;

@@ -6,12 +6,12 @@
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
  * @year   2021
- * @package ngs.NgsAdminTools.loads
+ * @package ngs.AdminTools.loads
  * @version 1.0
  *
  **/
 
-namespace ngs\NgsAdminTools\loads;
+namespace ngs\AdminTools\loads;
 
 use ngs\exceptions\NgsErrorException;
 
@@ -25,7 +25,7 @@ abstract class CmsBulkUpdateLoad extends AbstractCmsLoad
 
     public function getTemplate(): string
     {
-        return NGS()->getTemplateDir('ngs-cms') . "/bulk_update.tpl";
+        return NGS()->getTemplateDir('ngs-AdminTools') . "/bulk_update.tpl";
     }
 
     /**

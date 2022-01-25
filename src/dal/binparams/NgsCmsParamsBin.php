@@ -7,11 +7,11 @@
  * @site https://naghashyan.com
  * @mail levon@naghashyan.com
  * @year 2019
- * @package ngs.NgsAdminTools.dal.binparams
+ * @package ngs.AdminTools.dal.binparams
  * @version 1.0.0
  */
 
-namespace ngs\NgsAdminTools\dal\binparams;
+namespace ngs\AdminTools\dal\binparams;
 
 use ngs\exceptions\DebugException;
 

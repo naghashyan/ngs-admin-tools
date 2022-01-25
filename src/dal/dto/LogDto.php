@@ -9,14 +9,14 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2019
- * @package ngs.NgsAdminTools.dal.dto
+ * @package ngs.AdminTools.dal.dto
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\dal\dto;
+namespace ngs\AdminTools\dal\dto;
 
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
 
 class LogDto extends AbstractCmsDto
 {

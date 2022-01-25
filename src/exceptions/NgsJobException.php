@@ -6,12 +6,12 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.exceptions
+ * @package ngs.AdminTools.exceptions
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\exceptions;
+namespace ngs\AdminTools\exceptions;
 
 
 

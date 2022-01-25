@@ -9,12 +9,12 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.dal.dto
+ * @package ngs.AdminTools.dal.dto
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\dal\dto;
+namespace ngs\AdminTools\dal\dto;
 
 use ngs\dal\dto\AbstractDto;
 

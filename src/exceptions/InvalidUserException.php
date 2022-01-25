@@ -6,7 +6,7 @@
  * @year 2021
  */
 
-namespace ngs\NgsAdminTools\exceptions;
+namespace ngs\AdminTools\exceptions;
 
 class InvalidUserException extends \ngs\exceptions\InvalidUserException
 {

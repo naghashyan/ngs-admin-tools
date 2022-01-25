@@ -6,20 +6,20 @@
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
  * @year   2021
- * @package ngs.NgsAdminTools.loads
+ * @package ngs.AdminTools.loads
  * @version 1.0
  *
  **/
 
-namespace ngs\NgsAdminTools\loads;
+namespace ngs\AdminTools\loads;
 
-use ngs\NgsAdminTools\dal\binparams\NgsCmsParamsBin;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\dal\dto\NgsRuleDto;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\managers\ExportTemplatesManager;
-use ngs\NgsAdminTools\managers\FilterManager;
-use ngs\NgsAdminTools\managers\NgsRuleManager;
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\dal\dto\NgsRuleDto;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\ExportTemplatesManager;
+use ngs\AdminTools\managers\FilterManager;
+use ngs\AdminTools\managers\NgsRuleManager;
 
 abstract class AbstractCmsListLoad extends AbstractCmsLoad
 {
@@ -167,7 +167,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         $this->addJsonParam('itemType', $itemType);
         $this->afterCmsLoad($itemDtos, $itemsCount);
         $this->addJsonParam('cmsModal', $this->args()->cmsModal);
-        $uuid = $this->args()->cmsUUID ? $this->args()->cmsUUID : uniqid('ngs-cms-', false);
+        $uuid = $this->args()->cmsUUID ? $this->args()->cmsUUID : uniqid('ngs-AdminTools-', false);
         $this->addParam('cmsUUID', $uuid);
         $this->addJsonParam('cmsUUID', $uuid);
 
@@ -202,7 +202,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
      */
     public function getTemplate(): string
     {
-        return NGS()->getTemplateDir('ngs-cms') . '/list.tpl';
+        return NGS()->getTemplateDir('ngs-AdminTools') . '/list.tpl';
     }
 
 

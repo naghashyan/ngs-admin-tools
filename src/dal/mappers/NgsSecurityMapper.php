@@ -8,17 +8,17 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2018
- * @package admin.NgsAdminTools.dal.mappers
+ * @package admin.AdminTools.dal.mappers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\dal\mappers;
+namespace ngs\AdminTools\dal\mappers;
 
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
-use ngs\NgsAdminTools\dal\dto\NgsSecurityDto;
-use ngs\NgsAdminTools\exceptions\NgsSecurityException;
+use ngs\AdminTools\dal\dto\NgsSecurityDto;
+use ngs\AdminTools\exceptions\NgsSecurityException;
 use ReflectionProperty;
 
 class NgsSecurityMapper extends AbstractMysqlMapper

@@ -7,22 +7,22 @@
  * @site   https://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
  * @year   2021
- * @package ngs.NgsAdminTools.loads
+ * @package ngs.AdminTools.loads
  * @version 1.0
  * @copyright Naghashyan Solutions
  *
  **/
 
-namespace ngs\NgsAdminTools\loads;
+namespace ngs\AdminTools\loads;
 
 
-use ngs\NgsAdminTools\dal\binparams\NgsCmsParamsBin;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\managers\NgsRuleManager;
-use ngs\NgsAdminTools\managers\TranslationManager;
-use ngs\NgsAdminTools\util\StringUtil;
-use ngs\NgsAdminTools\util\ValidateUtil;
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\NgsRuleManager;
+use ngs\AdminTools\managers\TranslationManager;
+use ngs\AdminTools\util\StringUtil;
+use ngs\AdminTools\util\ValidateUtil;
 
 abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
 {
@@ -71,7 +71,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         }
         $additionalTabs = $itemDto->getNgsCmsTabsArray();
         foreach ($additionalTabs as $key => $tab) {
-            $tabUID = uniqid('ngs-cms-', false);
+            $tabUID = uniqid('ngs-AdminTools-', false);
             $additionalTabs[$key]['nest_uid'] = $tabUID;
             $this->nestLoads[$tabUID] = [
                 'action' => $tab['action'],
@@ -92,7 +92,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
      */
     public function getTemplate(): string
     {
-        return NGS()->getTemplateDir('ngs-cms') . '/add_update.tpl';
+        return NGS()->getTemplateDir('ngs-AdminTools') . '/add_update.tpl';
     }
 
     /**

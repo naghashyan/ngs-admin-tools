@@ -7,17 +7,17 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2020
- * @package ngs.NgsAdminTools.managers.executors
+ * @package ngs.AdminTools.managers.executors
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers\executors;
+namespace ngs\AdminTools\managers\executors;
 
 use Closure;
-use ngs\NgsAdminTools\dal\binparams\NgsCmsParamsBin;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\util\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 

@@ -2,7 +2,7 @@
 
 include("MainIlyovBin.php");
 
-use ngs\NgsAdminTools\managers\jobs\JobsManager;
+use ngs\AdminTools\managers\jobs\JobsManager;
 
 $args = \ngs\util\NgsArgs::getInstance()->getArgs();
 if(!isset($args['job_id'])) {

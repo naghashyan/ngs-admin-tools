@@ -6,15 +6,15 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2020
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\dto\AbstractSecureDto;
+use ngs\AdminTools\dal\dto\AbstractSecureDto;
 
 
 abstract class NgsSecurityManager extends AbstractManager
@@ -34,7 +34,7 @@ abstract class NgsSecurityManager extends AbstractManager
      */
     public static function getInstance(): NgsSecurityManager {
         if (self::$instance == null){
-            $managerName = 'ngs\NgsAdminTools\managers\Ngs' . self::$securityMode . 'SecurityManager';
+            $managerName = 'ngs\AdminTools\managers\Ngs' . self::$securityMode . 'SecurityManager';
             self::$instance = new $managerName();
         }
         return self::$instance;

@@ -5,12 +5,12 @@
  * @author Mikael Mkrtchyan
  * @site http://naghashyan.com
  * @mail mkael.mkrtchyan@naghashyan.com
- * @package ngs.NgsAdminTools.templater
+ * @package ngs.AdminTools.templater
  * @version 1.0.0
  * @year 2020
  */
 
-namespace ngs\NgsAdminTools\templater;
+namespace ngs\AdminTools\templater;
 
 class NgsCmsTemplater extends \ngs\templater\NgsTemplater {
     public function __construct() {

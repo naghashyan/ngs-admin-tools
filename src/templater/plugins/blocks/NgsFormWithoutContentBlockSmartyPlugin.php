@@ -4,7 +4,7 @@
  * form block which is empty, to write content manually , but using smarty function plugins, like "ngsText" etc...
  */
 
-namespace ngs\NgsAdminTools\templater\plugins\blocks;
+namespace ngs\AdminTools\templater\plugins\blocks;
 
 
 class NgsFormWithoutContentBlockSmartyPlugin extends AbstractFormBlockSmartyPlugin

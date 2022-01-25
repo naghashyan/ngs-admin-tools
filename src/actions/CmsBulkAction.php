@@ -13,11 +13,11 @@
  *
  */
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
-use ngs\NgsAdminTools\dal\binparams\NgsCmsParamsBin;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\managers\AbstractCmsManager;
 
 abstract class CmsBulkAction extends AbsctractCmsAction
 {

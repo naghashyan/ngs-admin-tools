@@ -4,7 +4,7 @@
  * tab block plugin for smarty
  */
 
-namespace ngs\NgsAdminTools\templater\plugins\blocks;
+namespace ngs\AdminTools\templater\plugins\blocks;
 
 
 class NgsTabBlockSmartyPlugin extends AbstractTabBlockSmartyPlugin

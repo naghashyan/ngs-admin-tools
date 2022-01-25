@@ -1,9 +1,9 @@
 <?php
 
-namespace ngs\NgsAdminTools\util;
+namespace ngs\AdminTools\util;
 
 
-use ngs\NgsAdminTools\validators\BaseValidator;
+use ngs\AdminTools\validators\BaseValidator;
 
 class ValidateUtil
 {

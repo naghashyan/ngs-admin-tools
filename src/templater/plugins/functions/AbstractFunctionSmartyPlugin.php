@@ -5,12 +5,12 @@
  * all created function type plugins should extend this class
  */
 
-namespace ngs\NgsAdminTools\templater\plugins\functions;
+namespace ngs\AdminTools\templater\plugins\functions;
 
 
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\templater\plugins\AbstractSmartyPlugin;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\templater\plugins\AbstractSmartyPlugin;
+use ngs\AdminTools\util\StringUtil;
 
 abstract class AbstractFunctionSmartyPlugin extends AbstractSmartyPlugin
 {

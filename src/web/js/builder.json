@@ -5,8 +5,8 @@
     },
     {
       "source_dir": "",
-      "out_dir": "ngs/cms",
-      "module": "ngs-cms",
+      "out_dir": "ngs/AdminTools",
+      "module": "ngs-AdminTools",
       "files": [
         "actions/AbstractAddUpdateAction.js",
         "actions/AbstractExportAction.js",

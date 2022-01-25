@@ -13,10 +13,10 @@
  *
  */
 
-namespace ngs\NgsAdminTools\dal\mappers;
+namespace ngs\AdminTools\dal\mappers;
 
 use ngs\dal\mappers\AbstractMysqlMapper;
-use ngs\NgsAdminTools\dal\dto\ApiKeysDto;
+use ngs\AdminTools\dal\dto\ApiKeysDto;
 
 class ApiKeysMapper extends AbstractMysqlMapper
 {

@@ -6,15 +6,15 @@
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
  * @year   2012-2017
- * @package ngs.NgsAdminTools.loads
+ * @package ngs.AdminTools.loads
  * @version 6.5.0
  *
  **/
 
-namespace ngs\NgsAdminTools\loads;
+namespace ngs\AdminTools\loads;
 
-use ngs\NgsAdminTools\exceptions\NoAccessException;
-use ngs\NgsAdminTools\util\LoggerFactory;
+use ngs\AdminTools\exceptions\NoAccessException;
+use ngs\AdminTools\util\LoggerFactory;
 use ngs\exceptions\NgsErrorException;
 use ngs\request\AbstractLoad;
 use Monolog\Logger;

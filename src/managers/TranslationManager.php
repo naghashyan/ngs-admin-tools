@@ -8,16 +8,16 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\dal\mappers\TranslationMapper;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\dal\mappers\TranslationMapper;
 
 class TranslationManager extends AbstractManager
 {

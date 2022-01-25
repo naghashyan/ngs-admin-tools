@@ -6,14 +6,14 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2020
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
-use ngs\NgsAdminTools\dal\dto\AbstractSecureDto;
+use ngs\AdminTools\dal\dto\AbstractSecureDto;
 
 
 class NgsAnnotatedSecurityManager extends NgsSecurityManager

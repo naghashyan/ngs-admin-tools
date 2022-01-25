@@ -7,19 +7,19 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2019
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 6.5.0
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\dal\dto\NgsRuleDto;
-use ngs\NgsAdminTools\dal\mappers\NgsRuleMapper;
-use ngs\NgsAdminTools\util\ArrayUtil;
-use ngs\NgsAdminTools\util\MathUtil;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\dal\dto\NgsRuleDto;
+use ngs\AdminTools\dal\mappers\NgsRuleMapper;
+use ngs\AdminTools\util\ArrayUtil;
+use ngs\AdminTools\util\MathUtil;
+use ngs\AdminTools\util\StringUtil;
 
 
 class NgsRuleManager extends AbstractManager

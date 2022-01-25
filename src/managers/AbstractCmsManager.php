@@ -6,22 +6,22 @@
  * @site https://naghashyan.com
  * @mail miakel.mkrtchyan@naghashyan.com
  * @year 2017-2019
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 2.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use Monolog\Logger;
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\binparams\NgsCmsParamsBin;
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\dal\dto\NgsRuleDto;
-use ngs\NgsAdminTools\dal\mappers\AbstractCmsMapper;
-use ngs\NgsAdminTools\util\ArrayUtil;
-use ngs\NgsAdminTools\util\LoggerFactory;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\dal\dto\NgsRuleDto;
+use ngs\AdminTools\dal\mappers\AbstractCmsMapper;
+use ngs\AdminTools\util\ArrayUtil;
+use ngs\AdminTools\util\LoggerFactory;
+use ngs\AdminTools\util\StringUtil;
 
 abstract class AbstractCmsManager extends AbstractManager
 {

@@ -4,6 +4,6 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="{ngs cmd=get_js_out_path}/js/ngs/cms/lib/jquery.min.js" async></script>
 <script src="{ngs cmd=get_js_out_path}/js/ngs/cms/lib/materialize.min.js" async></script>
-<script src="{ngs cmd=get_js_out_path ns="ngs-cms"}/js/ngs/cms/lib/materialize.min.js" async></script>
+<script src="{ngs cmd=get_js_out_path ns="ngs-AdminTools"}/js/ngs/cms/lib/materialize.min.js" async></script>
 <script type="module" src="{ngs cmd=get_js_out_path}/index.js?{ngs cmd=get_version}"></script>
 

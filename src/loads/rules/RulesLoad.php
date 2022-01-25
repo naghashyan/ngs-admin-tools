@@ -6,18 +6,18 @@
  * @author Mikael Mkrtchyan
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
- * @package ngs.NgsAdminTools.loads.rules
+ * @package ngs.AdminTools.loads.rules
  * @year   2021
  * @version 1.0.0
  **/
 
-namespace ngs\NgsAdminTools\loads\rules;
+namespace ngs\AdminTools\loads\rules;
 
-use ngs\NgsAdminTools\dal\dto\NgsRuleDto;
-use ngs\NgsAdminTools\loads\AbstractCmsLoad;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\managers\NgsRuleManager;
-use ngs\NgsAdminTools\util\StringUtil;
+use ngs\AdminTools\dal\dto\NgsRuleDto;
+use ngs\AdminTools\loads\AbstractCmsLoad;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\NgsRuleManager;
+use ngs\AdminTools\util\StringUtil;
 
 class RulesLoad extends AbstractCmsLoad
 {
@@ -58,7 +58,7 @@ class RulesLoad extends AbstractCmsLoad
      */
     public function getTemplate(): string
     {
-        return NGS()->getTemplateDir('ngs-cms') . '/rules.tpl';
+        return NGS()->getTemplateDir('ngs-AdminTools') . '/rules.tpl';
     }
 
 

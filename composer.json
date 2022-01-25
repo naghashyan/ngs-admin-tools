@@ -16,15 +16,16 @@
   ],
   "require": {
     "php": ">=7.4.0",
-    "naghashyan/ngs-php-framework": "*",
+    "naghashyan/ngs-php-framework": "^4.2.0",
     "phpoffice/phpspreadsheet": "^1.14",
     "phpoffice/phpexcel": "^1.8.2",
     "monolog/monolog": "^2.1.1",
-    "denissimon/formula-parser": "^2.7"
+    "denissimon/formula-parser": "^2.7",
+    "lcobucci/jwt": "*"
   },
   "autoload": {
     "psr-4": {
-      "ngs\\NgsAdminTools\\": "src/"
+      "ngs\\AdminTools\\": "src/"
     }
   }
 }

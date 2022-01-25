@@ -12,7 +12,7 @@
             <title>{block name="page_title"}NGS CMS{/block}</title>
         {/block}
         {block name="header_controls"}
-            {include file="{ngs cmd=get_template_dir ns='ngs-cms'}/util/headerControls.tpl"}
+            {include file="{ngs cmd=get_template_dir ns='ngs-AdminTools'}/util/headerControls.tpl"}
         {/block}
     {/block}
 </head>
@@ -67,9 +67,9 @@
     <div id="modal" class="modal ngs-modal">{nest ns=cms_modal}</div>
     <div id="secondModal" class="modal ngs-modal"></div>
     <div id="modalPiker" style="display: block;z-index: 2000" class="modal"></div>
-    {include file="{ngs cmd=get_template_dir ns='ngs-cms'}/util/dialog.tpl"}
+    {include file="{ngs cmd=get_template_dir ns='ngs-AdminTools'}/util/dialog.tpl"}
     <div id="ajax_loader" class="ajax-loader">
-        {include file="{ngs cmd=get_template_dir ns='ngs-cms'}/util/svg/Rolling-1s-200px.svg"}
+        {include file="{ngs cmd=get_template_dir ns='ngs-AdminTools'}/util/svg/Rolling-1s-200px.svg"}
     </div>
     {block name='additional-container'}
     {/block}

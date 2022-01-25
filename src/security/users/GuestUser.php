@@ -7,15 +7,15 @@
  * @site http://naghashyan.com
  * @mail levon@naghashyan.com
  * @year 2009-2014
- * @package ngs.NgsAdminTools.security.users
+ * @package ngs.AdminTools.security.users
  * @version 6.0
  *
  */
 
-namespace ngs\NgsAdminTools\security\users;
+namespace ngs\AdminTools\security\users;
 
-use ngs\NgsAdminTools\exceptions\InvalidUserException;
-use ngs\NgsAdminTools\managers\UserManager;
+use ngs\AdminTools\exceptions\InvalidUserException;
+use ngs\AdminTools\managers\UserManager;
 
 class GuestUser extends AdminUser
 {
@@ -35,7 +35,7 @@ class GuestUser extends AdminUser
     /**
      */
     public function getLevel() {
-        return \ngs\NgsAdminTools\security\UserGroups::$GUEST;
+        return \ngs\AdminTools\security\UserGroups::$GUEST;
     }
 
     /**

@@ -6,17 +6,17 @@
  * @author Mikael Mkrtchyan
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
- * @package NGS.NgsAdminTools.actions.filters
+ * @package NGS.AdminTools.actions.filters
  * @year   2020
  * @version 1.0.0
  **/
 
-namespace ngs\NgsAdminTools\actions\filters;
+namespace ngs\AdminTools\actions\filters;
 
-use ngs\NgsAdminTools\actions\AbsctractCmsAction;
-use ngs\NgsAdminTools\dal\dto\NgsRuleDto;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\managers\NgsRuleManager;
+use ngs\AdminTools\actions\AbsctractCmsAction;
+use ngs\AdminTools\dal\dto\NgsRuleDto;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\NgsRuleManager;
 
 class ListAction extends AbsctractCmsAction
 {

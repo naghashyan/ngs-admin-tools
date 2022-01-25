@@ -7,14 +7,14 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
-use ngs\NgsAdminTools\dal\mappers\LogMapper;
-use ngs\NgsAdminTools\util\LoggerFactory;
+use ngs\AdminTools\dal\mappers\LogMapper;
+use ngs\AdminTools\util\LoggerFactory;
 
 
 class LogManager extends AbstractCmsManager {
@@ -37,7 +37,7 @@ class LogManager extends AbstractCmsManager {
     }
 
     /**
-     * @return \ngs\cms\dal\mappers\AbstractCmsMapper|LogMapper
+     * @return \ngs\AdminTools\dal\mappers\AbstractCmsMapper|LogMapper
      */
     public function getMapper() {
         return LogMapper::getInstance();

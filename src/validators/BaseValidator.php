@@ -1,9 +1,9 @@
 <?php
 
-namespace ngs\NgsAdminTools\validators;
+namespace ngs\AdminTools\validators;
 
 
-use ngs\NgsAdminTools\exceptions\NgsValidationException;
+use ngs\AdminTools\exceptions\NgsValidationException;
 
 abstract class BaseValidator
 {

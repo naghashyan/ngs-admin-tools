@@ -7,19 +7,19 @@
  * @site https://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2010-2019
- * @package ngs.NgsAdminTools.actions
+ * @package ngs.AdminTools.actions
  * @version 9.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
-use ngs\NgsAdminTools\dal\dto\AbstractCmsDto;
-use ngs\NgsAdminTools\exceptions\NgsValidationException;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\managers\LogManager;
-use ngs\NgsAdminTools\managers\TranslationManager;
-use ngs\NgsAdminTools\util\ValidateUtil;
+use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\exceptions\NgsValidationException;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\LogManager;
+use ngs\AdminTools\managers\TranslationManager;
+use ngs\AdminTools\util\ValidateUtil;
 use ngs\exceptions\DebugException;
 use ngs\exceptions\NgsErrorException;
 

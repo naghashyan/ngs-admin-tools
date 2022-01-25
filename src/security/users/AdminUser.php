@@ -12,11 +12,11 @@
  *
  */
 
-namespace ngs\NgsAdminTools\security\users;
+namespace ngs\AdminTools\security\users;
 
-use ngs\NgsAdminTools\exceptions\InvalidUserException;
-use ngs\NgsAdminTools\managers\UserManager;
-use ngs\NgsAdminTools\security\UserGroups;
+use ngs\AdminTools\exceptions\InvalidUserException;
+use ngs\AdminTools\managers\UserManager;
+use ngs\AdminTools\security\UserGroups;
 use ngs\security\users\AbstractNgsUser;
 
 class AdminUser extends AbstractNgsUser

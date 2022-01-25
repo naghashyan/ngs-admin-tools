@@ -13,10 +13,10 @@
  *
  */
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
 use Monolog\Logger;
-use ngs\NgsAdminTools\util\LoggerFactory;
+use ngs\AdminTools\util\LoggerFactory;
 use ngs\request\AbstractAction;
 use ngs\exceptions\NgsErrorException;
 

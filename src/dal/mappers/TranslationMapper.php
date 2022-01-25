@@ -8,14 +8,14 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.dal.mappers
+ * @package ngs.AdminTools.dal.mappers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\dal\mappers;
+namespace ngs\AdminTools\dal\mappers;
 
-use ngs\NgsAdminTools\dal\dto\TranslationDto;
+use ngs\AdminTools\dal\dto\TranslationDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 

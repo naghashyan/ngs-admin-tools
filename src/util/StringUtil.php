@@ -1,6 +1,6 @@
 <?php
 
-namespace ngs\NgsAdminTools\util;
+namespace ngs\AdminTools\util;
 
 
 class StringUtil

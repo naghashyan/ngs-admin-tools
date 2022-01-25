@@ -7,12 +7,12 @@
  * @author Mikael Mkrtchyan
  * @site https://naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.routes
+ * @package ngs.AdminTools.routes
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\routes;
+namespace ngs\AdminTools\routes;
 
 use ngs\exceptions\DebugException;
 use ngs\exceptions\NgsErrorException;

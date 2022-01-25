@@ -8,17 +8,17 @@
  * @site https://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.actions
+ * @package ngs.AdminTools.actions
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
 use Monolog\Logger;
-use ngs\NgsAdminTools\exceptions\NgsValidationException;
-use ngs\NgsAdminTools\util\LoggerFactory;
-use ngs\NgsAdminTools\util\ValidateUtil;
+use ngs\AdminTools\exceptions\NgsValidationException;
+use ngs\AdminTools\util\LoggerFactory;
+use ngs\AdminTools\util\ValidateUtil;
 use ngs\request\AbstractAction;
 use ngs\exceptions\NgsErrorException;
 use ngs\util\NgsArgs;
@@ -28,7 +28,7 @@ use ngs\util\NgsArgs;
  * abstract class for the api actions, all api actions should extend from this class
  *
  * Class NgsApiAction
- * @package ngs\cms\actions
+ * @package ngs\AdminTools\actions
  */
 abstract class NgsApiAction extends AbstractAction
 {

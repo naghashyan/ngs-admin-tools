@@ -7,14 +7,14 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2010-2019
- * @package ngs.NgsAdminTools.actions
+ * @package ngs.AdminTools.actions
  * @version 9.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\actions;
+namespace ngs\AdminTools\actions;
 
-use ngs\NgsAdminTools\managers\TranslationManager;
+use ngs\AdminTools\managers\TranslationManager;
 use ngs\request\AbstractAction;
 use ngs\exceptions\NgsErrorException;
 

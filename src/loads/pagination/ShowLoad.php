@@ -6,18 +6,18 @@
  * @author Mikael Mkrtchyan
  * @site   http://naghashyan.com
  * @email  mikael.mkrtchyan@naghashyan.com
- * @package ngs.NgsAdminTools.loads.pagination
+ * @package ngs.AdminTools.loads.pagination
  * @year   2021
  * @version 1.0
  **/
 
-namespace ngs\NgsAdminTools\loads\pagination;
+namespace ngs\AdminTools\loads\pagination;
 
-use ngs\NgsAdminTools\dal\binparams\NgsCmsParamsBin;
-use ngs\NgsAdminTools\dal\dto\NgsRuleDto;
-use ngs\NgsAdminTools\loads\AbstractCmsLoad;
-use ngs\NgsAdminTools\managers\AbstractCmsManager;
-use ngs\NgsAdminTools\managers\NgsRuleManager;
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\dal\dto\NgsRuleDto;
+use ngs\AdminTools\loads\AbstractCmsLoad;
+use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\NgsRuleManager;
 
 class ShowLoad extends AbstractCmsLoad
 {
@@ -52,13 +52,13 @@ class ShowLoad extends AbstractCmsLoad
      */
     public function getTemplate(): string
     {
-        return NGS()->getTemplateDir('ngs-cms') . '/pagination.tpl';
+        return NGS()->getTemplateDir('ngs-AdminTools') . '/pagination.tpl';
     }
 
 
     /**
      * @param NgsRuleDto $rule
-     * @param \ngs\cms\dal\dto\AbstractCmsDto $dto
+     * @param \ngs\AdminTools\dal\dto\AbstractCmsDto $dto
      *
      * @return NgsRuleDto|void
      *

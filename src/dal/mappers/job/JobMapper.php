@@ -1,9 +1,9 @@
 <?php
 
 
-namespace ngs\NgsAdminTools\dal\mappers\job;
+namespace ngs\AdminTools\dal\mappers\job;
 
-use ngs\NgsAdminTools\dal\dto\job\JobDto;
+use ngs\AdminTools\dal\dto\job\JobDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 

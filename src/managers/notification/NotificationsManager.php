@@ -7,15 +7,15 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers.notification
+ * @package ngs.AdminTools.managers.notification
  * @version 1.0.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers\notification;
+namespace ngs\AdminTools\managers\notification;
 
-use ngs\NgsAdminTools\dal\dto\notification\NotificationDto;
-use ngs\NgsAdminTools\dal\mappers\notification\NotificationMapper;
+use ngs\AdminTools\dal\dto\notification\NotificationDto;
+use ngs\AdminTools\dal\mappers\notification\NotificationMapper;
 use ngs\AbstractManager;
 
 class NotificationsManager extends AbstractManager {

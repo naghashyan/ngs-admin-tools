@@ -6,12 +6,12 @@
  * @site http://naghashyan.com
  * @mail levon@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.security
+ * @package ngs.AdminTools.security
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\security;
+namespace ngs\AdminTools\security;
 
 class RequestGroups
 {

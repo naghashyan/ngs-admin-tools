@@ -8,16 +8,16 @@
  * @site http://naghashyan.com
  * @mail mikael.mkrtchyan@naghashyan.com
  * @year 2021
- * @package ngs.NgsAdminTools.managers
+ * @package ngs.AdminTools.managers
  * @version 1.0
  *
  */
 
-namespace ngs\NgsAdminTools\managers;
+namespace ngs\AdminTools\managers;
 
 use ngs\AbstractManager;
-use ngs\NgsAdminTools\dal\dto\LanguageDto;
-use ngs\NgsAdminTools\dal\mappers\LanguageMapper;
+use ngs\AdminTools\dal\dto\LanguageDto;
+use ngs\AdminTools\dal\mappers\LanguageMapper;
 
 class LanguageManager extends AbstractManager
 {
