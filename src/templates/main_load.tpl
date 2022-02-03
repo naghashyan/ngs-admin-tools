@@ -54,7 +54,7 @@
                                 <img src="{$ns.profileImage}" alt="">
                             </span>
                                     <span class="name-box medium1">
-                                {$ns.firstName} {$ns.lastName}
+{*                                {$ns.firstName} {$ns.lastName}*}
                                 <i class="icon-svg3"></i>
                             </span>
                                 </a>

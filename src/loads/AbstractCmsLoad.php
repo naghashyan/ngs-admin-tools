@@ -189,6 +189,7 @@ abstract class AbstractCmsLoad extends AbstractLoad
                 $notAllowed = array_merge($read['not_allowed'], $write['not_allowed']);
                 $allowed = array_merge($read['allowed'], $write['allowed']);
                 $allowed = array_diff($allowed, $notAllowed);
+                $allowed = array_values($allowed);
                 return ['not_allowed' => $notAllowed, 'allowed' => $allowed];
             }
             return $read;

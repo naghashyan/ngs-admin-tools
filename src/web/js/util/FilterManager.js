@@ -223,8 +223,8 @@ export default class FilterManager {
 
         let addNewCriteriaRowBtnBox = document.createElement("div");
         addNewCriteriaRowBtnBox.classList.add('add-criteria-box', 'f_add-new-group-of-and-assoc-criterias-btn-container');
-        addNewCriteriaRowBtnBox.innerHTML = `<button class="add-criteria button basic success f_add-new-criteria-row-btn">
-                                             <span class="circle"><i class="icon-svg179"></i></span>Add Criteria</button>`;
+        addNewCriteriaRowBtnBox.innerHTML = `<div class="f_or-delimiter or-delimiter" data-index-of-delimiter="1">Or</div><button class="add-criteria button basic f_add-new-criteria-row-btn">
+                                             <span class="circle"><i class="icon-svg179"></i></span></button>`;
 
         allCriteriasAndAddBtnContainer.appendChild(addNewCriteriaRowBtnBox);
 
@@ -918,10 +918,16 @@ export default class FilterManager {
      * @returns {HTMLSpanElement}
      */
     createDeleteBtnForAndAssocRowsGroup() {
+        let deleteAndAssocRowsGroupBtnContainer = document.createElement("div");
+        deleteAndAssocRowsGroupBtnContainer.classList.add('remove-criteria-container');
+
         let deleteAndAssocRowsGroupBtn = document.createElement("span");
         deleteAndAssocRowsGroupBtn.classList.add('f_remove-and-assoc-rows-group', 'remove-criteria');
-        deleteAndAssocRowsGroupBtn.innerHTML = '<i class="icon-delete-trash"></i>';
-        return deleteAndAssocRowsGroupBtn;
+        deleteAndAssocRowsGroupBtn.innerHTML = '<i class="icon-close1"></i>';
+
+        deleteAndAssocRowsGroupBtnContainer.appendChild(deleteAndAssocRowsGroupBtn);
+
+        return deleteAndAssocRowsGroupBtnContainer;
     }
 
 
@@ -1081,13 +1087,17 @@ export default class FilterManager {
      * @returns {HTMLSpanElement}
      */
     _createDeleteBtnForJustOneCriteriaRow() {
+        let deleteJustOneCriteriaRowBtnContainer = document.createElement("div");
+        deleteJustOneCriteriaRowBtnContainer.classList.add('remove-criteria-container');
+
         let deleteJustOneCriteriaRowBtn = document.createElement("span");
         deleteJustOneCriteriaRowBtn.classList.add('f_remove-just-one-criteria-row', 'remove-criteria');
-        deleteJustOneCriteriaRowBtn.innerHTML = '<i class="icon-delete-trash"></i>';
+        deleteJustOneCriteriaRowBtn.innerHTML = '<i class="icon-close1"></i>';
 
-        return deleteJustOneCriteriaRowBtn;
+        deleteJustOneCriteriaRowBtnContainer.appendChild(deleteJustOneCriteriaRowBtn);
+
+        return deleteJustOneCriteriaRowBtnContainer;
     }
-
 
     /**
      * remove a line of subcriteria ie just one row, not the group of and associated criterias
@@ -1135,7 +1145,7 @@ export default class FilterManager {
     _createAddJustOneCriteriaRowBtn() {
         let buttonContainer = document.createElement('div');
         buttonContainer.classList.add('sub-criteria-item', 'f_add-sub-category-btn-container');
-        buttonContainer.innerHTML = `<button class="add-criteria button dark success f_btn-add-sub-criteria-item"><span class="circle"><i class="icon-svg179"></i></span>Add Sub Criteria</button>`;
+        buttonContainer.innerHTML = `<button class="add-criteria button dark f_btn-add-sub-criteria-item"><span class="circle"><i class="icon-svg179"></i></span></button>`;
         return buttonContainer;
     }
 

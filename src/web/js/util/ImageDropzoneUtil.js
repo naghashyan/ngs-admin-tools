@@ -1,4 +1,4 @@
-import Dropzone from "../../../ngs/cms/lib/dropzone.min.js";
+import Dropzone from "../../../ngs/AdminTools/lib/dropzone.min.js";
 import DialogUtility from "./DialogUtility.js";
 
 

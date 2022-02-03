@@ -92,7 +92,7 @@ export default class RulesLoad extends AbstractCmsAddUpdateLoad {
         let actions = {};
         actions[fieldName] = assignFormula;
         let ruleName = this.args().ruleName;
-        NGS.action("ngs.cms.actions.rules.save", {ruleName: ruleName, name: newRuleName, filter: filter, actions: [actions]}, function(res) {
+        NGS.action("ngs.AdminTools.actions.rules.save", {ruleName: ruleName, name: newRuleName, filter: filter, actions: [actions]}, function(res) {
             if(res.success) {
                 let renderTemplate = document.getElementById('existingRuleToCopy').innerHTML;
                 let newRuleRow = this.renderTemplate(renderTemplate, res);
@@ -155,7 +155,7 @@ export default class RulesLoad extends AbstractCmsAddUpdateLoad {
         btn.addEventListener('click', function(evt) {
             let btn = evt.target.closest('.f_delete-rule');
             let id = btn.getAttribute('data-id');
-            NGS.action("ngs.cms.actions.rules.remove", {id: id}, function(res) {
+            NGS.action("ngs.AdminTools.actions.rules.remove", {id: id}, function(res) {
                 if(res.success) {
                     btn.closest('.f_actual-rule-item').remove();
                 }

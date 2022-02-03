@@ -66,7 +66,6 @@ abstract class AbstractSecureDto extends AbstractDto {
             $user = $sessionManager->getUser();
         }
         $userLevel = $user->getLevel();
-
         return $sessionManager->userIsAllowed($readAccess, $userLevel);
     }
 
@@ -88,7 +87,7 @@ abstract class AbstractSecureDto extends AbstractDto {
             $user = $sessionManager->getUser();
         }
         $userLevel = $user->getLevel();
-
+        
         return $sessionManager->userIsAllowed($readAccess, $userLevel);
     }
 

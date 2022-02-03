@@ -1,5 +1,5 @@
 import AbstractAction from "../../AbstractAction.js";
-import DialogUtility from '../../../ngs/cms/util/DialogUtility.js';
+import DialogUtility from '../../../ngs/AdminTools/util/DialogUtility.js';
 import MaterialsUtils from "../util/MaterialsUtils.js";
 
 export default class AbstractDeleteAction extends AbstractAction {

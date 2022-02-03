@@ -5,4 +5,4 @@
 |--------------------------------------------------------------------------
 */
 NGS()->define("NGS_CMS_VERSION", "1.0.0");
-NGS()->define("NGS_CMS_NS", "ngs/cms");
+NGS()->define("NGS_CMS_NS", "ngs/AdminTools");

@@ -61,7 +61,7 @@ export default class AbstractListLoad extends AbstractLoad {
      */
     getFilterValuesAndInitFilters() {
 
-        NGS.action("ngs.cms.actions.filters.list", {manager: this.args().manager}, (data) => {
+        NGS.action("ngs.AdminTools.actions.filters.list", {manager: this.args().manager}, (data) => {
             this.initFilters(data.filterValues);
             this.initPagination();
             this.initBulkActions(data.exportableFields);

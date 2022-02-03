@@ -312,7 +312,6 @@ class SessionManager extends AbstractSessionManager {
         }
         $userLevel = $user->getLevel();
         $allowedGroupsInfo = $request->getRequestAllowedGroups();
-
         return $this->userIsAllowed($allowedGroupsInfo, $userLevel);
     }
 
@@ -330,7 +329,6 @@ class SessionManager extends AbstractSessionManager {
         if(!isset($allowedGroupsInfo['allowed']) || !$allowedGroupsInfo['allowed']) {
             return true;
         }
-
         return $this->userAllowedToDoRequest($allowedGroupsInfo['allowed'], $userLevel);
     }
 
@@ -341,6 +339,7 @@ class SessionManager extends AbstractSessionManager {
      * @return bool
      */
     private function userAllowedToDoRequest($allowedUserGroups, $userLevel) {
+
         if($allowedUserGroups[0] === "all") {
             return true;
         }

@@ -140,8 +140,13 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $sortClass = "";
         $order = "";
         $sortType = null;
-        if ($sortParams && isset($sortParams[$columnData['name']])) {
-            $sortType = $sortParams[$columnData['name']];
+        $sortName = $columnData['name'];
+        if (isset($columnData['sort_name'])) {
+            $sortName = $columnData['sort_name'];
+        }
+
+        if ($sortParams && isset($sortParams[$sortName])) {
+            $sortType = $sortParams[$sortName];
         }
         if (isset($columnData['sortable']) && $columnData['sortable']) {
             $sortClass = 'f_sorting sorted';
@@ -152,7 +157,7 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         }
         $columnData['display_name'] = $columnData['display_name'] ?? ucwords(str_replace('_', ' ', $columnData['name']));
 
-        return '<li data-header-column-index="' . $index . '" id="' . $columnData['name'] . '" class="' . $sortClass . '" data-im-sorting="' . $columnData['name'] . '" ' . $order . '>
+        return '<li data-header-column-index="' . $index . '" id="' . $columnData['name'] . '" class="' . $sortClass . '" data-im-sorting="' . $sortName . '" ' . $order . '>
                   <span class="elipsis-box">' . $columnData['display_name'] . '</span><span class="f_column-resize-line column-resize-line">|</span></li>';
     }
 
