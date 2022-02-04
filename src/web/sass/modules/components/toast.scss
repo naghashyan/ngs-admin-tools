@@ -16,7 +16,7 @@
   opacity: 1;
   max-width: 460px;
   border-radius: 6px;
-  padding: 20px 24px 20px;
+  padding: 20px;
 
   &.not-centered {
     max-width: unset;
@@ -34,8 +34,8 @@
   }
 
   .toast-header-box {
-    padding: 0 24px 15px;
-    margin: 0 -24px;
+    padding: 0 20px 20px;
+    margin: 0 -20px;
     border-bottom: 1px solid #e2e8f0;
     position: relative;
 
@@ -57,19 +57,15 @@
 
   .toast-content-box {
     padding-top: 10px;
-    min-height: 90px;
     text-align: center;
 
-    .toast-icon-box {
-      text-align: center;
-    }
     i.icon-success{
       font-size: 56px;
-      color: $successColor
+      color: #49d69a;
     }
     i.icon-cancel{
       font-size: 56px;
-      color: $dangerColor;
+      color: #F93B25;
     }
 
     .dialogContent-header{
@@ -89,12 +85,8 @@
   }
 
   .toast-buttons {
-    text-align: right;
+    text-align: center;
     margin-top: 20px;
-
-    .button {
-      margin-left: 8px;
-    }
   }
 
   .toast-action {

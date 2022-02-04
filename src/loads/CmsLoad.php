@@ -14,7 +14,10 @@
 namespace ngs\AdminTools\loads;
 
 
+use ngs\AdminTools\dal\dto\UserDto;
 use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\UserManager;
+use ngs\AdminTools\managers\MediasManager;
 
 abstract class CmsLoad extends AbstractCmsLoad
 {
@@ -88,17 +91,32 @@ abstract class CmsLoad extends AbstractCmsLoad
 
     public final function load()
     {
-
-
         $currentUser = NGS()->getSessionManager()->getUser();
         $id = $currentUser->getId();
-        //TODO: should check if such user exists in db, should be created dto mapper managers for user
         if (!$id) {
             $this->onNoAccess();
         }
 
-        $manager = $this->getManager();
+        /** @var UserDto $userDto */
+        $userDto = UserManager::getInstance()->getUserById($id);
 
+        if(!$userDto) {
+            $this->onNoAccess();
+        }
+
+        $profileImage = MediasManager::getInstance()->getItemImagesUrlsAndDescriptions($id, 'users');
+        if(!empty($profileImage)){
+            $profileImage = $profileImage[0]['url']['original'];
+        }else{
+            $profileImage = NGS()->getDefinedValue('MY_HOST') . '/streamer/images/users/0';
+        }
+
+        $this->addParam('firstName', $userDto->getFirstName());
+        $this->addParam('lastName', $userDto->getLastName());
+        $this->addParam('userName', $userDto->getUserName());
+        $this->addParam('profileImage', $profileImage);
+
+        $manager = $this->getManager();
         $this->addParam('parentSections', $this->getParentSections());
         $this->addParam('sectionName', $this->getSectionName());
         $this->addJsonParam('addLoad', $manager->getAddLoad());

@@ -51,17 +51,8 @@
     width: auto;
     height: auto;
     right: 4px;
-    transition: transform 0.3s ease;
+  }
 
-  }
-  .choices[data-type*='select-one']{
-    &.is-open{
-      &:after{
-        transform: rotate(180deg);
-        margin-top: -2.5px;
-      }
-    }
-  }
   .input-field {
     display: inline-block;
     vertical-align: middle;

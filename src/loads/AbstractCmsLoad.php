@@ -174,7 +174,7 @@ abstract class AbstractCmsLoad extends AbstractLoad
      * @return array
      */
     public function getRequestAllowedGroups() {
-        if(method_exists($this, 'getManager')) {
+        if(method_exists($this, 'getManager') && $this->getManager() && $this->getManager()->getMapper()) {
             $manager = $this->getManager();
             $mapper = $manager->getMapper();
             $dto = $mapper->createDto();

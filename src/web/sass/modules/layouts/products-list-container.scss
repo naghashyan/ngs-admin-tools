@@ -65,10 +65,6 @@
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-
-        &.active {
-          color: $primaryColor;
-        }
       }
       .vertical-tab-list-item-actions {
         display: flex;

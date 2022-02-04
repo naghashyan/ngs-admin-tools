@@ -16,6 +16,7 @@
 namespace ngs\AdminTools\loads;
 
 
+use ngs\AdminTools\managers\MediasManager;
 use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
 use ngs\AdminTools\dal\dto\AbstractCmsDto;
 use ngs\AdminTools\managers\AbstractCmsManager;
@@ -166,6 +167,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         } else {
             $itemDto = $manager->createDto();
         }
+
         if ($this->getItemId() && $this->getItemId() > 0 && $manager->hasImage()) {
             $mainImageUrl = NGS()->getDefinedValue('MY_HOST') . '/streamer/images/' . $manager->getMapper()->getTableName() . '/0?objectId=' . $this->getItemId();
             $this->addParam('mainImage', $mainImageUrl);
@@ -243,6 +245,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $this->addJsonParam('fromViewPage', !!$this->args()->fromViewPage);
         $this->addJsonParam('fromListingPage', !!$this->args()->fromListingPage);
         $this->addJsonParam('pageParams', $jsParams);
+        $this->addItemImagesProperties($itemDto);
         $this->afterCmsLoad($itemDto);
         $this->getLogger()->info($fieldsType . ' load finished ' . ($itemDto && $itemDto->getId() ? $itemDto->getId() : ""));
     }
@@ -457,5 +460,23 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             }
         }
         return $result;
+    }
+
+
+    protected function addItemImagesProperties($itemDto): void
+    {
+        $mediasManager = MediasManager::getInstance();
+        if($itemDto->getId() && $this->getManager()->hasImage()){
+
+            $itemImageProperties = $mediasManager->getItemImagesUrlsAndDescriptions($itemDto->getId(), $itemDto->getTableName());
+            if ($itemImageProperties){
+                $this->addJsonParam('imagesUrls', $itemImageProperties);
+            }else{
+                $defaultUrl = [['url' => ['original' => NGS()->getDefinedValue('MY_HOST') . '/streamer/images/' . $itemDto->getTableName() . '/0']]];
+                $this->addJsonParam('imagesUrls', $defaultUrl);
+                $this->addJsonParam('onlyDefaultImage', true);
+
+            }
+        }
     }
 }

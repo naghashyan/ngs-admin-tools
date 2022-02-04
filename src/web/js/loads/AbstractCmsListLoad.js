@@ -43,7 +43,6 @@ export default class AbstractListLoad extends AbstractLoad {
         this.initEditItem();
         this.initRemoveItem();
         this.initDragAndDrop();
-        this.afterCmsLoad();
         this.initSorting();
         this.initExport();
         this.initItemRowClick();
@@ -52,16 +51,17 @@ export default class AbstractListLoad extends AbstractLoad {
         this.getFilterValuesAndInitFilters();
         this.initChoices();
         this.rowsListManager.initRowsResizing(this);
+        this.afterCmsLoad();
     }
 
 
     /**
      * init filters via ajax
-     * 
+     *
      */
     getFilterValuesAndInitFilters() {
 
-        NGS.action("ngs.AdminTools.actions.filters.list", {manager: this.args().manager}, (data) => {
+        NGS.action("ngs.cms.actions.filters.list", {manager: this.args().manager}, (data) => {
             this.initFilters(data.filterValues);
             this.initPagination();
             this.initBulkActions(data.exportableFields);
@@ -81,7 +81,7 @@ export default class AbstractListLoad extends AbstractLoad {
     setListDataInLocalStorage() {
         let mainSectionUuid = document.querySelector('main.main-section');
         let uuid = mainSectionUuid.getAttribute('data-ngs-uuid');
-        
+
         let params = this._getNgsParams();
         if(this.filterManager) {
             params.filter = this.filterManager.getCurrentFilter();
@@ -119,21 +119,29 @@ export default class AbstractListLoad extends AbstractLoad {
     }
 
     initChoices() {
+        this.choices = {};
         let choicesElems = document.querySelectorAll('#' + this.getContainer() + ' .ngs-choice');
         for (let i = 0; i < choicesElems.length; i++) {
             let choiceElem = choicesElems[i];
             if (choiceElem.choices) {
                 continue;
             }
-            choiceElem.choices = new Choices(choiceElem,
-                {
-                    removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
-                    searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
-                    renderChoiceLimit: 150,
-                    searchResultLimit: 150,
-                    shouldSort: true,
-                });
+            this.choices[choiceElem.id] = new Choices(choiceElem,
+              {
+                  removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
+                  searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
+                  renderChoiceLimit: 150,
+                  searchResultLimit: 150,
+                  shouldSort: true,
+              });
         }
+    }
+
+    getChoiceElemById(elemId) {
+        if(typeof this.choices[elemId] !== 'undefined'){
+            return this.choices[elemId];
+        }
+        return null;
     }
 
 
@@ -542,9 +550,7 @@ export default class AbstractListLoad extends AbstractLoad {
         document.querySelectorAll('#' + this.getContainer() + ' .f_edit_btn').click(event => {
             event.stopPropagation();
             let itemId = event.currentTarget.attr('data-im-id');
-            //todo: this line was before, and was working wrong (sending page params to backend too). Need to be checked
-            // let params = this._getNgsParams();
-            let params = {};
+            let params = this._getNgsParams();
             params.itemId = itemId;
             params.fromListingPage = true;
             NGS.load(this.args().editLoad, params);
@@ -574,7 +580,7 @@ export default class AbstractListLoad extends AbstractLoad {
             if (!this.hasViewLoad()) {
                 return false;
             }
-            if (event.target.closest(".f_check-items")) {
+            if (event.target.closest(".checkbox-item")) {
                 return false;
             }
             if (!this.args().rowClickLoad || !this.args().rowClickLoad.trim()) {

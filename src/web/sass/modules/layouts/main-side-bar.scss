@@ -34,13 +34,13 @@
     border-radius: 50%;
     border: none;
     outline: none;
-    background: #1E1E1D;
+    background: glob-map-deep-get($bgSectionColors, "colors", "background-color");
     font-size: 25px;
     cursor: pointer;
     padding-left: 7px;
 
     i {
-      color: #ffffff;
+      color: glob-map-deep-get($bgSectionColors, "colors", "color");
     }
 
     .icon-svg17l {
@@ -235,7 +235,7 @@
         border-radius: 30px 0 0 30px;
 
         a.collapsible-header-item{
-          color: #F6821F;
+          color: $primaryColor;
           font-weight: 600;
         }
       }
@@ -249,7 +249,7 @@
       &.not-opening {
         &.active {
           & > a {
-            color: #F6821F;
+            color: $primaryColor;
           }
         }
       }
@@ -269,11 +269,11 @@
           .arrow-item {
             transform: rotate(180deg);
             transform-origin: center;
-            color: #F6821F;
+            color: $primaryColor;
           }
 
           .icon-menu {
-            color: #F6821F;
+            color: $primaryColor;
           }
         }
 
@@ -377,10 +377,10 @@
           align-items: center;
 
           &:hover, &.active {
-            color: #F6821F;
+            color: $primaryColor;
 
             span {
-              color: #F6821F;
+              color: $primaryColor;
             }
           }
 

@@ -17,6 +17,7 @@ namespace ngs\AdminTools\actions;
 use ngs\AdminTools\dal\dto\AbstractCmsDto;
 use ngs\AdminTools\exceptions\NgsValidationException;
 use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\managers\MediasManager;
 use ngs\AdminTools\managers\LogManager;
 use ngs\AdminTools\managers\TranslationManager;
 use ngs\AdminTools\util\ValidateUtil;
@@ -112,6 +113,17 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
                 $this->getLogger()->info('update action started', $params);
                 $this->loggerActionStart($params, $this->args()->id);
                 $itemDto = $manager->updateItem($this->args()->id, $params, false);
+                if($manager->hasImage()){
+                    $this->updateImagesTitles($itemDto);
+                    $this->removeOldImages($itemDto);
+                    if(!empty($_FILES)){
+                        $this->addNewImages($manager, $itemDto);
+                    }
+                }
+
+                if($manager->hasAttachedFile() && !empty($_FILES)){
+                    $this->addAttachedFile($manager, $itemDto);
+                }
                 $manager->updateItemRelations($this->args(), $itemDto->getId());
             } else {
                 $params = $this->getRequestParameters('add');
@@ -119,9 +131,19 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
                 $params = $this->beforeService($params);
                 $this->getLogger()->info('create action started', $params);
                 $itemDto = $manager->createItem($params, false);
-
+                if ($manager->hasImage() && !empty($_FILES)){
+                    $this->addNewImages($manager, $itemDto);
+                }
+                if($manager->hasAttachedFile() && !empty($_FILES)){
+                    $this->addAttachedFile($manager, $itemDto);
+                }
                 $manager->updateItemRelations($this->args(), $itemDto->getId());
             }
+
+            if($manager->hasImage()) {
+                $this->setMainImageFromOldImages($itemDto);
+            }
+
 
             if($manager->hasTranslations()) {
                 $translations = $this->args()->translations ? $this->args()->translations : [];
@@ -432,9 +454,128 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
         }
 
         return array_merge($res, $this->getAdditionalParams());
+    }
 
+    /**
+     * @param $itemDto
+     */
+    private function updateImagesTitles($itemDto){
+        $mediasManager = MediasManager::getInstance();
+        $oldDescriptions = [];
+        if(isset(NGS()->args()->imageDescriptionText)){
+            foreach (NGS()->args()->imageDescriptionText as $index => $description){
+                if(substr(NGS()->args()->imageDescriptionId[$index], 0, 3) === 'old'){
+                    $oldDescriptions['text'][] = $description;
+                    $oldDescriptions['id'][] = substr(NGS()->args()->imageDescriptionId[$index], 4);
+                }
+            }
+            if(isset($oldDescriptions['text']) && $oldDescriptions['text']){
+                foreach ($oldDescriptions['text'] as $index => $value){
+                    $mediasManager->updateImageTitle(intval($oldDescriptions['id'][$index]), $value);
+                }
+            }
 
+        }
     }
 
 
+    /**
+     *
+     * @param $itemDto
+     */
+    private function removeOldImages($itemDto) {
+        $mediasManager = MediasManager::getInstance();
+        $images = $mediasManager->getMapper()->getItemImages($this->args()->id, $itemDto->getTableName());
+        $imageIds = [];
+        foreach ($images as $image){
+            $imageIds[] = $image->getId();
+        }
+        $oldImages = array_map('intval', explode(',', $this->args()->oldImages));
+        foreach ($imageIds as $image) {
+            if(!in_array($image, $oldImages)){
+                $mediasManager->removeMediaById($image);
+            }
+        }
+    }
+
+
+    /**
+     * @param $manager
+     * @param $itemDto
+     */
+    private function addNewImages($manager, $itemDto){
+        $newDescriptions = [];
+        if(isset(NGS()->args()->imageDescriptionText)){
+            foreach (NGS()->args()->imageDescriptionText as $index => $description){
+                if(substr(NGS()->args()->imageDescriptionId[$index], 0, 3) === 'new'){
+                    $newDescriptions[] = $description;
+                }
+            }
+        }
+        $mediasManager = MediasManager::getInstance();
+        foreach ($_FILES['image']['name'] as $key => $file){
+            if(isset($newDescriptions[$key]) && $newDescriptions[$key]){
+                $imgDescription = $newDescriptions[$key];
+            }else{
+                $imgDescription = "";
+            }
+
+            $path = $_FILES['image']['tmp_name'][$key];
+            $name = $_FILES["image"]["name"][$key];
+
+            $mainImageIndex = null;
+            if($this->args()->mainImage) {
+
+                $mainImage = json_decode($this->args()->mainImage, true, 512, JSON_THROW_ON_ERROR);
+                if (isset($mainImage['newImageIndex'])) {
+                    if($key === $mainImage['newImageIndex']) {
+                        $mainImageIndex = $key;
+                    }
+                }
+            }
+
+            $mediasManager->createMediaFromFile($path, $name, $itemDto->getId(), $itemDto->getTableName(), $imgDescription, $mainImageIndex);
+        }
+    }
+
+    /**
+     * @param $manager
+     * @param $itemDto
+     */
+    private function addAttachedFile($manager, $itemDto){
+        $mediasManager = \admin\managers\medias\MediasManager::getInstance();
+
+        foreach ($_FILES['attachedFile']['name'] as $key => $file) {
+            if(method_exists($this->getManager(), 'getAllowedFileTypesToUpload')) {
+                $allowedTypes = $this->getManager()->getAllowedFileTypesToUpload();
+                if(!in_array($_FILES['attachedFile']['type'][$key], $allowedTypes)) {
+                    continue;
+                }
+            }
+            $path = $_FILES['attachedFile']['tmp_name'][$key];
+            $name = $_FILES["attachedFile"]["name"][$key];
+
+            $mediasManager->createMediaFromFile($path, $name, $itemDto->getId(), $itemDto->getTableName());
+        }
+    }
+
+    /**
+     * if main image is chosen from old images (not new added) this function sets main image
+     * @param $itemDto
+     * @throws DebugException
+     */
+    private function setMainImageFromOldImages($itemDto) {
+
+        $mainImage = $this->args()->mainImage;
+        if(!$mainImage) {
+            //todo: maybe need to set all medias of current item to isMain = (NULL)
+            return;
+        }else {
+            $mainImage = json_decode($mainImage, true, 512, JSON_THROW_ON_ERROR);
+            $mediasManager = \admin\managers\medias\MediasManager::getInstance();
+            if(isset($mainImage['oldImageId'])) {
+                $mediasManager->updateMainImageOfCurrentItem($itemDto->getId(), $itemDto->getTableName(), $mainImage['oldImageId']);
+            }
+        }
+    }
 }
