@@ -61,7 +61,7 @@ export default class AbstractListLoad extends AbstractLoad {
      */
     getFilterValuesAndInitFilters() {
 
-        NGS.action("ngs.cms.actions.filters.list", {manager: this.args().manager}, (data) => {
+        NGS.action("ngs.AdminTools.actions.filters.list", {manager: this.args().manager}, (data) => {
             this.initFilters(data.filterValues);
             this.initPagination();
             this.initBulkActions(data.exportableFields);
@@ -794,7 +794,6 @@ export default class AbstractListLoad extends AbstractLoad {
             if (this.args().cmsUUID) {
                 params.cmsUUID = this.args().cmsUUID;
             }
-            NGS.abortAll();
             NGS.load(this.args().listLoad, this.modifyFilterForLoad(params));
         }, document.getElementById(this.getContainer()));
     }
@@ -810,7 +809,7 @@ export default class AbstractListLoad extends AbstractLoad {
         params = this.modifyFilterForLoad(params);
         params.manager = this.args().manager;
         params.parentContainer = this.getContainer();
-        NGS.load("ngs.cms.loads.pagination.show", params, (data) => {
+        NGS.load("ngs.AdminTools.loads.pagination.show", params, (data) => {
             PageManager.initPageParams(data.pageParams);
             this.initChoices();
             this.initPaging();

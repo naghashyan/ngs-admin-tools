@@ -223,6 +223,11 @@
   display: inline-flex;
   align-items: center;
 
+  /*      max-width: 1199.98px       */
+  @include media-breakpoint-down(lg) {
+    min-height: 33px;
+  }
+
   &:focus {
     box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
   }

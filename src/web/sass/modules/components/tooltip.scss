@@ -1,11 +1,8 @@
 // ToDo
 
-
-//todo: Avo jan please check the part below, and make your amendments
 .icons-box {
 
   top: 31px;
-  ///* transform: translate(0, -50%); */
   right: 10px;
   z-index: 495;
   font-size: 14px;
@@ -13,20 +10,24 @@
   display: flex;
   align-content: center;
 
-
   .icon-tooltip {
     font-size: 20px;
     color: #F6821F;
-    //font-size: 20px;
-    //color: #F6821F;
-    //position: absolute;
-    //right: 8px;
-    //top: 30px;
-    //z-index: $zindex-items;
+    margin-right: 5px;
+
+    /*      max-width: 1199.98px       */
+    @include media-breakpoint-down(lg) {
+      font-size: 17px;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
 
     & + .icon-tooltip {
       z-index: $zindex-items - 5;
     }
+
     &.rule-btn {
       right: 35px;
 
@@ -37,7 +38,7 @@
 
     i {
       &:hover {
-        &+ .tooltip {
+        & + .tooltip {
           opacity: 1;
           right: 30px;
           pointer-events: auto;
@@ -83,16 +84,8 @@
     font-size: 17px;
     margin-right: 7px;
     pointer-events: none;
-    //top: 65%;
-    //transform: translate(0, -50%);
-    //right: 35px;
-    //z-index: 495;
-    //font-size: 14px;
-    //position: absolute;
-    //pointer-events: none;
   }
 }
-
 
 
 /*-------------products product pricing checkbox----------------*/

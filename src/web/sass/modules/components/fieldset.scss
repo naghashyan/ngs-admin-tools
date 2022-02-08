@@ -101,7 +101,7 @@ textarea {
 
 .tox-tinymce-aux {
   &.tox-silver-sink {
-  z-index: 5100;
+    z-index: 5100;
   }
 }
 
@@ -155,13 +155,15 @@ textarea {
     -ms-flex: 0 0 100%;
     flex: 0 0 100%;
     max-width: 100%;
-
-
   }
-  &.small-box {
-    -ms-flex: 0 0 23%;
-    flex: 0 0 23%;
-    max-width: 23%;
+
+  /*      min-width: 1200px        */
+  @include media-breakpoint-up(lg) {
+    &.small-box {
+      -ms-flex: 0 0 23%;
+      flex: 0 0 23%;
+      max-width: 23%;
+    }
   }
 
   .input-field {

@@ -1715,7 +1715,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     _openRuleManagementWindow(ruleName, itemId) {
-        NGS.load("ngs.cms.loads.rules.rules", {ruleName: ruleName, itemId: itemId, isViewMode: this.isViewMode()});
+        NGS.load("ngs.AdminTools.loads.rules.rules", {ruleName: ruleName, itemId: itemId, isViewMode: this.isViewMode()});
     }
 
 
