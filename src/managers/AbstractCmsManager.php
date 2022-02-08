@@ -377,7 +377,6 @@ abstract class AbstractCmsManager extends AbstractManager
 
             $result[] = $filterItem;
         }
-
         return $result;
     }
 

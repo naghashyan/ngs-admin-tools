@@ -46,7 +46,7 @@ let StringUtility = {
       str += 'y';
     }
     else if(str.substr(str.length - 2) === 'es') {
-      str = str.substring(0, str.length - 2);
+      str = str.substring(0, str.length - 1);
     }
     else if(str.slice(-1) === 's') {
       str = str.substring(0, str.length - 1);

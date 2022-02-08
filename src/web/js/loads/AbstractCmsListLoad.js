@@ -51,7 +51,17 @@ export default class AbstractListLoad extends AbstractLoad {
         this.getFilterValuesAndInitFilters();
         this.initChoices();
         this.rowsListManager.initRowsResizing(this);
+        this.initAddButton();
         this.afterCmsLoad();
+    }
+
+    //todo: maybe need to init this button in AbstractCmsListLoad.js too, because now addButton is in list.tpl, not in main.tpl
+    initAddButton() {
+        let addBtns = document.querySelectorAll('#'+this.getContainer() + ' .f_addItemBtn');
+        addBtns.unbindClick();
+        addBtns.click(()=>{
+            NGS.load(this.args().addLoad, {});
+        });
     }
 
 
@@ -550,7 +560,7 @@ export default class AbstractListLoad extends AbstractLoad {
         document.querySelectorAll('#' + this.getContainer() + ' .f_edit_btn').click(event => {
             event.stopPropagation();
             let itemId = event.currentTarget.attr('data-im-id');
-            let params = this._getNgsParams();
+            let params = {}; //this._getNgsParams();
             params.itemId = itemId;
             params.fromListingPage = true;
             NGS.load(this.args().editLoad, params);

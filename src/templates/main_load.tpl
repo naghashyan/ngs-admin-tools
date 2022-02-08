@@ -65,10 +65,6 @@
                                             <i class="icon-svg241"></i>
                                             Profile
                                         </a>
-                                        <a href="javascript:void(0);" class="f_goToHelpPage">
-                                            <i class="icon-question-1"></i>
-                                            Help Page
-                                        </a>
                                         <a href="javascript:void(0);" class="f_menu f_doLogout" data-im-load="admin.loads.main.home">
                                             <i class="icon-svg138"></i>
                                             Logout

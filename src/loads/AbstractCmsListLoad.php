@@ -247,14 +247,15 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
     {
         $allowedActions = $this->getManager()->getAllowedActions();
 
-            //remove 'add' from array to leave only 'edit' and 'delete' for ngsListFunctionPlugin
-            if(in_array('add', $allowedActions)) {
-                unset($allowedActions[array_search('add', $allowedActions)]);
-            }
-            if(!$itemDto->hasWriteAccess('id')) {
-                unset($allowedActions[array_search('edit', $allowedActions)]);
-                unset($allowedActions[array_search('delete', $allowedActions)]);
-            }
+
+        //remove 'add' from array to leave only 'edit' and 'delete' for ngsListFunctionPlugin
+        if (in_array('add', $allowedActions)) {
+            unset($allowedActions[array_search('add', $allowedActions)]);
+        }
+        if (!$itemDto->hasWriteAccess('id')) {
+            unset($allowedActions[array_search('edit', $allowedActions)]);
+            unset($allowedActions[array_search('delete', $allowedActions)]);
+        }
 
         $this->addParam('allowedActions', $allowedActions);
     }
