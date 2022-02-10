@@ -1353,7 +1353,7 @@ export default class FilterManager {
             let conditionFields = this._createConditionSelectionByFieldId(fieldName);
 
             conditionFields.forEach(conditionField => {
-                let deleteIcon = aRowOfCriteriaItem.querySelector('.f_remove-just-one-criteria-row');
+                let deleteIcon = aRowOfCriteriaItem.querySelector('.remove-criteria-container');
                 aRowOfCriteriaItem.insertBefore(conditionField, deleteIcon);
             });
 
