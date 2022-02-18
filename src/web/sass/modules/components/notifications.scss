@@ -1,0 +1,113 @@
+.unread-notifications-title {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding: 19px 43px 16px 23px;
+  width: 100%;
+
+  .notification-more-btn {
+    position: absolute;
+    right: 6px;
+    top: 13px;
+  }
+}
+.notifications-action-container {
+  right: 5px;
+  left: auto;
+}
+.unread-notifications {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  width: 365px;
+  border-radius: 6px;
+  z-index: $zindex-fixed;
+  display: none;
+
+  &:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 7px solid #ffffff;
+    right: 16px;
+    position: absolute;
+    top: -7px;
+  }
+
+  &.active {
+    display: block;
+  }
+}
+.show-notifications {
+  position: fixed;
+  top: 42px;
+  right: 13px;
+  width: 375px;
+  border-left: 2px solid $primaryColor;
+
+  z-index: $zindex-fixed;
+}
+.notification-content {
+  max-height: 70vh;
+  overflow: auto;
+}
+.notification-container {
+  padding: 15px 16px 17px 24px;
+  position: relative;
+  border-bottom: 1px solid;
+
+  &:last-child {
+    border: 0;
+  }
+
+  .title {
+    margin: 0;
+    padding-right: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .content {
+    margin: 0;
+    padding-right: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .remove-notification {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    cursor: pointer;
+  }
+  .progress-container {
+    display: flex;
+    align-items: center;
+
+    &:after {
+      content: attr(data-percent) " %";
+    }
+
+    .progress-bar {
+      background-color: #E1E2E5;
+      flex: 1;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-right: 10px;
+      height: 6px;
+
+      .progress-bar-inner {
+        background-color: $primaryColor;
+        width: 0;
+        height: 100%;
+        border-radius: 3px;
+      }
+    }
+  }
+}
+
