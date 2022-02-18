@@ -91,7 +91,7 @@ class FilterMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_SAVED_FILTER_BY_TYPE = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type`=:itemType ORDER BY `id` DESC';
+    private $GET_USER_SAVED_FILTER_BY_TYPE = 'SELECT * FROM `%s` WHERE (`user_id` = :userId OR `user_id` IS NULL) AND `item_type`=:itemType ORDER BY `id` DESC';
 
     /**
      * get user saved filters by type
@@ -107,6 +107,26 @@ class FilterMapper extends AbstractMysqlMapper
     {
         $sqlQuery = sprintf($this->GET_USER_SAVED_FILTER_BY_TYPE, $this->getTableName());
         return $this->fetchRows($sqlQuery, ['userId' => $userId, 'itemType' => $itemType]);
+    }
+
+
+    private $GET_USER_PRESELECTED_FILTER = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type`=:itemType AND preselected=1 ORDER BY `id` DESC';
+    private $GET_GENERAL_PRESELECTED_FILTER = 'SELECT * FROM `%s` WHERE `user_id` IS NULL AND `item_type`=:itemType AND preselected=1 ORDER BY `id` DESC';
+
+    public function getEntityPreselectedFilter(int $userId, string $itemType) {
+        $sqlQuery = sprintf($this->GET_USER_PRESELECTED_FILTER, $this->getTableName());
+        $preselectedFilter = $this->fetchRow($sqlQuery, ['userId' => $userId, 'itemType' => $itemType]);
+        if($preselectedFilter) {
+            return $preselectedFilter;
+        }
+
+        $sqlQuery = sprintf($this->GET_GENERAL_PRESELECTED_FILTER, $this->getTableName());
+        $preselectedFilter = $this->fetchRow($sqlQuery, ['itemType' => $itemType]);
+        if($preselectedFilter) {
+            return $preselectedFilter;
+        }
+
+        return null;
     }
 
 

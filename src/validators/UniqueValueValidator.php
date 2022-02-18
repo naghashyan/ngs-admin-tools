@@ -45,6 +45,9 @@ class UniqueValueValidator extends BaseValidator
 
         $itemId = isset($additionalData['item_id']) ? $additionalData['item_id'] : null;
         $companyId = isset($additionalData['company_id']) ? $additionalData['company_id'] : null;
+        if(!$this->getValue()) {
+            return true;
+        }
         $isUnique = $manager->fieldIsUnique($fieldName, $this->getValue(), $itemId, $companyId);
         if(!$isUnique) {
             $this->setErrorText('The value for field <b class="f_fieldName">' . $fieldName . '</b> already exists');

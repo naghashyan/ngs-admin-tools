@@ -61,6 +61,23 @@ class FilterManager extends AbstractManager
 
 
     /**
+     * get preselected filter for given entity
+     *
+     * @param $userId
+     * @param $itemType
+     *
+     * @return array|\ngs\dal\dto\AbstractDto|null
+     *
+     * @throws \Exception
+     */
+    public function getEntityPreselectedFilter($userId, $itemType) {
+        $mapper = FilterMapper::getInstance();
+        $filter = $mapper->getEntityPreselectedFilter($userId, $itemType);
+        return $filter;
+    }
+
+
+    /**
      * get user all saved filters for given type
      *
      * @param $userId

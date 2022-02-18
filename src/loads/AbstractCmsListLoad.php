@@ -15,6 +15,7 @@ namespace ngs\AdminTools\loads;
 
 use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
 use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\dal\dto\FilterDto;
 use ngs\AdminTools\dal\dto\NgsRuleDto;
 use ngs\AdminTools\managers\AbstractCmsManager;
 use ngs\AdminTools\managers\ExportTemplatesManager;
@@ -173,6 +174,13 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
 
         if ($this->args()->filter) {
             $this->addJsonParam('filter', $this->args()->filter);
+        }
+        else {
+            /** @var FilterDto $preselectedFilter */
+            $preselectedFilter = $filterManager->getEntityPreselectedFilter($currentUserId, $itemType);
+            if($preselectedFilter) {
+                $this->addJsonParam('filter', json_decode($preselectedFilter->getFilter()));
+            }
         }
         $this->addParam('favoriteFilter', '');
         $this->addParam('hasDetailPage', $this->hasDetailPage());
