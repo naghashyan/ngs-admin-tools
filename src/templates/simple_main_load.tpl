@@ -1,5 +1,5 @@
 {block name="cms-main-header"}
-    <div class="page-title inner">
+    <div class="page-title inner table-title">
         <div class="left-box">
             <h2 class="title-box">{$ns.sectionName}</h2>
         </div>

@@ -50,7 +50,7 @@ class NgsAddButtonFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
     {
 
         return '<a class="button basic primary with-icon f_addItemBtn addItemBtn' . $params['specific_class'] . '" href="javascript:void(0);"
-                   title="ADD NEW' . strtoupper($params['name']) . '">
+                   title="ADD NEW ' . strtoupper($params['name']) . '">
                     <i class="icon-svg179 left-icon"></i>
                     <span>' .  strtoupper($params['name']) . '</span>
                 </a>';

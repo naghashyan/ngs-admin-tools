@@ -80,9 +80,13 @@ abstract class AbstractTabBlockSmartyPlugin extends AbstractBlockSmartyPlugin
         }
         $fieldsCount = $this->getCountOfGroupItems($content);
 
-        return '<li id="item-main-group"
-                        class="bgweb3 form-content-item form-content-count-' . $fieldsCount . '"><div class="form-items-container' .$flexClass. '">' . $content .
+        if($this->formHasListing($content)) {
+            return '<li class="bgweb3 ngs-block-form-content-item form-content-count-' . $fieldsCount . '">' . $content .
+                '</li>';
+        }
+        return '<li class="bgweb3 ngs-block-form-content-item form-content-item form-content-count-' . $fieldsCount . '"><div class="form-items-container">' . $content .
             '</div></li>';
+
     }
 
 
@@ -97,8 +101,14 @@ abstract class AbstractTabBlockSmartyPlugin extends AbstractBlockSmartyPlugin
      */
     private function formHasInnerGroup($content): bool
     {
-        return strpos($content, 'form-content-item');
+        return strpos($content, 'ngs-block-form-content-item') !== false;
     }
+
+    private function formHasListing($content): bool
+    {
+        return strpos($content, 'f_list-load-container') !== false;
+    }
+
 
 
     /**

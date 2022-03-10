@@ -64,7 +64,7 @@ class NgsGroupBlockSmartyPlugin extends AbstractBlockSmartyPlugin
             $flexClass = " no-flex-wrap";
         }
         return '<li id="item-' . strtolower(str_replace(' ', '-', $params['blockName'])) . '-group"
-                        class="bgweb3 form-content-item form-content-count-' . $params['fieldsCount'] . '">
+                        class="bgweb3 ngs-block-form-content-item form-content-item form-content-count-' . $params['fieldsCount'] . '">
                         <div class="form-item-group-name">' . $params['blockName'] . '</div><div class="form-items-container'.$params['addClass'] .$flexClass. '">' . $params['content'] .
             '</div></li>';
     }

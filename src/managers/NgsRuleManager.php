@@ -1163,8 +1163,13 @@ class NgsRuleManager extends AbstractManager
                             } else {
 
                                 $condition = $this->getConditionByType($filterItem);
-                                $searchValue = $this->getSearchValueByType($filterItem);
-                                $result .= $condition . $searchValue;
+                                if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) &&
+                                    ($filterItem['searchValue'] === 'is_null' || $filterItem['searchValue'] === 'is_not_null')) {
+                                    $result .= $condition;
+                                } else {
+                                    $searchValue = $this->getSearchValueByType($filterItem);
+                                    $result .= $condition . $searchValue;
+                                }
                             }
                         }
                     }
@@ -1275,6 +1280,20 @@ class NgsRuleManager extends AbstractManager
     private function getConditionByType($filterItem)
     {
         $condition = '';
+        if($filterItem['conditionType'] === 'select' && isset($filterItem['conditionValue']) && $filterItem['conditionValue'] === 'not_equal') {
+            if($filterItem['searchValue'] === 'is_null') {
+                $filterItem['searchValue'] === 'is_not_null';
+            }
+            else if($filterItem['searchValue'] === 'is_not_null') {
+                $filterItem['searchValue'] === 'is_null';
+            }
+        }
+        if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) && $filterItem['searchValue'] === 'is_null') {
+            return ' IS NULL';
+        } else if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) && $filterItem['searchValue'] === 'is_not_null') {
+            return ' IS NOT NULL';
+        }
+        
         if ($filterItem['conditionType'] == 'text') {
             $condition = $this->getTextCondition($filterItem['conditionValue']);
         } else if ($filterItem['conditionType'] == 'date') {

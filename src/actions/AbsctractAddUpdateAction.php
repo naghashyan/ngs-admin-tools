@@ -77,6 +77,10 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
         }
     }
 
+    public function onServiceStart() {
+
+    }
+
     /**
      * @param $params
      * @return mixed
@@ -88,6 +92,7 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
 
     public final function service()
     {
+        $this->onServiceStart();
         $action = 'create';
         $userId = NGS()->getSessionManager()->getUser()->getId();
         $tableName = $this->getManager()->getMapper()->getTableName();
@@ -393,6 +398,17 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
 
 
     /**
+     * can modify validators
+     *
+     * @param array $validators
+     * @return array
+     */
+    protected function modifyPreparedValidators(array $validators) {
+        return $validators;
+    }
+
+
+    /**
      * save dto translations
      *
      * @param $dto
@@ -418,7 +434,7 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
     private function validateRequest(array $requestData = null) {
         $fieldsWithValidators = $this->getValidators();
         $validators = ValidateUtil::prepareValidators($fieldsWithValidators, $this->args(), $requestData);
-
+        $validators = $this->modifyPreparedValidators($validators);
         $result = ValidateUtil::validateRequestData($validators);
         return $result;
     }
@@ -525,13 +541,15 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
 
             $mainImageIndex = null;
             if($this->args()->mainImage) {
-
                 $mainImage = json_decode($this->args()->mainImage, true, 512, JSON_THROW_ON_ERROR);
                 if (isset($mainImage['newImageIndex'])) {
                     if($key === $mainImage['newImageIndex']) {
                         $mainImageIndex = $key;
                     }
                 }
+            }
+            if(!$this->args()->mainImage) {
+                $mainImageIndex = 0;
             }
 
             $mediasManager->createMediaFromFile($path, $name, $itemDto->getId(), $itemDto->getTableName(), $imgDescription, $mainImageIndex);

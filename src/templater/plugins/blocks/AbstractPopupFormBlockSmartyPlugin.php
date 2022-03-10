@@ -66,8 +66,7 @@ abstract class AbstractPopupFormBlockSmartyPlugin extends AbstractFormBlockSmart
    * @return string
    */
   protected function addGroupIfNotExists($params) {
-    return '<div id="item-main-group"
-                        class="bgweb3 form-content-item form-content-count-0 form-content-count-' . $params['fieldsCount'] . '"><div class="form-items-container' .$params['flexClass']. '">' .
+    return '<div class="bgweb3 ngs-block-form-content-item form-content-item form-content-count-0 form-content-count-' . $params['fieldsCount'] . '"><div class="form-items-container' .$params['flexClass']. '">' .
       $params['content'] .
       '</div></div>';
   }

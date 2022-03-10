@@ -873,6 +873,23 @@ abstract class AbstractCmsManager extends AbstractManager
 
 
     /**
+     * this function finds in db the correspond relation entity for custom items and if finds return first row
+     * @param $id
+     * @param $searchField
+     * @param $tableName
+     * @return mixed|\ngs\dal\dto\AbstractDto|null
+     */
+    public function getRelatedEntities($id, $searchField, $tableName)
+    {
+        $res = $this->getMapper()->getRelatedEntity($id, $searchField, $tableName);
+        if (!empty($res)) {
+            return $res;
+        }
+        return [];
+    }
+
+
+    /**
      * @param $field
      * @param $relationField
      * @param $relationFieldValue

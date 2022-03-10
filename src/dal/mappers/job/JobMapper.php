@@ -51,6 +51,22 @@ class JobMapper extends AbstractMysqlMapper
     }
 
     /**
+     * @var string
+     */
+    private $GET_RUNNING_JOB_BY_NAME_AND_PARAM = 'SELECT * FROM %s WHERE `name` = :jobName AND `params` LIKE :likeCondition AND `status` != "finished"';
+
+    public function getRunningJobByNameAndParam(string $jobName, string $paramName, string $paramValue)
+    {
+        $likeCondition = '%"' . $paramName . '":' . $paramValue . ',%';
+        $bindArray = [
+            'likeCondition' => $likeCondition,
+            'jobName' => $jobName
+        ];
+        $sqlQuery = sprintf($this->GET_RUNNING_JOB_BY_NAME_AND_PARAM, $this->getTableName());
+        return $this->fetchRow($sqlQuery, $bindArray);
+    }
+
+    /**
      * @return JobDto
      */
     public function createDto() :AbstractDto

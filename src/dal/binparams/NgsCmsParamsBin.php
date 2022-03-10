@@ -406,7 +406,7 @@ class NgsCmsParamsBin
 
     private $defaultOperators = ['and' => true, 'or' => true, 'not' => true];
     private $defaultComparisons = ['=' => true, '<>' => true, '!=' => true, '>' => true, '>=' => true, '<' => true,
-        '<=' => true, 'is null' => true, 'is not null' => true, 'like' => true, 'exists' => true, 'in' => true, 'not_in' => true, 'not' => true];
+        '<=' => true, 'is null' => true, 'is not null' => true, 'like' => true, 'not_like' => true, 'exists' => true, 'in' => true, 'not_in' => true, 'not' => true];
 
 
     /**
@@ -524,12 +524,14 @@ class NgsCmsParamsBin
                     } else {
 
                         $condition = $this->getConditionByType($filterItem);
-                        $searchValue = $this->getSearchValueByType($filterItem);
-                        $result .= $condition . $searchValue;
+                        if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) &&
+                            ($filterItem['searchValue'] === 'is_null' || $filterItem['searchValue'] === 'is_not_null')) {
+                            $result .= $condition;
+                        } else {
+                            $searchValue = $this->getSearchValueByType($filterItem);
+                            $result .= $condition . $searchValue;
+                        }
                     }
-
-
-
                 }
             }
         }
@@ -566,13 +568,11 @@ class NgsCmsParamsBin
             case 'less' :
                 return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' ';
             case 'greater_or_equal' :
-                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' OR (' .  $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' OR (' . $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
             case 'less_or_equal' :
-                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' OR (' .  $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' OR (' . $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
         }
     }
-
-
 
 
     /**
@@ -625,6 +625,19 @@ class NgsCmsParamsBin
     private function getConditionByType($filterItem)
     {
         $condition = null;
+        if($filterItem['conditionType'] === 'select' && isset($filterItem['conditionValue']) && $filterItem['conditionValue'] === 'not_equal') {
+            if($filterItem['searchValue'] === 'is_null') {
+                $filterItem['searchValue'] === 'is_not_null';
+            }
+            else if($filterItem['searchValue'] === 'is_not_null') {
+                $filterItem['searchValue'] === 'is_null';
+            }
+        }
+        if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) && $filterItem['searchValue'] === 'is_null') {
+            return ' IS NULL';
+        } else if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) && $filterItem['searchValue'] === 'is_not_null') {
+            return ' IS NOT NULL';
+        }
         if ($filterItem['conditionType'] == 'text') {
             if ($filterItem['conditionValue'] === 'equal') {
                 $condition = ' =';
@@ -650,10 +663,9 @@ class NgsCmsParamsBin
                 $condition = ' <=';
             }
         } else if ($filterItem['conditionType'] === 'checkbox' || $filterItem['conditionType'] === 'select') {
-            if(!isset($filterItem['conditionValue']) || $filterItem['conditionValue'] === 'equal') {
+            if (!isset($filterItem['conditionValue']) || $filterItem['conditionValue'] === 'equal') {
                 $condition = ' =';
-            }
-            else {
+            } else {
                 $condition = ' !=';
             }
 

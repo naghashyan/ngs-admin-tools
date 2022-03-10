@@ -179,7 +179,7 @@ let FilesUploadingUtility = {
                 theWordIs = 'are';
                 theWordIt = 'They ';
             }
-            DialogUtility.showInfoDialog('Error',  theWordFile + '<b><br />"' + invalidFileNames.join(', <br/ >') + '"</b> <br />' + theWordIs + ' not pdf. <br />' + theWordIt + theWordIs + ' skipped', {actionResultShow: false, noButton: true, 'timeout' : 3000});
+            DialogUtility.showErrorDialog('Error',  theWordFile + ' "' + invalidFileNames.join(', <br/ >') + '" ' + theWordIs + ' not pdf. <br />' + theWordIt + theWordIs + ' skipped', {actionResultShow: true, noButton: true, 'timeout' : 3000});
 
         }
         return buffer.files

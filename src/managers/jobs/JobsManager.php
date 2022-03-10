@@ -58,6 +58,24 @@ class JobsManager extends AbstractManager {
 
 
     /**
+     * returns running job by name and param
+     *
+     * @param string $jobName
+     * @param string $paramName
+     * @param string $paramValue
+     *
+     * @return JobDto
+     */
+    public function getRunningJobByNameAndParam(string $jobName, string $paramName, string $paramValue) {
+        $mapper = $this->getMapper();
+        /** @var JobDto $job */
+        $job = $mapper->getRunningJobByNameAndParam($jobName, $paramName, $paramValue);
+
+        return $job;
+    }
+
+
+    /**
      * create new job instance
      *
      * @param $name

@@ -16,6 +16,7 @@
 namespace ngs\AdminTools\loads;
 
 
+use ngs\AdminTools\managers\LanguageManager;
 use ngs\AdminTools\managers\MediasManager;
 use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
 use ngs\AdminTools\dal\dto\AbstractCmsDto;
@@ -154,6 +155,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
      */
     public final function load(): void
     {
+        $this->beforeCmsLoad();
         $manager = $this->getManager();
         $itemDto = null;
         $fieldsType = 'add';
@@ -409,6 +411,15 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
 
 
     /**
+     * before cms loaded
+     */
+    public function beforeCmsLoad() :void
+    {
+
+    }
+
+
+    /**
      * after cms loaded
      * @param $itemDto
      */
@@ -445,7 +456,8 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
      * @return array
      */
     private function getLanguages() {
-        return [];
+        $languageManager = LanguageManager::getInstance();
+        return $languageManager->getLanguagesList();
     }
 
 

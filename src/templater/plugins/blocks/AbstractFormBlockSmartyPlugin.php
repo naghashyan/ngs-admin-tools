@@ -40,8 +40,7 @@ abstract class AbstractFormBlockSmartyPlugin extends AbstractBlockSmartyPlugin
      * @return string
      */
     protected function addGroupIfNotExists($params) {
-        return '<li id="item-main-group"
-                        class="bgweb3 form-content-item form-content-count-' . $params['fieldsCount'] . '"><div class="form-items-container' .$params['flexClass']. '">' .
+        return '<li class="bgweb3 ngs-block-form-content-item form-content-item form-content-count-' . $params['fieldsCount'] . '"><div class="form-items-container' .$params['flexClass']. '">' .
             $params['content'] .
             '</div></li>';
     }
@@ -56,7 +55,7 @@ abstract class AbstractFormBlockSmartyPlugin extends AbstractBlockSmartyPlugin
      */
     protected function formHasInnerGroup($content): bool
     {
-        return strpos($content, 'form-content-item');
+        return strpos($content, 'ngs-block-form-content-item');
     }
 
 

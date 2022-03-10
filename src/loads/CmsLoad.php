@@ -117,6 +117,7 @@ abstract class CmsLoad extends AbstractCmsLoad
         $this->addParam('profileImage', $profileImage);
 
         $manager = $this->getManager();
+        $this->addParam('hasAddButton', $manager->loadShouldHaveAddButton());
         $this->addParam('parentSections', $this->getParentSections());
         $this->addParam('sectionName', $this->getSectionName());
         $this->addJsonParam('addLoad', $manager->getAddLoad());

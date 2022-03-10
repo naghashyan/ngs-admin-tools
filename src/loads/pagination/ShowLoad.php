@@ -32,13 +32,11 @@ class ShowLoad extends AbstractCmsLoad
         $tableName = $manager->getMapper()->getTableName();
         $ruleForFilter = $this->getFilterRule($tableName, $paramsBin);
 
-
         if($ruleForFilter) {
             $ruleForFilter = $this->modifyListRule($ruleForFilter, $itemDto);
             $itemsCount = $manager->getItemsCountByRule($ruleForFilter);
         }
         else {
-            $itemDtos = $manager->getList($paramsBin);
             $itemsCount = $manager->getItemsCount($paramsBin);
         }
 
@@ -87,6 +85,10 @@ class ShowLoad extends AbstractCmsLoad
         $paramsBin->setOrderBy($this->args()->ordering);
 
         if ($this->args()->filter) {
+            $paramsBin = $manager->setFilterForList($this->args()->filter, $paramsBin);
+        }
+
+        if ($this->args()->categoryId) {
             $paramsBin = $manager->setFilterForList($this->args()->filter, $paramsBin);
         }
 

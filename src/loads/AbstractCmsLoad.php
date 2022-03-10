@@ -15,8 +15,10 @@ namespace ngs\AdminTools\loads;
 
 use ngs\AdminTools\exceptions\NoAccessException;
 use ngs\AdminTools\util\LoggerFactory;
+use ngs\Dispatcher;
 use ngs\exceptions\NgsErrorException;
 use ngs\request\AbstractLoad;
+use ngs\AdminTools\util\NavigationUtil;
 use Monolog\Logger;
 
 abstract class AbstractCmsLoad extends AbstractLoad
@@ -72,6 +74,22 @@ abstract class AbstractCmsLoad extends AbstractLoad
             $page = $this->args()->page;
         }
         return $page;
+    }
+
+
+    /**
+     * redirects to route
+     *
+     * @param string $uri
+     */
+    public function redirectTo(string $uri) {
+        if (NGS()->getHttpUtils()->isAjaxRequest()) {
+            NGS()->getTemplateEngine()->setHttpStatusCode(301);
+            NGS()->getTemplateEngine()->assignJson('redirect_to', NavigationUtil::getFullLink($uri));
+            NGS()->getTemplateEngine()->display(true);
+            exit;
+        }
+        header("Location: " . NavigationUtil::getFullLink($uri), true, 301);exit;
     }
 
 

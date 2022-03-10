@@ -52,6 +52,7 @@ abstract class AbsctractCmsAction extends AbstractAction
         }
         $this->addParam('afterActionParams', $result);
     }
+    
 
     /**
      * @return mixed|null

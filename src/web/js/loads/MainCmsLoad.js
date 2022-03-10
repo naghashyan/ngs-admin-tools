@@ -165,7 +165,20 @@ export default class MainCmsLoad extends AbstractLoad {
         if(!ngsLoad){
           return false;
         }
-        NGS.load(ngsLoad, {});
+        let filter = null;
+        if(menuElem.getAttribute('default-filter')) {
+          try {
+            filter = JSON.parse(menuElem.getAttribute('default-filter'));
+          }
+          catch(error) {
+            filter = null;
+          }
+        }
+        let params = {};
+        if(filter) {
+          params.filter = filter;
+        }
+        NGS.load(ngsLoad, params);
         return false;
       });
     });

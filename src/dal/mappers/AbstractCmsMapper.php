@@ -135,8 +135,15 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
 
 
         $orderBySql = $paramsBin->getOrderBy();
+        $cmsMapArray = $this->createDto()->getCmsMapArray();
         if(strpos($paramsBin->getSortBy(), '.') === false) {
-            $sortBySql = $this->getTableName() . '.' . $paramsBin->getSortBy();
+            if($cmsMapArray && $cmsMapArray[$paramsBin->getSortBy()] && isset($cmsMapArray[$paramsBin->getSortBy()]['from_other_table'])
+                && $cmsMapArray[$paramsBin->getSortBy()]['from_other_table']) {
+                $sortBySql = $paramsBin->getSortBy();
+            }
+            else {
+                $sortBySql = $this->getTableName() . '.' . $paramsBin->getSortBy();
+            }
         }
         else {
             $sortBySql = trim($paramsBin->getSortBy(), '.');

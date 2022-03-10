@@ -1,6 +1,6 @@
 import AbstractLoad from '../../../AbstractLoad.js';
 
-export default class RulesLoad extends AbstractLoad {
+export default class ShowLoad extends AbstractLoad {
 
     constructor() {
         super();

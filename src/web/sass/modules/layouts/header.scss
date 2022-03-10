@@ -67,6 +67,21 @@
     .right-box {
       background-color: transparent;
       width: auto;
+      padding: 6px 0;
+
+      .button{
+        &.addItemBtn {
+          white-space: nowrap;
+          padding-left: 10px;
+          padding-right: 15px;
+          margin-left: 6px;
+          font-size: 14px;
+          padding-top: 0;
+          padding-bottom: 0;
+          height: 29px;
+          min-height: 35px;
+        }
+      }
     }
   }
 

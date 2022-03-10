@@ -28,7 +28,7 @@ class NgsApiRouter extends NgsRoutes
      *
      * @return Object Array
      */
-    protected function getRouteConfig()
+    protected function getRouteConfig() :?array
     {
         if ($this->routes == null) {
             $routesDir = NGS()->getConfigDir() . '/routes';
@@ -75,9 +75,10 @@ class NgsApiRouter extends NgsRoutes
      * @access
      * @return String $namespace
      */
-    public function getLoadORActionByAction($action) {
+    public function getLoadORActionByAction(?string $action = null): ?array
+    {
         if (!isset($action)){
-            return false;
+            return null;
         }
         $pathArr = explode('.', $action);
         $action = array_splice($pathArr, count($pathArr) - 1);
@@ -117,7 +118,7 @@ class NgsApiRouter extends NgsRoutes
      * @param array $route
      * @return array
      */
-    protected function getMatchedRouteData(string $action, array $route)
+    protected function getMatchedRouteData(string $action, array $route) : array
     {
         return [
             'action' => $action,

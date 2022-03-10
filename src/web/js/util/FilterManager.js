@@ -4,6 +4,19 @@ export default class FilterManager {
 
     static instances = {};
 
+
+    static createDefaultFilter() {
+        return {
+            getCurrentFilter: function() {
+                return null;
+            },
+
+            onFilterChange: function(handler) {
+
+            }
+        }
+    }
+
     /**
      * creates instance of filter
      *

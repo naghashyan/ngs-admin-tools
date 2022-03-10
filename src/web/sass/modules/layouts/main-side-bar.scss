@@ -1,20 +1,20 @@
 .minimize-button {
   position: absolute;
   top: 35px;
-  z-index: $zindex-dropdown;
-  transition: left 0.3s ease;
+  z-index: $zindex-fixed;
+  transition: left 0.25s ease;
 
-  @include glob-map-get-fluid(left, 240, 185, 185, 185);
+  @include glob-map-get-fluid(left, 250, 195, 195, 195);
 
   &:hover {
-    @include glob-map-get-fluid(left, 243, 188, 185, 185);
+    @include glob-map-get-fluid(left, 253, 198, 195, 195);
   }
 
   &.btn-to-close {
-    left: 40px;
+    left: 50px;
 
     &:hover {
-      left: 43px;
+      left: 53px;
     }
 
     button {
@@ -29,15 +29,14 @@
   }
 
   button {
-    width: 40px;
+    width: 34px;
     height: 44px;
-    border-radius: 50%;
+    border-radius: 0 20px 20px 0;
     border: none;
     outline: none;
-    background: glob-map-deep-get($bgSectionColors, "colors", "background-color");
     font-size: 25px;
     cursor: pointer;
-    padding-left: 7px;
+    padding-left: 2px;
 
     i {
       color: glob-map-deep-get($bgSectionColors, "colors", "color");
@@ -160,15 +159,15 @@
   }
 
   .logo-menu {
-    margin-bottom: 24px;
-    margin-right: 20px;
-    margin-left: 14px;
-    height: 63px;
+    padding-bottom: 24px;
+    padding-right: 20px;
+    padding-left: 14px;
+    height: 83px;
     position: sticky;
     top: 0;
     z-index: $zindex-sticky;
 
-    //@include glob-map-get-sectionColors(bg-aside);
+    @include glob-map-get-sectionColors(bg-aside);
 
     .menu-block {
       display: none;

@@ -94,7 +94,11 @@ export default class AbstractListLoad extends AbstractLoad {
 
         let params = this._getNgsParams();
         if(this.filterManager) {
-            params.filter = this.filterManager.getCurrentFilter();
+            let filter = null;
+            filter = this.filterManager.getCurrentFilter();
+            if(filter) {
+                params.filter = filter;
+            }
         }
         if (this.args().cmsUUID) {
             params.cmsUUID = this.args().cmsUUID;
@@ -107,7 +111,11 @@ export default class AbstractListLoad extends AbstractLoad {
      *
      */
     initPagination() {
-        let ajaxPaginationContainer = document.getElementById(this.getContainer()).querySelector('.f_ajax-pagination');
+        let container = document.getElementById(this.getContainer());
+        if(!container) {
+            return;
+        }
+        let ajaxPaginationContainer = container.querySelector('.f_ajax-pagination');
         if(ajaxPaginationContainer) {
             this.initAjaxPaging();
         }
@@ -800,7 +808,7 @@ export default class AbstractListLoad extends AbstractLoad {
     initPaging() {
         PagingManager.init((args) => {
             let params = Object.assign(this._getNgsParams(), args);
-            params.filter = this.filterManager.getCurrentFilter()
+            params.filter = this.filterManager.getCurrentFilter();
             if (this.args().cmsUUID) {
                 params.cmsUUID = this.args().cmsUUID;
             }
@@ -849,6 +857,7 @@ export default class AbstractListLoad extends AbstractLoad {
                 if (this.args().parentId) {
                     params.parentId = this.args().parentId;
                 }
+                params.filter = this.filterManager.getCurrentFilter();
                 NGS.load(this.args().listLoad, this.modifyFilterForLoad(params));
             });
         });
