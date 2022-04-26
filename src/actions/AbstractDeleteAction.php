@@ -111,6 +111,10 @@ abstract class AbstractDeleteAction extends AbsctractCmsAction
         if ($this->args()->ordering) {
             $result['ordering'] = $this->args()->ordering;
         }
+        if ($this->args()->filter) {
+            $result['filter'] = $this->args()->filter;
+        }
+        
         $this->addParam('afterActionParams', $result);
     }
 

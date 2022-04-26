@@ -22,7 +22,7 @@ use ngs\AdminTools\managers\NgsRuleManager;
 class ShowLoad extends AbstractCmsLoad
 {
 
-    protected $im_pagesShowed = 12;
+    protected $im_pagesShowed = 5;
 
     public final function load() {
         $managerClass = $this->args()->manager;

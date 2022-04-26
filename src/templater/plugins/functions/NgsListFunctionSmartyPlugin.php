@@ -306,7 +306,7 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                 }
 
                 if(!$isItemSystemSet) {
-                    $actionsField .= '<button title="' . $actionName .'" class="button btn-link outline with-small-icon ' . $actionName . '-btn f_' . $actionName . '_btn ' . $dangerClass . '"
+                    $actionsField .= '<button type="button" title="' . $actionName .'" class="button btn-link outline with-small-icon ' . $actionName . '-btn f_' . $actionName . '_btn ' . $dangerClass . '"
                                     data-im-id="' . $primaryKeyValue . '">' . $icon . '
                             </button>';
                 }

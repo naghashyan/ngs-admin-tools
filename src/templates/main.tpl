@@ -6,9 +6,9 @@
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
             <meta name="viewport" content="initial-scale=1.0,width=device-width">
             <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-            <link rel="shortcut icon" type="image/x-icon" href="{ngs cmd=get_static_path}/favicon.ico">
-            <link rel="icon" type="image/x-icon" href="{ngs cmd=get_static_path}/favicon.ico" sizes="16x16"/>
-            <link rel="apple-touch-icon" href="{ngs cmd=get_static_path}/favicon.ico"/>
+            <link rel="shortcut icon" type="image/x-icon" href="{ngs cmd=get_static_path}/img/favicon.ico">
+            <link rel="icon" type="image/x-icon" href="{ngs cmd=get_static_path}/img/favicon.ico" sizes="16x16"/>
+            <link rel="apple-touch-icon" href="{ngs cmd=get_static_path}/img/favicon.ico"/>
             <title>{block name="page_title"}NGS CMS{/block}</title>
         {/block}
         {block name="header_controls"}
@@ -16,12 +16,11 @@
         {/block}
     {/block}
 </head>
-<body class="blue-color{block name='cms_main-container-class'} g_fixed-content-style{/block}">
+<body class="{block name='cms_main-container-class'}g_fixed-content-style{/block}">
 {block name='cms_body'}
     <main class="main-section">
-        <div id="main-overlay-for-all-purposes" class="main-overlay-for-all-purposes is_hidden"></div>
         {block name="left_bar"}
-            <aside id="navBar" class="main-nav no-scroll-bar">
+            <aside id="navBar" class="main-nav no-scroll-bar bg-aside">
                 {block name="left_bar_content"}
                     <div class="logo-content">
                         <div class="logo-block">
@@ -52,7 +51,8 @@
                     </button>
                 </div>
             </aside>
-{*            <div id="sidebarOverlay" class="sidebar-overlay"></div>*}
+
+            <div id="main-overlay-for-all-purposes" class="main-overlay-for-all-purposes"></div>
         {/block}
         <div class="content-box bgweb2">
             <section id="main_container" class="main-container">

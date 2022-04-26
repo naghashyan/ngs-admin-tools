@@ -48,7 +48,7 @@ class NotificationMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_NOT_READ_NOTIFICATION = "SELECT * FROM %s WHERE `user_id` = :userId AND `read` = 0 ORDER BY `shown` ASC, `id` DESC LIMIT :offset, :limit";
+    private $GET_USER_NOT_READ_NOTIFICATION = "SELECT * FROM %s WHERE `type`='system' AND `user_id` = :userId AND `read` = 0 ORDER BY `shown` ASC, `id` DESC LIMIT :offset, :limit";
 
     /**
      * @param int $userId
@@ -64,7 +64,7 @@ class NotificationMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_NOT_READ_NOTIFICATION_COUNT = "SELECT COUNT(*) as count FROM %s WHERE `user_id` = :userId AND `read` = 0";
+    private $GET_USER_NOT_READ_NOTIFICATION_COUNT = "SELECT COUNT(*) as count FROM %s WHERE `type`='system' AND `user_id` = :userId AND `read` = 0";
 
     /**
      * @param int $userId
@@ -94,6 +94,16 @@ class NotificationMapper extends AbstractMysqlMapper
         $notification->setRead(1);
         $this->updateByPK($notification);
         return true;
+    }
+
+    /**
+     * mark users all notifications read
+     * @param int $userId
+     * @return bool
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function markUserNotificationsAsRead(int $userId) {
+        return !!$this->markUserNotificationsRead($userId);
     }
 
 
@@ -135,6 +145,25 @@ class NotificationMapper extends AbstractMysqlMapper
     }
 
 
+    private $UPDATE_JOB_NOTIDICATIONS = "UPDATE %s SET `title`=:title, `content`=:content, `progress_percent`=:progress WHERE job_id=:jobId";
+
+    public function updateJobNotifications(string $title, string $content, float $progress, int $jobId) {
+        $sqlQuery = sprintf($this->UPDATE_JOB_NOTIDICATIONS, $this->getTableName());
+        $result = $this->executeQuery($sqlQuery, ['content' => $content, 'progress'=>$progress, 'jobId' => $jobId, 'title' => $title]);
+        return $result;
+    }
+
+
+    private $GET_JOB_NOTIFICATIONS_COUNT = "SELECT COUNT(*) as count FROM %s WHERE `job_id` = :jobId";
+
+    public function getJobNotificationsCount(int $jobId) :int
+    {
+        $sqlQuery = sprintf($this->GET_JOB_NOTIFICATIONS_COUNT, $this->getTableName());
+        $count = $this->fetchField($sqlQuery, 'count', ['jobId' => $jobId]);
+        return (int) $count;
+    }
+
+
 
     private $GET_USER_NOTIFICATION = "SELECT * FROM %s WHERE `user_id` = :userId AND `id` = :notificationId";
 
@@ -155,5 +184,17 @@ class NotificationMapper extends AbstractMysqlMapper
         return $notification;
     }
 
+    private $MARK_USER_NOTIFICATIONS_READ = "UPDATE %s SET `read`=1 WHERE `user_id` = :userId";
 
+    /**
+     * set all notifications of user read
+     * @param int $userId
+     * @return int|null
+     * @throws \ngs\exceptions\DebugException
+     */
+    private function markUserNotificationsRead(int $userId)
+    {
+        $sqlQuery = sprintf($this->MARK_USER_NOTIFICATIONS_READ, $this->getTableName());
+        return $this->executeUpdate($sqlQuery, ['userId' => $userId]);
+    }
 }

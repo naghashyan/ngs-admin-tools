@@ -4,6 +4,10 @@ include("MainIlyovBin.php");
 
 use ngs\AdminTools\managers\jobs\JobsManager;
 
+$dispatcher = new ngs\Dispatcher();
+NGS()->setDispatcher($dispatcher);
+$dispatcher->getSubscribersAndSubscribeToEvents(true);
+
 $args = \ngs\util\NgsArgs::getInstance()->getArgs();
 if(!isset($args['job_id'])) {
     echo 'job id not provided';

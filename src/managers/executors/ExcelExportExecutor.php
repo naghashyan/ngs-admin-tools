@@ -19,12 +19,14 @@ use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
 use ngs\AdminTools\managers\AbstractCmsManager;
 use ngs\AdminTools\util\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 
 class ExcelExportExecutor extends AbstractJobExecutor
 {
     private $manager = null;
-
+    private $memoryUsageStart = null;
+    private $memoryUsageEnd = null;
 
     /**
      * returns current job name
@@ -43,11 +45,11 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * @return array
      */
     protected function execute(Closure $progressTracker = null) :array {
+        $this->memoryUsageStart = memory_get_peak_usage(true);
         $managerClass = $this->params['manager'];
         $manager = $managerClass::getInstance();
         $this->manager = $manager;
-
-        return $this->getItemsAddToCsv([], []);
+        return $this->getItemsAddToCsv($progressTracker, [], []);
     }
 
 
@@ -58,14 +60,16 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * @param int $limit
      * @return array
      */
-    private function getItemsAddToCsv(array $fileNames, array $fileTitles, $offset = 0, $limit = 500) {
+    private function getItemsAddToCsv(?Closure $progressTracker, array $fileNames, array $fileTitles, $offset = 0, $limit = 500) {
+
         /** @var AbstractCmsManager $manager */
         $manager = $this->getManager();
         $dto = $manager->getMapper()->createDto();
-        $possibleValues = $manager->getSelectionPossibleValues($dto);
+        $possibleValues = $manager->getSelectionPossibleValues($dto, true);
         $paramsBin = $this->getNgsListBinParams($offset, $limit);
         $this->getLogger()->info("doing for offset " . $offset . ' started');
         $itemDtos = $manager->getList($paramsBin);
+        $totalCount = $manager->getItemsCount($paramsBin);
         $itemsCount = count($itemDtos);
         foreach ($itemDtos as $itemDto) {
             if($possibleValues) {
@@ -73,18 +77,22 @@ class ExcelExportExecutor extends AbstractJobExecutor
             }
         }
 
+
         $this->getLogger()->info("doing for offset " . $offset . ' get data');
         $csvFiles = $this->getCsvFiles($fileNames, $fileTitles, $itemDtos);
         unset($possibleValues);
         unset($itemDtos);
         $fileNames = $csvFiles['files'];
         $fileTitles = $csvFiles['titles'];
-
+        if($progressTracker) {
+            $progressTracker(floor($offset * 100 / $totalCount));
+        }
         if($itemsCount < $limit) {
             return $this->convertCsvToExcel(NGS()->getDataDir('admin') . '/download_files', $fileNames, $fileTitles);
         }
         else {
-            return $this->getItemsAddToCsv($fileNames, $fileTitles, $offset + $limit, $limit);
+
+            return $this->getItemsAddToCsv($progressTracker, $fileNames, $fileTitles, $offset + $limit, $limit);
         }
     }
 
@@ -171,6 +179,25 @@ class ExcelExportExecutor extends AbstractJobExecutor
         return "";
     }
 
+    /**
+     * modify columns data in excel
+     * @param Spreadsheet $sheet
+     */
+    protected function modifyColumns(Spreadsheet $sheet) {
+
+    }
+
+    /**
+     * change column styles
+     * @param Spreadsheet $sheet
+     */
+    protected function convertColumnTypes(Spreadsheet $sheet) {
+    }
+
+
+    protected function onAddRow($item) {
+    }
+
 
     /**
      * return csv row data from item
@@ -180,7 +207,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
     private function getCsvRowData($item) {
         $result = [];
         $selectedFields = $this->params['fields'];
-
+        $this->onAddRow($item);
         foreach($selectedFields as $selectedField) {
             $fieldName = $selectedField['fieldName'];
             $fieldNameParts = explode(".", $fieldName);
@@ -231,19 +258,37 @@ class ExcelExportExecutor extends AbstractJobExecutor
                 }
             }
 
+            $this->modifyColumns($objPHPExcel);
+            $this->convertColumnTypes($objPHPExcel);
             $objWriter = IOFactory::createWriter($objPHPExcel, 'Xlsx');
             $fileRealName = str_replace('.csv', '', $csvFileNames[0]);
             $objWriter->save($csvFilePath . '/' . $fileRealName . '.xlsx');
             for($i=0; $i<count($csvFileNames); $i++) {
                 unlink($csvFilePath . '/' . $csvFileNames[$i]);
             }
-
-            return ['success' => true, 'fileName' => $fileRealName . '.xlsx'];
+            $this->memoryUsageEnd = memory_get_peak_usage(true);
+            return [
+                'success' => true,
+                'fileName' => $fileRealName . '.xlsx',
+                'memory_usage_start' => $this->getUsageInMb($this->memoryUsageStart),
+                'memory_usage_end' => $this->getUsageInMb($this->memoryUsageEnd)
+            ];
 
         }
         catch(\Exception $exp) {
-            return ['success' => false, 'message' => $exp->getMessage()];
+            $this->memoryUsageEnd = memory_get_peak_usage(true);
+            return [
+                'success' => false,
+                'message' => $exp->getMessage(),
+                'memory_usage_start' => $this->getUsageInMb($this->memoryUsageStart),
+                'memory_usage_end' => $this->getUsageInMb($this->memoryUsageEnd)
+            ];
         }
+    }
+
+
+    private function getUsageInMb($memoryUsage) {
+        return $memoryUsage / 1024 / 1024;
     }
 
 
@@ -273,7 +318,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
 
         $searchData = null;
         $searchableFields = $this->getManager()->getSearchableFields();
-        if(isset($filter['search'])) {
+        if(isset($paramFilter['search'])) {
             $searchData = [
                 'searchKeys' => $paramFilter['search'],
                 'searchableFields' => $searchableFields

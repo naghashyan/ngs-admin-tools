@@ -9,7 +9,6 @@
 // Grids
 // Here are the styles for grid classes.
 
-
 .row {
   display: -ms-flexbox;
   display: flex;
@@ -50,6 +49,12 @@
   -ms-flex: 0 0 255px;
   flex: 0 0 255px;
   max-width: 255px;
+
+  @include media-breakpoint-down(md) {
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 
 .col {
@@ -63,7 +68,6 @@
 .col-auto {
   -ms-flex: 1;
   flex: 1;
-  //width: auto;
   max-width: 100%;
 }
 
@@ -156,6 +160,14 @@
   flex: 0 0 100%;
   max-width: 100%;
 }
+
+//@include media-breakpoint-down(md) {
+//  .col-0, .col-1, .col-2, .col-2-5, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-9-5, .col-10, .col-11, .col-12 {
+//    -ms-flex: 0 0 100%;
+//    flex: 0 0 100%;
+//    max-width: 100%;
+//  }
+//}
 
 .order-first {
   -ms-flex-order: -1;
@@ -276,7 +288,7 @@
   margin-left: 91.666667%;
 }
 
-@media (min-width: 576px) {
+@include media-breakpoint-up(xs) {
   .col-sm {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
@@ -448,7 +460,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .col-md {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
@@ -620,7 +632,7 @@
   }
 }
 
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .col-lg {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
@@ -792,7 +804,7 @@
   }
 }
 
-@media (min-width: 1200px) {
+@include media-breakpoint-up(lg) {
   .col-xl {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
@@ -1002,7 +1014,7 @@
   display: inline-flex !important;
 }
 
-@media (min-width: 576px) {
+@include media-breakpoint-up(xs) {
   .d-sm-none {
     display: none !important;
   }
@@ -1034,7 +1046,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .d-md-none {
     display: none !important;
   }
@@ -1066,7 +1078,7 @@
   }
 }
 
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .d-lg-none {
     display: none !important;
   }
@@ -1098,7 +1110,7 @@
   }
 }
 
-@media (min-width: 1200px) {
+@include media-breakpoint-up(lg) {
   .d-xl-none {
     display: none !important;
   }
@@ -1332,7 +1344,7 @@
   align-self: stretch !important;
 }
 
-@media (min-width: 576px) {
+@include media-breakpoint-up(xs) {
   .flex-sm-row {
     -ms-flex-direction: row !important;
     flex-direction: row !important;
@@ -1471,7 +1483,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .flex-md-row {
     -ms-flex-direction: row !important;
     flex-direction: row !important;
@@ -1610,7 +1622,7 @@
   }
 }
 
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .flex-lg-row {
     -ms-flex-direction: row !important;
     flex-direction: row !important;
@@ -1749,7 +1761,7 @@
   }
 }
 
-@media (min-width: 1200px) {
+@include media-breakpoint-up(lg) {
   .flex-xl-row {
     -ms-flex-direction: row !important;
     flex-direction: row !important;
@@ -2320,7 +2332,7 @@
   margin-left: auto !important;
 }
 
-@media (min-width: 576px) {
+@include media-breakpoint-up(xs) {
   .m-sm-0 {
     margin: 0 !important;
   }
@@ -2665,7 +2677,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .m-md-0 {
     margin: 0 !important;
   }
@@ -3010,7 +3022,7 @@
   }
 }
 
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .m-lg-0 {
     margin: 0 !important;
   }
@@ -3355,7 +3367,7 @@
   }
 }
 
-@media (min-width: 1200px) {
+@include media-breakpoint-up(lg) {
   .m-xl-0 {
     margin: 0 !important;
   }

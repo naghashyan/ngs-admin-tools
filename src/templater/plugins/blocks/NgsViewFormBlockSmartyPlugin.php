@@ -73,9 +73,9 @@ class NgsViewFormBlockSmartyPlugin extends AbstractFormBlockSmartyPlugin
                                         <div class="f_g-content-item-inner g-content-item-inner col-12">
                                             <ul class="form-content f_cms_tab-container">'
                                                      . $params['content'] .
-            '</ul>
+                                            '</ul>
                                         </div>
-                                     </div>
+                    </div>
                 </form>';
     }
 

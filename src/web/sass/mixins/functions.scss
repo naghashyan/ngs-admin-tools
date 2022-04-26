@@ -36,7 +36,7 @@
 		}
 	}
 
-	@include media-breakpoint-down(sm) {
+	@include media-breakpoint-down(md) {
 		@each $prop, $value in glob-map-deep-get($headingsMobile, $key) {
 			#{$prop}: $value;
 		}
@@ -91,7 +91,7 @@
 		}
 	}
 
-	@include media-breakpoint-down(sm) {
+	@include media-breakpoint-down(md) {
 		@if $key == default {
 			@each $prop, $value in glob-map-deep-get($fontSizesMobile, "default") { #{$prop}: $value; }
 		} @else if $key == large1 {
@@ -159,7 +159,7 @@
 		@each $prop, $value in $morelinkTablet { #{$prop}: $value; }
 	}
 
-	@include media-breakpoint-down(sm) {
+	@include media-breakpoint-down(md) {
 		@each $prop, $value in $morelinkMobile { #{$prop}: $value; }
 	}
 }
@@ -205,10 +205,13 @@
 			@each $prop, $value in glob-map-deep-get($bgtype, "link", "default") {
 				#{$prop}: $value;
 			}
-		}
-		.link:hover {
-			@each $prop, $value in glob-map-deep-get($bgtype, "link", "hover") {
-				#{$prop}: $value;
+
+			@include media-breakpoint-up(md) {
+				&:hover {
+					@each $prop, $value in glob-map-deep-get($bgtype, "link", "hover") {
+						#{$prop}: $value;
+					}
+				}
 			}
 		}
 
@@ -216,10 +219,13 @@
 			@each $prop, $value in glob-map-deep-get($bgtype, "morelink", "default") {
 				#{$prop}: $value;
 			}
-		}
-		.morelink:hover {
-			@each $prop, $value in glob-map-deep-get($bgtype, "morelink", "hover") {
-				#{$prop}: $value;
+
+			@include media-breakpoint-up(md) {
+				&:hover {
+					@each $prop, $value in glob-map-deep-get($bgtype, "morelink", "hover") {
+						#{$prop}: $value;
+					}
+				}
 			}
 		}
 
@@ -264,10 +270,13 @@
 				@each $prop, $value in glob-map-deep-get($bgtype, "buttons", "#{$btnClass}", "default") {
 					#{$prop}: $value;
 				}
-			}
-			.#{$btnClass}:hover {
-				@each $prop, $value in glob-map-deep-get($bgtype, "buttons", "#{$btnClass}", "hover") {
-					#{$prop}: $value;
+
+				@include media-breakpoint-up(md) {
+					&:hover {
+						@each $prop, $value in glob-map-deep-get($bgtype, "buttons", "#{$btnClass}", "hover") {
+							#{$prop}: $value;
+						}
+					}
 				}
 			}
 		}
@@ -307,8 +316,7 @@
 
 		@if glob-map-deep-get($bgtype, "inverce") {
 
-			/*      min-width: 992px          */
-			@include media-breakpoint-up(md) {
+			@include media-breakpoint-up(lg) {
 				@if map-get($bgwebInverse, "fontSizes") {
 					@each $class, $properties in map-get($bgwebInverse, "fontSizes") {
 						.#{$class}, .#{$class} a:not(.button)				            { @each $prop, $value in $properties { #{$prop}: $value; } }
@@ -325,8 +333,7 @@
 
 			@include media-breakpoint-down(lg) {
 
-				/*      min-width: 768px         */
-				@include media-breakpoint-up(sm) {
+				@include media-breakpoint-up(md) {
 					@if map-get($bgwebInverseTablet, "fontSizes") {
 						@each $class, $properties in map-get($bgwebInverseTablet, "fontSizes") {
 							.#{$class}, .#{$class} a:not(.button)				            { @each $prop, $value in $properties { #{$prop}: $value; } }
@@ -341,7 +348,7 @@
 				}
 			}
 
-			@include media-breakpoint-down(sm) {
+			@include media-breakpoint-down(md) {
 				@if $bgwebInverseMobile {
 					@if map-get($bgwebInverseMobile, "fontSizes") {
 						@each $class, $properties in map-get($bgwebInverseMobile, "fontSizes") {

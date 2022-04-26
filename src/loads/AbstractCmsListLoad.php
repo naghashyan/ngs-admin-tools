@@ -26,7 +26,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
 {
 
     protected $im_limit = 30;
-    protected $im_pagesShowed = 12;
+    protected $im_pagesShowed = 5;
 
     /**
      * @var array
@@ -105,6 +105,18 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         $manager = $this->getManager();
         $itemDto = $manager->createDto();
 
+        $currentUserId = NGS()->getSessionManager()->getUser()->getId();
+        $filterManager = FilterManager::getInstance();
+        $itemType = $this->getManager()->getMapper()->getTableName();
+
+        if(!$this->args()->filter && !$this->args()->cmsUUID) {
+            /** @var FilterDto $preselectedFilter */
+            $preselectedFilter = $filterManager->getEntityPreselectedFilter($currentUserId, $itemType);
+            if($preselectedFilter) {
+                $this->args()->filter = json_decode($preselectedFilter->getFilter(), true);
+            }
+        }
+
         $this->initializeVisibleFieldsMethods($itemDto);
         $paramsBin = $this->getNgsListBinParams();
         $ruleForFilter = $this->getFilterRule($paramsBin);
@@ -128,7 +140,8 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         $this->addParam('ajaxPagination', $this->paginationIsAjax());
         $this->addJsonParam('manager', get_class($manager));
 
-
+        $itemDtos = $this->modifyList($itemDtos);
+        
         $this->addParam('itemDtos', $itemDtos);
         $this->addAllowedActionsForListIcons($itemDto);
         $this->addParam('hasAddButton', $this->shouldHaveAddButton());
@@ -156,9 +169,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
             $this->addJsonParam('parentId', $this->args()->parentId);
         }
         $this->initPaging($itemsCount);
-        $filterManager = FilterManager::getInstance();
-        $itemType = $this->getManager()->getMapper()->getTableName();
-        $currentUserId = NGS()->getSessionManager()->getUser()->getId();
+
         $favoriteFilters = $filterManager->getUserSavedFilters($currentUserId, $itemType);
         $exportTemplateManager = ExportTemplatesManager::getInstance();
         $savedExportTemplates = $exportTemplateManager->getUserSavedTemplates($currentUserId, $itemType);
@@ -175,13 +186,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         if ($this->args()->filter) {
             $this->addJsonParam('filter', $this->args()->filter);
         }
-        else {
-            /** @var FilterDto $preselectedFilter */
-            $preselectedFilter = $filterManager->getEntityPreselectedFilter($currentUserId, $itemType);
-            if($preselectedFilter) {
-                $this->addJsonParam('filter', json_decode($preselectedFilter->getFilter()));
-            }
-        }
+
         $this->addParam('favoriteFilter', '');
         $this->addParam('hasDetailPage', $this->hasDetailPage());
         if ($this->args()->favoriteFilter) {
@@ -189,6 +194,14 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         }
 
         $this->getLogger()->info('load finished, loaded items count ' . count($itemDtos));
+    }
+
+    /**
+     * @param $items
+     * @return mixed
+     */
+    protected function modifyList($items) {
+        return $items;
     }
 
 

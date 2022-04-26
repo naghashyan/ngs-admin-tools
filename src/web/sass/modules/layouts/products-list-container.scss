@@ -10,9 +10,7 @@
     font-weight: 600;
     color: red;
   }
-
   .left-box {
-    //width: 100%;
   }
   .right-box {
     white-space: nowrap;
@@ -23,55 +21,6 @@
 
 /*-----------------*/
 /*-----------------*/
-/*-----------------*/
-
-.vertical-tabs {
-  padding: 21px 8px 15px;
-  border-radius: 6px;
-  margin: 0;
-
-  input {
-    background-color: #ffffff;
-    border: 1px solid #DEDEDE;
-    color: #2d3748;
-    font-size: 14px;
-    height: 38px;
-    box-sizing: border-box;
-    border-radius: 6px;
-    padding-left: 8px;
-    padding-right: 8px;
-    width: 100%;
-    margin-bottom: 4px;
-    width: 100% !important;
-  }
-
-  .vertical-tab-list-item {
-    display: flex;
-    flex-flow: column;
-
-    .vertical-tab-list-item-title {
-      display: flex;
-      flex-flow: row;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0;
-      width: 100%;
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      .vertical-tab-list-item-name {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      .vertical-tab-list-item-actions {
-        display: flex;
-      }
-    }
-  }
-}
 
 .form-items-container {
   .cms-main-block {
@@ -118,6 +67,8 @@
 }
 
 .add-categories, add-products-as-kit {
+  width: 100%;
+
   .add-categories-item, .add-product-kit-item {
     border-left: 2px solid #c8c8c8;
     background-color: #F8F9FB;

@@ -48,6 +48,9 @@ abstract class AbstractCmsDto extends AbstractSecureDto
             if (isset($value['relative']) && $value['relative']) {
                 continue;
             }
+            if(isset($value['from_other_table']) && $value['from_other_table']) {
+                continue;
+            }
             $value['field_name'] = $value['field_name'] ?? preg_replace_callback('/_([a-z0-9])/', static function ($property): string {
                     if (!isset($property[1])) {
                         return '';

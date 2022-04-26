@@ -14,9 +14,11 @@
 namespace ngs\AdminTools\managers;
 
 use Lcobucci\JWT\Configuration;
+use ngs\AdminTools\dal\dto\UserDto;
 use ngs\AdminTools\dal\mappers\ApiKeysMapper;
 use ngs\AdminTools\dal\mappers\UserSessionsMapper;
 use ngs\AdminTools\dal\mappers\UserMapper;
+use ngs\AdminTools\util\StringUtil;
 use ngs\exceptions\NgsErrorException;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key;
@@ -53,6 +55,61 @@ class UserManager extends \ngs\AbstractManager
     public function getUserById($id)
     {
         return UserMapper::getInstance()->selectByPK($id);
+    }
+
+
+    /**
+     * returns list of unique values by field
+     * 
+     * @param array $users
+     * @param string $field
+     * @return array
+     */
+    public function getUniqueValuesFromList(array $users, string $field) {
+        $result = [];
+        foreach($users as $user) {
+            $getter = StringUtil::getGetterByDbName($field);
+            if($user->$getter() && !in_array($user->$getter(), $result)) {
+                $result[] = $user->$getter();
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * returns users by group id
+     *
+     * @param int $groupId
+     * @return UserDto[]
+     */
+    public function getUsersByGroup(int $groupId) :array
+    {
+        return UserMapper::getInstance()->getUsersByGroup($groupId);
+    }
+
+    /**
+     * get user by username
+     *
+     * @param string $userName
+     *
+     * @return object userDto
+     */
+    public function getUserByUserName($userName)
+    {
+        return UserMapper::getInstance()->getUserByUserName($userName);
+    }
+
+
+    private ?UserDto $systemUser = null;
+    public function getSystemUser() {
+        if($this->systemUser) {
+            return $this->systemUser;
+        }
+
+        $this->systemUser = $this->getUserByUserName('System');
+        return $this->systemUser;
     }
 
     /**

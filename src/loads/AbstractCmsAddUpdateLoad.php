@@ -16,6 +16,9 @@
 namespace ngs\AdminTools\loads;
 
 
+use ngs\AdminTools\event\structure\AfterLoadEventStructure;
+use ngs\event\EventManager;
+use ngs\AdminTools\event\structure\BeforeLoadEventStructure;
 use ngs\AdminTools\managers\LanguageManager;
 use ngs\AdminTools\managers\MediasManager;
 use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
@@ -170,11 +173,13 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             $itemDto = $manager->createDto();
         }
 
-        if ($this->getItemId() && $this->getItemId() > 0 && $manager->hasImage()) {
-            $mainImageUrl = NGS()->getDefinedValue('MY_HOST') . '/streamer/images/' . $manager->getMapper()->getTableName() . '/0?objectId=' . $this->getItemId();
-            $this->addParam('mainImage', $mainImageUrl);
-        }
+        $beforeLoadEvent = new BeforeLoadEventStructure(['id' => $this->getItemId()], get_class($this), $itemDto);
+        $this->getEventManager()->dispatch($beforeLoadEvent);
 
+        if ($this->getItemId() && $this->getItemId() > 0 && $manager->hasImage()) {
+            $image = MediasManager::getInstance()->getItemImageUrl($this->getItemId(), $manager->getMapper()->getTableName());
+            $this->addParam('mainImage', $image);
+        }
         $ngsRuleManager = NgsRuleManager::getInstance();
         if ($itemDto && $itemDto->getId()) {
             $itemDto = $ngsRuleManager->modifyDtoByRules($itemDto);
@@ -235,6 +240,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $this->addJsonParam('editActionType', $editActionType);
         $this->addParam('tempId', $this->args()->tempId ? $this->args()->tempId : "");
         $this->addParam('itemDto', $itemDto);
+
         $this->addParam('helpTexts', $manager->getHelpTexts());
         $this->addParam('defaultValues', $manager->getDefaultValuesOfFields());
         $this->addParam('possibleValues', $manager->getSelectionPossibleValues($itemDto));
@@ -248,8 +254,12 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $this->addJsonParam('fromListingPage', !!$this->args()->fromListingPage);
         $this->addJsonParam('pageParams', $jsParams);
         $this->addItemImagesProperties($itemDto);
+        $this->addItemAttachedFilesProperties($itemDto);
         $this->afterCmsLoad($itemDto);
+        $afterLoadEvent = new AfterLoadEventStructure(['id' => $this->getItemId()], get_class($this), $itemDto);
+        $this->getEventManager()->dispatch($afterLoadEvent);
         $this->getLogger()->info($fieldsType . ' load finished ' . ($itemDto && $itemDto->getId() ? $itemDto->getId() : ""));
+
     }
 
 
@@ -484,10 +494,26 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             if ($itemImageProperties){
                 $this->addJsonParam('imagesUrls', $itemImageProperties);
             }else{
-                $defaultUrl = [['url' => ['original' => NGS()->getDefinedValue('MY_HOST') . '/streamer/images/' . $itemDto->getTableName() . '/0']]];
+                $defaultUrl = [['url' => ['original' => $mediasManager->getDefaultImage($itemDto->getTableName())]]];
                 $this->addJsonParam('imagesUrls', $defaultUrl);
                 $this->addJsonParam('onlyDefaultImage', true);
 
+            }
+        }
+    }
+
+
+    /**
+     *
+     * @param $itemDto
+     */
+    protected function addItemAttachedFilesProperties($itemDto): void
+    {
+        $mediasManager = MediasManager::getInstance();
+        if($itemDto && $this->getManager()->hasAttachedFile()){
+            $itemAttachedFilesProperties = $mediasManager->getItemAttachedFilesProperties($itemDto->getId(), $this->getManager()->getMapper()->getTableName());
+            if ($itemAttachedFilesProperties){
+                $this->addJsonParam('files', $itemAttachedFilesProperties);
             }
         }
     }

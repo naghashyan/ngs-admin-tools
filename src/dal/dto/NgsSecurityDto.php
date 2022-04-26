@@ -94,7 +94,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
@@ -102,7 +102,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -110,7 +110,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getDtoName(): string
+    public function getDtoName()
     {
         return $this->dtoName;
     }
@@ -118,7 +118,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $dtoName
      */
-    public function setDtoName(string $dtoName): void
+    public function setDtoName($dtoName): void
     {
         $this->dtoName = $dtoName;
     }
@@ -126,7 +126,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getFieldName(): string
+    public function getFieldName()
     {
         return $this->fieldName;
     }
@@ -134,7 +134,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $fieldName
      */
-    public function setFieldName(string $fieldName): void
+    public function setFieldName($fieldName): void
     {
         $this->fieldName = $fieldName;
     }
@@ -142,7 +142,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getFieldDisplayName(): string
+    public function getFieldDisplayName()
     {
         return $this->fieldDisplayName;
     }
@@ -150,7 +150,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $fieldDisplayName
      */
-    public function setFieldDisplayName(string $fieldDisplayName): void
+    public function setFieldDisplayName($fieldDisplayName): void
     {
         $this->fieldDisplayName = $fieldDisplayName;
     }
@@ -158,7 +158,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getDtoDisplayName(): string
+    public function getDtoDisplayName()
     {
         return $this->dtoDisplayName;
     }
@@ -166,7 +166,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $dtoDisplayName
      */
-    public function setDtoDisplayName(string $dtoDisplayName): void
+    public function setDtoDisplayName($dtoDisplayName): void
     {
         $this->dtoDisplayName = $dtoDisplayName;
     }
@@ -175,7 +175,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getAccessType(): string
+    public function getAccessType()
     {
         return $this->accessType;
     }
@@ -183,7 +183,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $accessType
      */
-    public function setAccessType(string $accessType): void
+    public function setAccessType($accessType): void
     {
         $this->accessType = $accessType;
     }
@@ -191,7 +191,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getRuleType(): string
+    public function getRuleType()
     {
         return $this->ruleType;
     }
@@ -199,7 +199,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $ruleType
      */
-    public function setRuleType(string $ruleType): void
+    public function setRuleType($ruleType): void
     {
         $this->ruleType = $ruleType;
     }
@@ -207,7 +207,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return string
      */
-    public function getRuleValue(): string
+    public function getRuleValue()
     {
         return $this->ruleValue;
     }
@@ -215,7 +215,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param string $ruleValue
      */
-    public function setRuleValue(string $ruleValue): void
+    public function setRuleValue($ruleValue): void
     {
         $this->ruleValue = $ruleValue;
     }
@@ -223,7 +223,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @return \DateTime
      */
-    public function getUpdatedDate(): \DateTime
+    public function getUpdatedDate()
     {
         return $this->updatedDate;
     }
@@ -231,7 +231,7 @@ class NgsSecurityDto extends AbstractDto
     /**
      * @param \DateTime $updatedDate
      */
-    public function setUpdatedDate(\DateTime $updatedDate): void
+    public function setUpdatedDate($updatedDate): void
     {
         $this->updatedDate = $updatedDate;
     }

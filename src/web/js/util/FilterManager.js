@@ -3,15 +3,16 @@ import Choices from "../lib/choices.min.js";
 export default class FilterManager {
 
     static instances = {};
-
+    static notShowedFilters = [];
+    static SHOW_FILTERS_COUNT = 5;
 
     static createDefaultFilter() {
         return {
-            getCurrentFilter: function() {
+            getCurrentFilter: function () {
                 return null;
             },
 
-            onFilterChange: function(handler) {
+            onFilterChange: function (handler) {
 
             }
         }
@@ -25,6 +26,8 @@ export default class FilterManager {
      * @param preselectedFilter
      */
     constructor(filterBoxId, filterableModel, preselectedFilter) {
+        this.notShowedFilters = [];
+
         if (FilterManager.instances[filterBoxId]) {
 
             if (filterBoxId === 'mainFilter') {
@@ -55,7 +58,9 @@ export default class FilterManager {
         FilterManager.instances[filterBoxId] = this;
         if (preselectedFilter) {
             let filterCriterias = preselectedFilter.and;
-
+            if (Object.keys(preselectedFilter).length) {
+                document.getElementById(this.filterBoxId).classList.add('has-items');
+            }
             if (filterCriterias) {
                 for (let i = 0; i < filterCriterias.length; i++) {
                     this.addCriteriaToExistingOnes(filterCriterias[i], false);
@@ -89,6 +94,10 @@ export default class FilterManager {
         let criterias = container.querySelectorAll('.f_filter-item');
         this.addCriteriaInfos(criterias);
         if (this.filterChangeHandler) {
+            let currentFilter = this.getCurrentFilter();
+            if (Object.keys(currentFilter).length) {
+                document.getElementById(this.filterBoxId).classList.add('has-items');
+            }
             this.filterChangeHandler(this.getCurrentFilter());
         }
     }
@@ -234,12 +243,20 @@ export default class FilterManager {
 
         filterMainControlPanelBox.appendChild(actionsBtnsContainer);
 
+
         let addNewCriteriaRowBtnBox = document.createElement("div");
         addNewCriteriaRowBtnBox.classList.add('add-criteria-box', 'f_add-new-group-of-and-assoc-criterias-btn-container');
         addNewCriteriaRowBtnBox.innerHTML = `<div class="f_or-delimiter or-delimiter" data-index-of-delimiter="1">Or</div><button class="add-criteria button basic f_add-new-criteria-row-btn">
                                              <span class="circle"><i class="icon-svg179"></i></span></button>`;
 
+
         allCriteriasAndAddBtnContainer.appendChild(addNewCriteriaRowBtnBox);
+
+        let loadMoreCreteria = document.createElement("div");
+        loadMoreCreteria.classList.add('add-criteria-box');
+        loadMoreCreteria.innerHTML = '<button class="add-criteria button basic f_load-more-criteria">Load more criteria</button>';
+        loadMoreCreteria.style.display = 'none';
+        addNewCriteriaRowBtnBox.insertAdjacentElement('beforebegin', loadMoreCreteria);
 
         return filterMainControlPanelBox;
     }
@@ -411,6 +428,7 @@ export default class FilterManager {
      */
     collectDataOfAllCriterias(andAssocCriteriaItemsGroups) {
         let res = [];
+
         for (let i = 0; i < andAssocCriteriaItemsGroups.length; i++) {
 
             let subcriteriasOfCurrentCriteriaGroup = andAssocCriteriaItemsGroups[i].querySelectorAll('.f_sub-criteria-item');
@@ -450,15 +468,27 @@ export default class FilterManager {
                         criteria.searchValue = searchValueField.querySelector('input').value;
                     }
                 }
-                filterItem.and.push(criteria);
 
+                filterItem.and.push(criteria);
 
             }
 
             res.push(filterItem);
-
-
         }
+
+        this.notShowedFilters.forEach(item => {
+            if (item.and && item.and.length) {
+                item.and.forEach(filterItem => {
+                    if (!filterItem.hasOwnProperty('conditionValue')) {
+                        filterItem.conditionValue = "equal";
+                    }
+                })
+            }
+
+            res.push(item)
+
+        });
+
         return res;
     }
 
@@ -801,29 +831,57 @@ export default class FilterManager {
 
             setTimeout(() => {
                 let filterItemsData = JSON.parse(evt.target.closest('.f_filter-item').getAttribute('data-ngs-filter-value'));
-
                 let filterBox = document.getElementById(this.filterBoxId);
                 let filterMainControlPanelBox = this._createFilterMainControlPanelBox();
                 filterMainControlPanelBox.setAttribute('criteria-box-number', uniqueName);
 
                 filterBox.appendChild(filterMainControlPanelBox);
 
-
                 if (!filterItemsData.or) {
                     resolve(true);
                     return;
                 }
 
+                let showFilters = [];
+
+                if (filterItemsData.or.length > 2) {
+                    showFilters = filterItemsData.or.splice(0, 2);
+                    this.notShowedFilters = filterItemsData.or;
+                } else {
+                    this.notShowedFilters = [];
+                    showFilters = filterItemsData.or;
+                }
+
                 let containerOfAllCriteriaRows = filterMainControlPanelBox.querySelector('.f_all-criteria-rows-container');
 
-
-                filterItemsData.or.forEach((filterCriteria, index) => {
-
+                showFilters.forEach((filterCriteria, index) => {
                     containerOfAllCriteriaRows.appendChild(this._createContainerForAndAssocCriteriasGroup(filterCriteria));
-                    if (index < filterItemsData.or.length - 1) {
+                    if (index < showFilters.length - 1) {
                         containerOfAllCriteriaRows.appendChild(this._createOrDelimiter(true));
                     }
                 });
+
+
+                let filterMainControlPanel = document.querySelector('.f_filter-main-control-panel-box');
+                if (!filterMainControlPanel) {
+                    return;
+                }
+
+                let loadMoreCreteria = filterMainControlPanel.querySelector('.f_load-more-criteria');
+
+                if (this.notShowedFilters.length) {
+
+                    loadMoreCreteria.parentElement.style.display = 'block';
+
+                    let filterMainControlPanel = document.querySelector('.f_filter-main-control-panel-box');
+                    if (!filterMainControlPanel) {
+                        return;
+                    }
+
+                    loadMoreCreteria.addEventListener('click', () => {
+                        this._initLoadMoreCriteria(loadMoreCreteria, filterMainControlPanel, 2);
+                    })
+                }
 
                 this._initAddNewCriteriaRowBtn();
 
@@ -854,6 +912,47 @@ export default class FilterManager {
         });
     }
 
+
+    _initLoadMoreCriteria(targetElement, filterMainControlPanelBox, showFilterCount) {
+        let showFiltersArray = [];
+
+        if (this.notShowedFilters.length > showFilterCount) {
+            showFiltersArray = this.notShowedFilters.splice(0, showFilterCount)
+        } else {
+            showFiltersArray = this.notShowedFilters;
+            this.notShowedFilters = [];
+            targetElement.style.display = 'none';
+        }
+
+        let containerOfAllCriteriaRows = filterMainControlPanelBox.querySelector('.f_all-criteria-rows-container');
+
+        showFiltersArray.forEach((filterCriteria, index) => {
+            containerOfAllCriteriaRows.appendChild(this._createOrDelimiter(true));
+            containerOfAllCriteriaRows.appendChild(this._createContainerForAndAssocCriteriasGroup(filterCriteria));
+        });
+
+        this._initAddNewCriteriaRowBtn();
+
+        let allSelects = document.querySelectorAll('#' + this.filterBoxId + ' .f_filter-main-control-panel-box .ngs-choice');
+        allSelects.forEach(this._initSelect);
+
+        this.filterMainControlPanelCloseHandler = (evt) => {
+
+            if (evt.target.closest('.f_filter-main-control-panel-box')) {
+                return;
+            }
+            if (!evt.target.closest('.f_filter-item')) {
+                filterMainControlPanelBox.remove();
+            }
+
+            this.toggleFilterControlPanelButtonClass();
+            document.removeEventListener('click', this.filterMainControlPanelCloseHandler);
+            this.filterMainControlPanelCloseHandler = null;
+        };
+
+        document.addEventListener('click', this.filterMainControlPanelCloseHandler);
+
+    }
 
     /**
      * cancel filtering, and close the control panel
@@ -966,6 +1065,7 @@ export default class FilterManager {
         if (filterItem.conditionType === 'select') {
             justOneCriteriaRow.appendChild(this._createSelectCondition(filterItem.conditionValue));
             let possibleValues = this._getPossibleValuesByFieldId(filterItem.fieldName);
+
             justOneCriteriaRow.appendChild(this._createSelectValue(possibleValues, filterItem.searchValue));
         } else if (filterItem.conditionType === 'number') {
             justOneCriteriaRow.appendChild(this._createNumberCondition(filterItem.conditionValue));
@@ -994,19 +1094,18 @@ export default class FilterManager {
      */
     _toggleRemoveIconOfEachAndAssocRow(andAssocRowsGroup) {
         let rows = andAssocRowsGroup.querySelectorAll('.f_sub-criteria-item');
-        if(rows.length === 1) {
+        if (rows.length === 1) {
             rows[0].querySelector('.f_remove-just-one-criteria-row')?.remove();
             return;
         }
 
         rows.forEach(row => {
-            if(!row.querySelector('.f_remove-just-one-criteria-row')) {
+            if (!row.querySelector('.f_remove-just-one-criteria-row')) {
                 row.appendChild(this._createDeleteBtnForJustOneCriteriaRow());
                 this.initSubCriteriaRemoveBtn(row);
             }
         })
     }
-
 
 
     /**
@@ -1226,7 +1325,8 @@ export default class FilterManager {
 
         removeAndAssocRowsContainerBtn.addEventListener('click', (evt) => {
             evt.stopPropagation();
-            if (this._getCountOfAndAssocCriteriasGroupsAtMoment() === 1) {
+
+            if (!this.notShowedFilters.length && this._getCountOfAndAssocCriteriasGroupsAtMoment() === 1) {
                 return;
             }
 
@@ -1244,6 +1344,17 @@ export default class FilterManager {
             andAssocRowsContainer.closest('.f_container-of-and-assoc-criterias-and-and-delimiter').remove();
             this._updateIndexesOfAndAssocCriteriaGroups();
             this._toggleAddGroupOfAndAssocCriteriaBtn();
+
+            if (this.notShowedFilters.length && this._getCountOfAndAssocCriteriasGroupsAtMoment() >= 1) {
+                let filterMainControlPanel = document.querySelector('.f_filter-main-control-panel-box');
+                if (!filterMainControlPanel) {
+                    return;
+                }
+
+                let loadMoreCreteria = filterMainControlPanel.querySelector('.f_load-more-criteria');
+                this._initLoadMoreCriteria(loadMoreCreteria, filterMainControlPanel, 1);
+            }
+
         });
     }
 
@@ -1683,7 +1794,7 @@ export default class FilterManager {
         valueBox.setAttribute('data-ngs-searchable', (possibleValues.length > 5) ? 'true' : 'false');
 
         possibleValues.forEach(possibleValue => {
-            valueBox.appendChild(this._createOptionTag(possibleValue.id, possibleValue.value, value));
+            valueBox.appendChild(this._createOptionTag(possibleValue.id, possibleValue.value, "" + value));
         });
 
         return valueBox;

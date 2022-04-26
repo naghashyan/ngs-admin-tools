@@ -98,7 +98,7 @@ class NgsPaginationFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                             <span> of ' . $pageCount . ' | View </span>
                 
                             <div class="input-field">' . $perPageOptionsContent . '</div>
-                            <span> items | <span class="f_items-count"> ' . $itemsCount . ' </span>items</span>
+                            <span class="items-count"> items | <span class="items-count-main"><span class="f_items-count"> ' . $itemsCount . ' </span>items</span></span>
                             <input class="f_old-items-count" type="hidden" value="'.$itemsCount.'">
                         </div>
                  </div>';
@@ -139,7 +139,13 @@ class NgsPaginationFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             $previousDisabled = $page <= 1 ? 'is_disabled' : '';
             $nextDisabled = $page == $pageCount ? 'is_disabled' : '';
             $buttons = $this->getPagesButtonsList($page, $start, $end);
+            $firstDisabledClass = $page <= 1 ? "disabled" : "";
+            $lastDisabledClass = $page == $pageCount ? "disabled" : "";
             $result .= '<ul class="pagination">
+                                <li class="waves-effect">
+                                    <a href="javascript:void(0);" class="f_page ' . $firstDisabledClass . '"
+                                       data-im-page="1">First</a>
+                                </li>
                                 <li class="waves-effect">
                                     <a href="javascript:void(0);" class="f_page ' . $previousDisabled . '"
                                        data-im-page="' . ($page - 1) . '"><i class="icon-svg17l"></i></a>
@@ -148,6 +154,10 @@ class NgsPaginationFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                                 <li class="waves-effect">
                                     <a href="javascript:void(0);" class="f_page ' . $nextDisabled . '"
                                        data-im-page="' . ($page + 1) . '"><i class="icon-svg17"></i></a>
+                                </li>
+                                <li class="waves-effect">
+                                    <a href="javascript:void(0);" class="f_page ' . $lastDisabledClass . '"
+                                       data-im-page="'. $pageCount . '">Last</a>
                                 </li>
                             </ul>';
         }

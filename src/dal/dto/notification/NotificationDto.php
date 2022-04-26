@@ -12,26 +12,32 @@ class NotificationDto extends AbstractDto
 
 
     protected $id;
+    protected $notificationTempalteId;
     protected $title;
     protected $content;
     protected $read;
     protected $shown;
     protected $withProgress;
     protected $progressPercent;
+    protected $type;
     protected $userId;
+    protected $jobId;
     protected $addedDate;
 
 
     // Map of DB value to Field value
     protected array $mapArray = [
         'id' => 'id',
+        'notification_tempalte_id' => 'notificationTempalteId',
         'title' => 'title',
         'content' => 'content',
         'read' => 'read',
         'shown' => 'shown',
         'with_progress' => 'withProgress',
         'progress_percent' => 'progressPercent',
+        'type' => 'type',
         'user_id' => 'userId',
+        'job_id' => 'jobId',
         'added_date' => 'addedDate'
     ];
 
@@ -49,6 +55,22 @@ class NotificationDto extends AbstractDto
     public function setId($id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNotificationTempalteId()
+    {
+        return $this->notificationTempalteId;
+    }
+
+    /**
+     * @param mixed $notificationTempalteId
+     */
+    public function setNotificationTempalteId($notificationTempalteId): void
+    {
+        $this->notificationTempalteId = $notificationTempalteId;
     }
 
     /**
@@ -147,6 +169,21 @@ class NotificationDto extends AbstractDto
         $this->progressPercent = $progressPercent;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type): void
+    {
+        $this->type = $type;
+    }
 
     /**
      * @return mixed
@@ -162,6 +199,22 @@ class NotificationDto extends AbstractDto
     public function setUserId($userId): void
     {
         $this->userId = $userId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getJobId()
+    {
+        return $this->jobId;
+    }
+
+    /**
+     * @param mixed $jobId
+     */
+    public function setJobId($jobId): void
+    {
+        $this->jobId = $jobId;
     }
 
     /**

@@ -22,10 +22,13 @@
   width: 100%;
 
   .form-action {
-    margin-bottom: 0;
+    margin-bottom: 11px;
+    margin-top: 23px;
 
-    @include glob-map-get-fluid(margin-bottom, 11, 5, 0, 0);
-    @include glob-map-get-fluid(margin-top, 23, 10, 5, 5);
+    @include media-breakpoint-down(lg) {
+      margin-bottom: 0px;
+      margin-top: 10px;
+    }
   }
   .panel-body {
     padding: 20px 20px;
@@ -97,6 +100,11 @@
     .form-item {
       max-width: 49%;
 
+      /*        575.98px     */
+      @include media-breakpoint-down(xs) {
+        max-width: none;
+      }
+
       &.translated {
         border: 1px solid $successColor;
       }
@@ -166,13 +174,17 @@
       border-radius: 6px;
       align-items: flex-start;
 
-      //todo: Avo, please check this
+      &.no-flex-wrap {
+        @include media-breakpoint-up(xs) {
+          flex-wrap: nowrap;
+        }
+      }
+
       .addItemBtn {
         position: absolute;
         right: 0;
         top: -46px;
       }
-
       .view-mode {
         .table-header {
           .dropdown-box {
@@ -182,19 +194,22 @@
           }
         }
       }
+      .upload-image-right {
+        /*           max-width: 575.98px   */
+        @include media-breakpoint-down(xs) {
+          padding-left: 0;
+        }
+      }
+      .upload-image-left {
+        width: auto;
 
-      &.no-flex-wrap {
-        flex-wrap: nowrap;
-
-        .upload-image-left {
-          width: auto;
+        /*           max-width: 575.98px   */
+        @include media-breakpoint-down(xs) {
+          width: 100%;
+          margin-bottom: 15px;
         }
       }
     }
   }
 }
-
-
-
-
 

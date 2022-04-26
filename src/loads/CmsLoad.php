@@ -104,12 +104,7 @@ abstract class CmsLoad extends AbstractCmsLoad
             $this->onNoAccess();
         }
 
-        $profileImage = MediasManager::getInstance()->getItemImagesUrlsAndDescriptions($id, 'users');
-        if(!empty($profileImage)){
-            $profileImage = $profileImage[0]['url']['original'];
-        }else{
-            $profileImage = NGS()->getDefinedValue('MY_HOST') . '/streamer/images/users/0';
-        }
+        $profileImage = MediasManager::getInstance()->getItemImageUrl($id, 'users', MediasManager::SMALL_THUMB);
 
         $this->addParam('firstName', $userDto->getFirstName());
         $this->addParam('lastName', $userDto->getLastName());

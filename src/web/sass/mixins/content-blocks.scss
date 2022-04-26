@@ -1,85 +1,58 @@
 /*---------main content--------*/
 
-
-
-.g_fixed-content-style {
-  .main-section {
-    height: 100vh;
-  }
-  .g-content {
-    flex: 1 1 0%;
-    display: flex;
-    //width: 100%;
-    height: 100%;
-
-    .g-content-item {
+@include media-breakpoint-up(md) {
+  .g_fixed-content-style {
+    .main-section {
+      height: 100vh;
+    }
+    .g-content {
+      flex: 1 1 0%;
       display: flex;
-      width: 100%;
+      height: 100%;
 
-      .g-content-item-wrapper {
-        position: relative;
+      .g-content-item {
+        display: flex;
         width: 100%;
 
-        .g-content-item-inner {
-          position: absolute;
-          height: 100%;
-          //height: calc(100% - 20px);
-          left: 0;
-          right: 0;
+        &.center-aligned {
+          align-items: center;
+        }
+
+        .g-content-item-wrapper {
+          position: relative;
+          width: 100%;
+
+          .g-content-item-inner {
+            position: absolute;
+            height: 100%;
+            left: 0;
+            right: 0;
+          }
         }
       }
     }
   }
-}
+  .g_overflow-y-auto {
+    overflow-x: hidden;
+    overflow-y: auto;
 
-.g_overflow-y-auto {
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  padding-right: 5px;
-
-  //padding-right: 10px;
-  ////margin-right: -10px;
-  //
-  //padding-left: 10px;
-  //padding-top: 10px;
-  //padding-bottom: 10px;
-}
-
-
-/*
-      Need to delete
- */
-
-.vertical-tabs-content {
-  border-style: solid !important;
-  border-image: linear-gradient( to top, #b5b2b226, #bfbdbd ) 0 0 1;
-
-  &.col-12 {
-    padding: 0;
+    padding-right: 5px;
   }
 }
-
-//////////////////////////
-
-//todo: Avo, please check this
-.button{
-  &.addItemBtn {
-    white-space: nowrap;
-    padding-left: 26px;
-    padding-right: 26px;
-    margin-left: 6px;
-  }
-}
-
 
 .g_scrolable-section {
   display: flex;
   flex-flow: column;
   max-height: 100%;
   overflow: hidden;
-
   height: 100%;
+
+  @include media-breakpoint-down(md) {
+    overflow: visible;
+    max-height: unset;
+    height: auto;
+  }
+
 
   .g_fixed-box {
     width: 100%;
@@ -90,7 +63,7 @@
     overflow-y: auto;
   }
   .g_scrolable-fixed-box {
-    flex: 1 1 0%;
+    flex: 1 1 0;
     position: relative;
 
     .g_scrolable-fixed-inner-box {
@@ -98,32 +71,50 @@
       left: 0;
       right: 0;
       height: 100%;
+
+      @include media-breakpoint-down(md) {
+        position: static;
+      }
     }
   }
 }
 
-
 .main-section {
-  display: flex;
   padding: 15px 13px 13px 6px;
+  display: flex;
+
+  @include media-breakpoint-down(lg) {
+    padding: 15px 13px 13px 13px;
+  }
+  @include media-breakpoint-down(md) {
+    display: block;
+    padding: 0;
+  }
 
   & > .content-box {
     border-radius: 22px;
-    flex: 1 1 0%;
-    padding: 0;
+    flex: 1 1 0;
+    padding: 0 29px 0 15px;
 
-    @include glob-map-get-fluid(padding-left, 29, 20, 15, 10);
-    @include glob-map-get-fluid(padding-right, 15, 15, 10, 10);
-  }
-}
-
-@include media-breakpoint-down(xs) {
-  .main-section {
-    & > .content-box {
-      padding: 0 16px 40px;
+    @include media-breakpoint-down(lg) {
+      padding: 0 10px 0 10px;
+    }
+    @include media-breakpoint-down(md) {
+      border-radius: 0;
     }
   }
 }
+
+@include media-breakpoint-down(md) {
+  .main-section {
+    & > .content-box {
+      padding: 0 20px 16px;
+    }
+  }
+}
+
+
+
 
 
 /*-------left opened box-------*/
@@ -138,11 +129,19 @@
   padding: 15px 25px;
   border-radius: 0 0 12px 0;
   box-shadow: 0 3px 6px rgb(0,0,0,0.2);
-
   display: flex;
   flex-flow: column;
+  top: 60px;
 
-  @include glob-map-get-fluid(top, 60, 59, 59, 59);
+  @include media-breakpoint-down(md) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: $zindex-modal;
+    max-width: unset;
+  }
 
   .g_left-opened-box-title-box {
     border-bottom-width: 1px;
@@ -225,8 +224,6 @@
   }
 }
 
-
-
 /*-------------Card list--------------*/
 
 .card-list {
@@ -294,7 +291,6 @@
 
       i{
         &.closed{
-
         }
         &.opened{
           display: inline-block;
@@ -311,6 +307,10 @@
   padding: 16px 16px 13px;
   border-radius: 6px;
   margin: 0;
+
+  @include media-breakpoint-down(md) {
+    padding: 9px 9px 9px;
+  }
 
   &.no-spaces {
     padding: 0;
@@ -332,28 +332,5 @@
     padding-top: 10px;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -81,6 +81,20 @@ class UserMapper extends AbstractMysqlMapper
      *
      * @return userDto|null
      */
+    private $GET_USER_BY_USER_NAME = 'SELECT * FROM `%s` WHERE `user_name` = :username';
+
+    public function getUserByUserName(string $userName): ?UserDto
+    {
+        return $this->fetchRow(sprintf($this->GET_USER_BY_USER_NAME, $this->getTableName()), ['username' => $userName]);
+    }
+
+    /**
+     * get user by user_name
+     *
+     * @param string $userName
+     *
+     * @return userDto|null
+     */
     private $GET_USER_BY_NAME_AND_EMAIL_QUERY = 'SELECT * FROM `%s` WHERE `user_name` = :username OR `email`=:email';
 
     public function getUserByNameOREmailAndPass(string $user): ?UserDto
@@ -114,6 +128,19 @@ class UserMapper extends AbstractMysqlMapper
     {
         $sqlQuery = sprintf($this->GET_USER_BY_EMAIL_AND_TYPE_QUERY, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['email' => $email, 'user_type' => $userType]);
+    }
+
+
+    private $GET_USERS_BY_GROUP = 'SELECT * FROM `%s` WHERE `user_type`=:userGroup';
+
+    /**
+     * @param int $userType
+     * @return userDto|null
+     */
+    public function getUsersByGroup(int $groupId): array
+    {
+        $sqlQuery = sprintf($this->GET_USERS_BY_GROUP, $this->getTableName());
+        return $this->fetchRows($sqlQuery, ['userGroup' => $groupId]);
     }
 
 

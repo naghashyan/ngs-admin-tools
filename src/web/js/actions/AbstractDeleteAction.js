@@ -9,7 +9,7 @@ export default class AbstractDeleteAction extends AbstractAction {
   }
 
   getParamsIn() {
-    return 'formData';
+    return 'body';
   }
 
   getMethod() {

@@ -127,14 +127,14 @@ class NgsRuleManager extends AbstractManager
      * modify dto by provided rules
      *
      * @param $itemDto
-     * @param array $rules
+     * @param array $ruleNames
      * @return AbstractCmsDto
      * @throws \Exception
      */
-    public function modifyDtoByGivenRules($itemDto, array $rules)
+    public function modifyDtoByGivenRules($itemDto, array $ruleNames)
     {
-        foreach ($rules as $rule) {
-            $updateProductRules = $this->getRules($rule, $itemDto->getId());
+        foreach ($ruleNames as $ruleName) {
+            $updateProductRules = $this->getRules($ruleName, $itemDto->getId());
             if ($updateProductRules) {
                 $itemDto = $this->executeActions($updateProductRules, $itemDto);
             }
@@ -339,7 +339,7 @@ class NgsRuleManager extends AbstractManager
         $ngsRuleManager = NgsRuleManager::getInstance();
         $rule->addWhereCondition($ngsRuleManager->getWhereCondition($rule, get_class($item), 'id', '=', $item->getId()));
         $sqlCondition = $ngsRuleManager->getSqlConditionFromRule($rule);
-
+        $sqlCondition .= " LIMIT 1";
         $result = $ruleMapper->getData($sqlCondition);
         if ($result) {
             return $result[0];
@@ -359,16 +359,17 @@ class NgsRuleManager extends AbstractManager
      */
     public function executeActions($rules, AbstractCmsDto $itemDto)
     {
-
         if (!$rules) {
             return $itemDto;
         }
 
 
+        $filterResult = $this->filterOnlyItemRules($rules, $itemDto);
+        $rules = $filterResult['filteredRules'];
         $rules = $this->prioritizeRules($rules, $itemDto);
         foreach ($rules as $updateProductRule) {
-
-            $itemDto = $this->executeAction($updateProductRule, $itemDto);
+            $itemData = $filterResult['dataByRules'][$updateProductRule->getId()];
+            $itemDto = $this->executeAction($updateProductRule, $itemDto, $itemData);
         }
 
         return $itemDto;
@@ -383,22 +384,25 @@ class NgsRuleManager extends AbstractManager
      *
      * @param NgsRuleDto $rule
      * @param AbstractCmsDto $item
+     * @param array|null $itemData
      *
      * @return AbstractCmsDto
      *
      * @throws \Exception
      */
-    public function executeAction(NgsRuleDto $rule, $item)
+    public function executeAction(NgsRuleDto $rule, $item, ?array $itemData = [])
     {
 
         $actions = $rule->getActions();
         $actions = json_decode($actions, true);
         $mapArray = $item->getCmsMapArray();
-        $data = $this->getItemDataByRule($item, $rule);
-
-        if (!$data) {
-            return $item;
+        if(!$itemData) {
+            $itemData = $this->getItemDataByRule($item, $rule);
+            if (!$itemData) {
+                return $item;
+            }
         }
+
 
         foreach ($actions as $action) {
             foreach ($action as $property => $setValue) {
@@ -411,7 +415,7 @@ class NgsRuleManager extends AbstractManager
                     $item->$setterMethod($setValue);
                 } else if ($actionType === 'formula') {
                     try {
-                        $item->$setterMethod(MathUtil::getValueByFormula($setValue, $data));
+                        $item->$setterMethod(MathUtil::getValueByFormula($setValue, $itemData));
                     } catch (\Exception $exp) {
                         //TODO: handle formula issue
                     }
@@ -1429,30 +1433,43 @@ class NgsRuleManager extends AbstractManager
 
 
     /**
+     * @param NgsRuleDto[] $rules
+     * @param AbstractCmsDto $dto
+     * @return array
+     */
+    public function filterOnlyItemRules(array $rules, AbstractCmsDto $dto) {
+        $itemDataByRule = [];
+        $filteredRules = [];
+        foreach ($rules as $rule) {
+            $data = $this->getItemDataByRule($dto, $rule);
+            if ($data) {
+                $filteredRules[] = $rule;
+                $itemDataByRule[$rule->getId()] = $data;
+            }
+        }
+        return ['filteredRules' => $filteredRules, 'dataByRules' => $itemDataByRule];
+    }
+
+
+    /**
      * sorts and filters rules for given item
      *
      * @param NgsRuleDto[] $rules
      * @param AbstractCmsDto $dto
+     *
      * @return array
      * @throws \Exception
      */
     public function prioritizeRules(array $rules, AbstractCmsDto $dto)
     {
+        if(!$rules) {
+            return [];
+        }
+
         $ruleClassInfo = $this->getRuleClassInfo($rules[0]);
         if (!isset($ruleClassInfo['additionalPriority']) || !$ruleClassInfo['additionalPriority']) {
             return $rules;
         }
-
-        $filteredRules = [];
-
-        foreach ($rules as $rule) {
-            $data = $this->getItemDataByRule($dto, $rule);
-            if ($data) {
-                $filteredRules[] = $rule;
-            }
-        }
-        /** @var NgsRuleDto[] $rules */
-        $rules = $filteredRules;
 
         $field = $ruleClassInfo['additionalPriority']['field'];
         $result = [];

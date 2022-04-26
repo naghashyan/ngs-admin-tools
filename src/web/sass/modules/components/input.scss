@@ -246,30 +246,20 @@
 }
 
 .form-item {
-  .input-field.col-3 {
-
-    input {
-      height: 38px;
-
-      /*      max-width: 1199.98px       */
-      @include media-breakpoint-down(lg) {
-        height: 33px;
+  .input-field {
+    &.col-3 {
+      .plus,.minus {
+        right: 5px;
       }
     }
 
-    .plus,.minus {
-      right: 5px;
-    }
-  }
-
-  .input-field {
-
     input {
       height: 38px;
 
-      /*      max-width: 1199.98px       */
       @include media-breakpoint-down(lg) {
         height: 33px;
+        padding-top: 6px;
+        padding-bottom: 6px;
       }
     }
 

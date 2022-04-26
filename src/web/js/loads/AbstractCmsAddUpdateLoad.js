@@ -169,9 +169,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             let actionPath = this.args().saveAction.split(".");
             let actionName = actionPath[actionPath.length - 1].split("_").join(" ");
             title = actionName.replace(/\b[a-z]/g,
-                function (firstLatter) {
-                    return firstLatter.toUpperCase();
-                })
+              function (firstLatter) {
+                  return firstLatter.toUpperCase();
+              })
         }
         return title;
     }
@@ -206,6 +206,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         if(this.args().editActionType !== "popup") {
             this.initBackBtn();
         }
+
         this.initChoices();
         this.initTinymce();
         this.initDatePickers();
@@ -408,7 +409,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     initDatePickers() {
-        flatpickr('#' + this.getContainer() + " .f_flatpickr-datepicker");
+        flatpickr('#' + this.getContainer() + " .f_flatpickr-datepicker", {
+            disableMobile: "true"
+        });
     }
 
     /**
@@ -432,10 +435,24 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 tinymce.execCommand('mceRemoveEditor', true, id);
             }
         }
+
         tinymce.init({
-            selector: '#' + this.getContainer() + ' .f_tinymce',
-            resize: false,
+            selector: '#' + this.getContainer() + ' .f_tinymce', resize: false, mobile: {
+                menubar: true
+            }
         })
+
+        let tinymceElement = document.querySelector('#' + this.getContainer() + ' .f_tinymce');
+
+        if (!tinymceElement) {
+            return;
+        }
+
+        let isViewMode = tinymceElement.getAttribute('data-view-mode');
+
+        if (isViewMode) {
+            tinymce.activeEditor.mode.set("readonly");
+        }
     }
 
 
@@ -443,17 +460,16 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let choicesElems = document.querySelectorAll('#' + this.getContainer() + ' .ngs-choice');
         for (let i = 0; i < choicesElems.length; i++) {
             let choiceElem = choicesElems[i];
-            if(choiceElem.choices) {
+            if (choiceElem.choices) {
                 continue;
             }
-            choiceElem.choices = new Choices(choiceElem,
-                {
-                    removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
-                    searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
-                    renderChoiceLimit: 150,
-                    searchResultLimit: 150,
-                    shouldSort: true,
-                });
+            choiceElem.choices = new Choices(choiceElem, {
+                removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
+                searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
+                renderChoiceLimit: 150,
+                searchResultLimit: 150,
+                shouldSort: true,
+            });
         }
     }
 
@@ -477,7 +493,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let mainSectionUuid = document.querySelector('main.main-section');
         let uuid = mainSectionUuid.getAttribute('data-ngs-uuid');
         let listLoadParams = localStorage.getItem(uuid + '_listLoadParams');
-        if(!listLoadParams) {
+        if (!listLoadParams) {
             return {};
         }
         return JSON.parse(listLoadParams);
@@ -486,30 +502,29 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
     initViewPage() {
 
-        if(!document.querySelector('.f_editItemBtn')) {
+        if (!document.querySelector('.f_editItemBtn')) {
             return;
         }
 
         let isPageNestedToParentLoad = !!(this.getUiStorage() && this.getRenderTemplate() && this.getTabContainer());
 
-        if(!isPageNestedToParentLoad) {
-            if(document.querySelector('.f_editItemBtn')) {
+        if (!isPageNestedToParentLoad) {
+            if (document.querySelector('.f_editItemBtn')) {
                 document.querySelector('.f_editItemBtn').removeAttribute('style');
-            }else {
+            } else {
                 return;
             }
         }
-        document.querySelector('.f_editItemBtn').addEventListener('click', ()=> {
+        document.querySelector('.f_editItemBtn').addEventListener('click', () => {
             document.querySelector('.f_editItemBtn').setAttribute('style', 'display: none;');
             let params = {
-                itemId: this.args().viewPageParams.itemId,
-                fromViewPage: true
+                itemId: this.args().viewPageParams.itemId, fromViewPage: true
             };
             if (this.currentTabId) {
                 params.currentTabId = this.currentTabId;
             }
 
-            if(!isPageNestedToParentLoad) {
+            if (!isPageNestedToParentLoad) {
                 NGS.load(this.args().viewPageParams.editLoad, params);
             }
         });
@@ -587,8 +602,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      */
     saveChildItemData(event) {
         let formElem = event.target.closest("form");
-        this.checkAllFields().then(function(isValid) {
-            if(!isValid) {
+        this.checkAllFields().then(function (isValid) {
+            if (!isValid) {
                 formElem.querySelectorAll('.f_tabTitle').removeClass('error');
                 formElem.querySelectorAll('.f_cms_tab-container').forEach((element, index) => {
                     if (element.querySelector('.ngs.invalid') && element.id) {
@@ -601,7 +616,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
             try {
                 formData = this.beforeSave(formData);
-            }catch (e) {
+            } catch (e) {
                 console.log(e.message);
                 return false;
             }
@@ -633,7 +648,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 row = table.querySelector(".f_table_row[data-im-id='" + formData.id + "']");
             }
 
-            if (!row){
+            if (!row) {
                 table.append(contactRow);
             } else {
                 row.replaceWith(contactRow);
@@ -648,7 +663,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             this.initRemoveChildItem(contactRow, this.getUiStorage());
 
             let checkElementCheckbox = contactRow.querySelector('.f_check-item');
-            if(checkElementCheckbox) {
+            if (checkElementCheckbox) {
                 checkElementCheckbox.addEventListener('change', (e) => {
                     this.initBulkActionsForNewAddedChildren(e);
                 });
@@ -676,12 +691,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
 
-
     initBulkActionsForNewAddedChildren(e) {
         let checkbox = e.target;
         this.rowsListManager.handleElementSelectionChange(checkbox, true);
 
-        if(this.rowsListManager.needToChangeMainSelectionCheckbox()){
+        if (this.rowsListManager.needToChangeMainSelectionCheckbox()) {
             this.rowsListManager.handleMainSelectionCheckbox(checkbox);
         }
     }
@@ -709,7 +723,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      *if there are input fields with type file which are empty, the variable $_FILES will be not empty in php, so need to delete that fields from formData
      * @param formData
      */
-    removeEmptyFileInputs(formData) {}
+    removeEmptyFileInputs(formData) {
+    }
 
     /**
      *
@@ -719,8 +734,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     saveItemData(event) {
         let formElem = event.target.closest('form');
 
-        this.checkAllFields().then(function(isValid) {
-            if(!isValid) {
+        this.checkAllFields().then(function (isValid) {
+            if (!isValid) {
                 formElem.querySelectorAll('.f_tabTitle').removeClass('error');
                 formElem.querySelectorAll('.f_cms_tab-container').forEach((element, index) => {
                     if (element.querySelector('.ngs.invalid') && element.id) {
@@ -734,7 +749,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
             try {
                 formData = this.beforeSave(formData);
-            }catch (e) {
+            } catch (e) {
                 console.log(e.message);
                 return false;
             }
@@ -758,7 +773,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     handleErrorCase(formData, error) {
-        if(error.params && error.params.overrideIssue) {
+        if (error.params && error.params.overrideIssue) {
             this.handleOverrideItemCase(formData);
         }
     }
@@ -786,8 +801,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
 
         let params = {
-            itemId: data.itemId,
-            fromViewPage: true
+            itemId: data.itemId, fromViewPage: true
         };
         if (this.currentTabId) {
             params.currentTabId = this.currentTabId;
@@ -819,11 +833,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             promises.push(this.validateElement(fieldName, fieldValidators[fieldName], fieldValidators));
         }
 
-        return new Promise(function(resolve, reject) {
-            Promise.all(promises).then(function(resolvedPromises) {
+        return new Promise(function (resolve, reject) {
+            Promise.all(promises).then(function (resolvedPromises) {
                 let isValid = true;
-                for(let i=0; i < resolvedPromises.length; i++) {
-                    if(!resolvedPromises[i]) {
+                for (let i = 0; i < resolvedPromises.length; i++) {
+                    if (!resolvedPromises[i]) {
                         isValid = false;
                         break;
                     }
@@ -833,8 +847,6 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         });
 
     }
-
-
 
 
     addElementToOldParentDtos(dtos, changed, index) {
@@ -914,13 +926,13 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         this.hideError(elem);
         elem.addClass('invalid');
         elem.addClass('ngs');
-        elem.parentNode.insertAdjacentHTML('beforeend', "<div class='ilyov_validate'>" + msg + "</div>");
+        elem.parentNode.insertAdjacentHTML('beforeend', "<div class='ngs_validate'>" + msg + "</div>");
     }
 
     hideError(elem) {
         elem.removeClass('invalid');
         elem.addClass('ngs');
-        let errorElement = elem.parentNode.getElementsByClassName('ilyov_validate');
+        let errorElement = elem.parentNode.getElementsByClassName('ngs_validate');
         if (errorElement.length === 0) {
             return;
         }
@@ -928,11 +940,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     _initDropzone() {
-        ImageDropzoneUtil.existingImagesIds = [];
-        ImageDropzoneUtil.images = [];
+       this.imageDropzone = new ImageDropzoneUtil();
 
-        if (this.args()['imagesUrls']) {
-            ImageDropzoneUtil.existingImagesIds = this.args()['imagesUrls'].map((item) => {
+       if (this.args()['imagesUrls']) {
+            this.imageDropzone.existingImagesIds = this.args()['imagesUrls'].map((item) => {
                 if (item.url.original) {
                     return item.url.original.substring(item.url.original.lastIndexOf('/') + 1);
                 }
@@ -940,14 +951,13 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
 
         let anyDropzoneElement = document.querySelector('#' + this.getContainer() + ' .f_all-dropzones-container');
-        if(anyDropzoneElement) {
+        if (anyDropzoneElement) {
             let hasWriteAccess = anyDropzoneElement.getAttribute('data-write-access') === 'true';
             let isDropzoneMultiple = !!anyDropzoneElement.querySelector('.f_multipleDropzone');
             this.imagesHasWritePermission = hasWriteAccess;
 
 
-
-            ImageDropzoneUtil.initVariables({
+            this.imageDropzone.initVariables({
                 imagesUrls: this.args()['imagesUrls'],
                 isViewMode: this.isViewMode(),
                 imagesHasWritePermission: hasWriteAccess,
@@ -956,12 +966,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
             });
 
-
-            if(!hasWriteAccess || this.isViewMode()) {
-                ImageDropzoneUtil.initDropzoneForViewMode(isDropzoneMultiple);
-            }else {
-                ImageDropzoneUtil.initSingleDropzoneForAddEditMode();
-                ImageDropzoneUtil.initMultipleDropzoneForAddEditMode();
+            if (!hasWriteAccess || this.isViewMode()) {
+                this.imageDropzone.initDropzoneForViewMode(isDropzoneMultiple);
+            } else {
+                this.imageDropzone.initSingleDropzoneForAddEditMode();
+                this.imageDropzone.initMultipleDropzoneForAddEditMode();
             }
         }
 
@@ -985,14 +994,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             formData.append('imageDescriptionId[]', id);
         });
 
-        ImageDropzoneUtil.images.forEach(image => {
+        this.imageDropzone.images.forEach(image => {
             for (let key in image) {
                 if (image.hasOwnProperty(key)) {
                     formData.append('image[]', image[key]);
                 }
             }
         });
-        formData.append('oldImages', ImageDropzoneUtil.existingImagesIds);
+        formData.append('oldImages', this.imageDropzone.existingImagesIds);
 
         formData = this.addInfoAboutMainImageToFormData(formData);
 
@@ -1009,35 +1018,33 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
         let allIsMainRadioButtons = document.querySelectorAll('.f_isMainRadioButton');
 
-        if(allIsMainRadioButtons) {
+        if (allIsMainRadioButtons) {
             let checkedIsMainButton = Array.from(allIsMainRadioButtons).find((radioButton) => radioButton.checked);
 
-            if(checkedIsMainButton) {
+            if (checkedIsMainButton) {
 
-                if(checkedIsMainButton.closest('.f_image-element-main-box').classList.contains('f_newAddedImage')) {
+                if (checkedIsMainButton.closest('.f_image-element-main-box').classList.contains('f_newAddedImage')) {
 
                     let allNewAddedImages = document.querySelectorAll('.f_newAddedImage');
-                    for(let i = 0; i < allNewAddedImages.length; i++) {
-                        if(allNewAddedImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
-                            formData.append('mainImage', JSON.stringify({newImageIndex : i}));
+                    for (let i = 0; i < allNewAddedImages.length; i++) {
+                        if (allNewAddedImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
+                            formData.append('mainImage', JSON.stringify({newImageIndex: i}));
                             break;
                         }
                     }
-                }else {
+                } else {
 
                     let allOldImages = document.querySelectorAll('.f_oldImage');
-                    for(let i = 0; i < allOldImages.length; i++) {
+                    for (let i = 0; i < allOldImages.length; i++) {
                         let imageId = allOldImages[i].querySelector('.f_hidden-input-image-id').value;
-                        if(allOldImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
-                            formData.append('mainImage', JSON.stringify({oldImageId : imageId}));
+                        if (allOldImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
+                            formData.append('mainImage', JSON.stringify({oldImageId: imageId}));
                             break;
                         }
                     }
                 }
             }
         }
-
-
 
 
         return formData;
@@ -1048,12 +1055,12 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      * @private
      */
     _setMainImageIfNoExist() {
-        if(this.args()['imagesUrls']) {
-            for(let image in this.args()['imagesUrls']) {
-                if(!this.args()['imagesUrls'].hasOwnProperty(image)) {
+        if (this.args()['imagesUrls']) {
+            for (let image in this.args()['imagesUrls']) {
+                if (!this.args()['imagesUrls'].hasOwnProperty(image)) {
                     continue;
                 }
-                if(this.args()['imagesUrls'][image].hasOwnProperty('isMain') && this.args()['imagesUrls'][image].isMain) {
+                if (this.args()['imagesUrls'][image].hasOwnProperty('isMain') && this.args()['imagesUrls'][image].isMain) {
                     return;
                 }
             }
@@ -1063,7 +1070,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     _removeImageDescriptionIfItsDefault() {
-        if (ImageDropzoneUtil.variables.onlyOneDefaultImage) {
+        if (this.imageDropzone.onlyOneDefaultImage) {
             if (document.querySelector('.f_multipleDropzone .info-box')) {
                 // we can either remove just the description of the image or remove the default image too
 
@@ -1096,17 +1103,17 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         if (!element) {
             return;
         }
-        if(element.getAttribute('data-validation-added')) {
+        if (element.getAttribute('data-validation-added')) {
             return;
         }
 
-        if(element.classList.contains('f_tinymce') && element.tagName === 'TEXTAREA') {
+        if (element.classList.contains('f_tinymce') && element.tagName === 'TEXTAREA') {
             let elementId = element.getAttribute('id');
-            tinymce.get(elementId).on('blur', function(e) {
+            tinymce.get(elementId).on('blur', function (e) {
                 this.validateElement(fieldName, validators, allValidators);
             }.bind(this));
 
-        }else{
+        } else {
             element.addEventListener("change", (evt) => {
                 this.validateElement(fieldName, validators, allValidators);
             });
@@ -1119,7 +1126,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let element = document.getElementById(fieldId);
 
         if (!element || this._elementIsNotRequired(element)) {                                 //todo: || this._elementIsNotRequired(element)   >>>>   this part was before made by me;  M.J. please tell should I remove this function?
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 resolve(true);
             });
         }
@@ -1145,7 +1152,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let itemId = this.args().itemId;
         for (let i = 0; i < validators.length; i++) {
             let valueToValidate = this.getValidatorValue(fieldName, validators[i], allValidators, false);
-            promisesOfAllValidations.push(new Promise(function(resolve, reject) {
+            promisesOfAllValidations.push(new Promise(function (resolve, reject) {
                 this.getValidationUtil().validate(valueToValidate, validators[i], this.ngsAction, fieldName, itemId).then(function (validateResult) {
                     let elementsToShowError = this.getElementsWithMessages(fieldName, validators[i], allValidators, validateResult);
                     let elemIsValid = true;
@@ -1164,10 +1171,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             }.bind(this)));
         }
 
-        return new Promise(function(resolve, reject) {
-            Promise.all(promisesOfAllValidations).then(function(fieldAllValidationResults) {
-                for(let i = 0; i<fieldAllValidationResults.length; i++) {
-                    if(!fieldAllValidationResults[i]) {
+        return new Promise(function (resolve, reject) {
+            Promise.all(promisesOfAllValidations).then(function (fieldAllValidationResults) {
+                for (let i = 0; i < fieldAllValidationResults.length; i++) {
+                    if (!fieldAllValidationResults[i]) {
                         resolve(false);
                         return;
                     }
@@ -1179,21 +1186,19 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     _elementIsNotRequired(element) {
-        return element.hasAttribute('is_not_required') ||
-               element.closest('.form-item').hasAttribute('is_not_required') ||
-               element.classList.contains('is_hidden') || element.closest('.form-item').classList.contains('is_hidden');
+        return element.hasAttribute('is_not_required') || element.closest('.form-item').hasAttribute('is_not_required') || element.classList.contains('is_hidden') || element.closest('.form-item').classList.contains('is_hidden');
     }
 
     clearTabsErrors(element) {
         let tab = element.closest('.f_cms_tab-container');
 
-        if(!tab) {
+        if (!tab) {
             return;
         }
-        if(!tab.id) {
+        if (!tab.id) {
             return
         }
-        if(!tab.querySelector('.ngs.invalid')) {
+        if (!tab.querySelector('.ngs.invalid')) {
             document.getElementById(tab.id + '_title').removeClass('error');
         }
     }
@@ -1210,42 +1215,42 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let elementIsSelectbox = element.classList.contains('ngs-choice') && element.tagName === 'SELECT';
         let elementIsTinymce = false;
 
-        if(!elementIsSelectbox) {
+        if (!elementIsSelectbox) {
             elementIsTinymce = element.closest('.form-item').classList.contains('richtext');
         }
 
 
-        if(elementIsSelectbox) {
+        if (elementIsSelectbox) {
             element.closest('.choices__inner').classList.add("ngs", "invalid");
-        }else {
+        } else {
             (!elementIsTinymce) ? element.classList.add("ngs", "invalid") : element.closest('.input-field').querySelector('.tox-tinymce').classList.add("ngs", "invalid");
         }
 
-        let errorElement = elementIsSelectbox? element.closest('.choices').getElementsByClassName("ilyov_validate")[0]: element.parentNode.getElementsByClassName("ilyov_validate")[0];
+        let errorElement = elementIsSelectbox ? element.closest('.choices').getElementsByClassName("ngs_validate")[0] : element.parentNode.getElementsByClassName("ngs_validate")[0];
         let hasSameError = false;
 
 
         let displayName = element.closest('.form-item').querySelector('label').innerText;
         message = this.modifyMessage(message, displayName);
 
-        if(errorElement) {
-            if(errorElement.getAttribute("data-validator-name") === validator) {
-                if(errorElement.innerHTML === message) {
+        if (errorElement) {
+            if (errorElement.getAttribute("data-validator-name") === validator) {
+                if (errorElement.innerHTML === message) {
                     return;
-                }else {
+                } else {
                     hasSameError = false;
                     errorElement.remove();
                 }
-            }else {
+            } else {
                 return;
             }
         }
 
         if (!hasSameError) {
-            if(elementIsSelectbox) {
-                element.closest('.choices').insertAdjacentHTML('beforeend', "<div class='ilyov_validate vertical_centered' data-validator-name='" + validator + "'>" + message + "</div>");
-            }else{
-                element.parentNode.insertAdjacentHTML('beforeend', "<div class='ilyov_validate vertical_centered' data-validator-name='" + validator + "'>" + message + "</div>");
+            if (elementIsSelectbox) {
+                element.closest('.choices').insertAdjacentHTML('beforeend', "<div class='ngs_validate vertical_centered' data-validator-name='" + validator + "'>" + message + "</div>");
+            } else {
+                element.parentNode.insertAdjacentHTML('beforeend', "<div class='ngs_validate vertical_centered' data-validator-name='" + validator + "'>" + message + "</div>");
             }
         }
     }
@@ -1255,7 +1260,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let tempDiv = document.createElement('div');
         tempDiv.innerHTML = message;
         let wordToChange = tempDiv.querySelector('.f_fieldName');
-        if(!wordToChange) {
+        if (!wordToChange) {
             return message;
         }
         wordToChange.innerHTML = displayName;
@@ -1274,11 +1279,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
         let elementIsTinymce = false;
 
-        if(!elementIsSelectbox) {
+        if (!elementIsSelectbox) {
             elementIsTinymce = element.closest('.form-item').classList.contains('richtext');
         }
 
-        let errorElement = elementIsSelectbox? element.closest('.choices').getElementsByClassName("ilyov_validate"): element.parentNode.getElementsByClassName("ilyov_validate");
+        let errorElement = elementIsSelectbox ? element.closest('.choices').getElementsByClassName("ngs_validate") : element.parentNode.getElementsByClassName("ngs_validate");
 
         if (errorElement.length) {
             for (let i = 0; i < errorElement.length; i++) {
@@ -1288,11 +1293,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             }
         }
 
-        errorElement = elementIsSelectbox? element.closest('.choices').getElementsByClassName("ilyov_validate"): element.parentNode.getElementsByClassName("ilyov_validate");
+        errorElement = elementIsSelectbox ? element.closest('.choices').getElementsByClassName("ngs_validate") : element.parentNode.getElementsByClassName("ngs_validate");
         if (!errorElement.length) {
-            if(elementIsSelectbox) {
+            if (elementIsSelectbox) {
                 element.closest('.choices__inner').classList.remove("ngs", "invalid");
-            }else {
+            } else {
                 (!elementIsTinymce) ? element.classList.remove("ngs", "invalid") : element.closest('.input-field').querySelector('.tox-tinymce').classList.remove("ngs", "invalid");
             }
         }
@@ -1313,14 +1318,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let fieldId = this.args().tableName + '_' + fieldName + '_input';
         let currentInput = document.getElementById(fieldId);
         let currentValue = currentInput;
-        if(!getInputs) {
-            if(currentInput.classList.contains('f_tinymce') && currentInput.tagName === 'TEXTAREA') {
+        if (!getInputs) {
+            if (currentInput.classList.contains('f_tinymce') && currentInput.tagName === 'TEXTAREA') {
                 let id = currentInput.getAttribute('id');
-                    currentValue = (tinymce.get(id).getContent()).replace(/(<([^>]+)>)/ig, '');
-            }else {
-                if(this.isElementCheckbox(currentInput)) {
+                currentValue = (tinymce.get(id).getContent()).replace(/(<([^>]+)>)/ig, '');
+            } else {
+                if (this.isElementCheckbox(currentInput)) {
                     currentValue = currentInput.checked ? 'on' : '';
-                }else {
+                } else {
                     currentValue = currentInput.value;
                 }
             }
@@ -1344,12 +1349,12 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 let fieldId = this.args().tableName + '_' + fieldNameToValidate + '_input';
                 let fieldInput = document.getElementById(fieldId);
 
-                if(getInputs) {
+                if (getInputs) {
                     result[existingValidator.as] = fieldInput
-                }else {
-                    if(this.isElementCheckbox(fieldInput)) {
+                } else {
+                    if (this.isElementCheckbox(fieldInput)) {
                         result[existingValidator.as] = fieldInput.checked ? 'on' : '';
-                    }else {
+                    } else {
                         result[existingValidator.as] = fieldInput.value;
                     }
                 }
@@ -1421,14 +1426,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      * initializing form translations if the form is translatable
      */
     initFormTranslation() {
-        if(!this.args().translations || this.args().editActionType === "popup") {
+        if (!this.args().translations || this.args().editActionType === "popup") {
             return;
         }
 
         let languagesListContainer = document.getElementById('languages-list-container');
-        if(languagesListContainer) {
+        if (languagesListContainer) {
             languagesListContainer.removeClass('is_hidden');
-        }else {
+        } else {
             return;
         }
 
@@ -1453,38 +1458,37 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let form = document.querySelectorAll('.f_addUpdateForm')[0];
         form.querySelectorAll('.f_translatable-field').addClass('is_hidden');
 
-        if(languageId === 'original') {
+        if (languageId === 'original') {
             let elements = document.querySelectorAll('[language-id="original"]');
             elements.removeClass('is_hidden');
             this._toggleAllNotTranslatableFields(form, 'remove');
             elements.forEach(field => {
                 field.closest(".form-item").classList.remove('no-translation', 'translated');
             });
-        }else{
+        } else {
             this._toggleAllNotTranslatableFields(form, 'add');
             let translatedInputs = document.querySelectorAll('.f_translatable-field');
             let translation = this.args().translations[languageId];
 
-            for(let i = 0; i < translatedInputs.length; i++) {
-                if(translatedInputs[i].getAttribute('language-id') === languageId) {
+            for (let i = 0; i < translatedInputs.length; i++) {
+                if (translatedInputs[i].getAttribute('language-id') === languageId) {
                     translatedInputs[i].classList.remove('is_hidden');
                     let originalInput = translatedInputs[i].closest('.input-field').querySelector('[language-id="original"]');
                     originalInput.classList.remove('blurred');
                     originalInput.classList.add('is_hidden');
 
-                    if(!this.isViewMode()) {
-                        if(!translatedInputs[i].value && translation) {             //this condition with (&& translation) needs only for add mode, when dont need to add blurred class
+                    if (!this.isViewMode()) {
+                        if (!translatedInputs[i].value && translation) {             //this condition with (&& translation) needs only for add mode, when dont need to add blurred class
                             translatedInputs[i].placeholder = originalInput.value;
                             translatedInputs[i].addClass('blurred');
                         }
                     } else {
-                        if(translatedInputs[i].innerText.trim() === "") {
+                        if (translatedInputs[i].innerText.trim() === "") {
                             originalInput.classList.remove('is_hidden');
                             translatedInputs[i].classList.add('is_hidden');
                             translatedInputs[i].closest(".form-item").classList.remove('translated');
                             translatedInputs[i].closest(".form-item").classList.add('no-translation');
-                        }
-                        else {
+                        } else {
                             translatedInputs[i].closest(".form-item").classList.remove('no-translation');
                             translatedInputs[i].closest(".form-item").classList.add('translated');
                         }
@@ -1502,10 +1506,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      * @private
      */
     _toggleAllNotTranslatableFields(form, action) {
-        if(!this.isViewMode()) {
+        if (!this.isViewMode()) {
             this._toggleNotTranslatableFieldsInAddEditMode(form, action);
 
-        }else {
+        } else {
             this._toggleNotTranslatableFieldsInViewMode(form, action);
         }
     }
@@ -1523,16 +1527,16 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         for (let i = 0; i < formAllInputs.length; i++) {
             let element = form.querySelector('[name="' + formAllInputs[i][0] + '"]');
 
-            if(!element.hasAttribute('language-id')) {
-                if(element.tagName === 'SELECT') {
+            if (!element.hasAttribute('language-id')) {
+                if (element.tagName === 'SELECT') {
                     let selectElement = element.closest('div.choices');
-                    if(selectElement) {
+                    if (selectElement) {
                         (action === 'add') ? selectElement.addClass('not-translatable-field') : selectElement.removeClass('not-translatable-field');
                     }
-                } else if(element.classList.contains('f_tinymce')) {
+                } else if (element.classList.contains('f_tinymce')) {
                     let tinymceElement = element.closest('.input-field').querySelector('.tox-tinymce');
 
-                    if(tinymceElement) {
+                    if (tinymceElement) {
                         (action === 'add') ? tinymceElement.addClass('not-translatable-field') : tinymceElement.removeClass('not-translatable-field');
                     }
                 } else {
@@ -1553,10 +1557,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     _toggleNotTranslatableFieldsInViewMode(form, action) {
         let allViewFields = document.querySelectorAll('.form-item.view-mode .f_form-item-view-mode');
         allViewFields.forEach(field => {
-            if(!field.closest('.form-item').querySelector('.f_translatable-field')) {
-                if(action === 'add'){
-                   //field.closest('.input-field').addClass('');
-                }else {
+            if (!field.closest('.form-item').querySelector('.f_translatable-field')) {
+                if (action === 'add') {
+                    //field.closest('.input-field').addClass('');
+                } else {
                     //field.closest('.input-field').removeClass('');
                 }
             }
@@ -1564,31 +1568,31 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
 
-
-
     /**
      * if number field value should be only positive, this function forces to input only positive
      */
     blockNegativeNumbersInput() {
         let onlyPositiveNumbers = document.querySelectorAll('[only_positive="true"]');
-        if(!onlyPositiveNumbers) {
+        if (!onlyPositiveNumbers) {
             return;
         }
         onlyPositiveNumbers.forEach((element) => {
             element.addEventListener('input', () => {
-                element.value = Math.abs(element.value) >= 0 ? Math.abs(element.value) : null;
-            })
-        })
+                if(+element.value < 0) {
+                    element.value = Math.abs(element.value);
+                }
+            });
+        });
     }
 
 
     initLogShowing() {
-        if(!this.args().itemId || this.args().itemId <= 0) {
+        if (!this.args().itemId || this.args().itemId <= 0) {
             return false;
         }
-        if(document.getElementById('show-items-logs-btn-container')) {
+        if (document.getElementById('show-items-logs-btn-container')) {
             document.getElementById('show-items-logs-btn-container').removeClass('is_hidden');
-        }else{
+        } else {
             return false;
         }
         let logShowBtn = document.getElementById('showItemsLogBtn');
@@ -1598,12 +1602,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         logShowBtn.addEventListener('mouseenter', (e) => {
             e.stopPropagation();
             e.preventDefault();
-            let timer = setTimeout(()=>{
-                if(logsList.classList.contains('is_hidden')) {
-                    if(!this.isLastLogLoaded){
-                        NGS.load('admin.loads.logs.list', {'itemId' : this.args().itemId, 'tableName' : this.args().tableName, offset : 0, limit: 1});
+            let timer = setTimeout(() => {
+                if (logsList.classList.contains('is_hidden')) {
+                    if (!this.isLastLogLoaded) {
+                        NGS.load('admin.loads.logs.list', {
+                            'itemId': this.args().itemId, 'tableName': this.args().tableName, offset: 0, limit: 1
+                        });
                         this.isLastLogLoaded = true;
-                    }else{
+                    } else {
                         lastLog.classList.toggle('is_hidden');
                     }
                 }
@@ -1617,7 +1623,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             el.addEventListener('mouseleave', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                if(logsList.classList.contains('is_hidden') && !lastLog.classList.contains('is_hidden')) {
+                if (logsList.classList.contains('is_hidden') && !lastLog.classList.contains('is_hidden')) {
                     let timerToClose = setTimeout(function () {
                         lastLog.classList.add('is_hidden');
                     }, 200);
@@ -1635,15 +1641,15 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             e.stopPropagation();
             e.preventDefault();
             lastLog.classList.add('is_hidden');
-            if(!this.isLogsLoaded){
-                NGS.load('admin.loads.logs.list', {'itemId' : this.args().itemId, 'tableName' : this.args().tableName, offset: 0, limit: 5});
+            if (!this.isLogsLoaded) {
+                NGS.load('admin.loads.logs.list', {
+                    'itemId': this.args().itemId, 'tableName': this.args().tableName, offset: 0, limit: 5
+                });
                 this.isLogsLoaded = true;
-            }else{
+            } else {
                 logsList.classList.toggle('is_hidden');
             }
         });
-
-
 
 
     }
@@ -1651,7 +1657,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
     initGoToRelatedEntity() {
         let goToRelatedEntityBtn = document.querySelectorAll('.f_go-to-related-entity');
-        if(!goToRelatedEntityBtn.length) {
+        if (!goToRelatedEntityBtn.length) {
             return;
         }
         goToRelatedEntityBtn.on('click', (e) => {
@@ -1659,13 +1665,12 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             let id = button.getAttribute('data-relation-id');
             let load = button.getAttribute('data-relation-load');
 
-            if(id && load) {
+            if (id && load) {
                 NGS.load(load, {itemId: id, doRefresh: true});
             }
 
         });
     }
-
 
 
     //todo: should be modified ASAP
@@ -1674,13 +1679,13 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
     isViewMode() {
 
-        if(this.args().isViewMode){
+        if (this.args().isViewMode) {
             return true;
         }
 
         let form = document.querySelector('form.f_addUpdateForm');
 
-        if(!form) {
+        if (!form) {
             return true;
         }
 
@@ -1690,7 +1695,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let inputsWithNameAttribute = Array.from(allInputs).filter(input => input.hasAttribute('name'));
         let selectBoxesWithNameAttribute = Array.from(allSelectBoxes).filter(selectBox => selectBox.hasAttribute('name'));
 
-        if(!inputsWithNameAttribute.length && !selectBoxesWithNameAttribute.length) {
+        if (!inputsWithNameAttribute.length && !selectBoxesWithNameAttribute.length) {
             return true;
         }
         return false;
@@ -1705,7 +1710,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let container = document.getElementById(this.getContainer());
         let ruleButtons = container.querySelectorAll('.f_rule-btn');
         let itemId = this.args().itemId;
-        for(let i=0; i<ruleButtons.length; i++) {
+        for (let i = 0; i < ruleButtons.length; i++) {
             ruleButtons[i].addEventListener('click', (evt) => {
                 let ruleName = evt.target.closest('.f_rule-btn').getAttribute('data-rule-name');
                 this._openRuleManagementWindow(ruleName, itemId);
@@ -1715,7 +1720,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     _openRuleManagementWindow(ruleName, itemId) {
-        NGS.load("ngs.AdminTools.loads.rules.rules", {ruleName: ruleName, itemId: itemId, isViewMode: this.isViewMode()});
+        NGS.load("ngs.AdminTools.loads.rules.rules", {
+            ruleName: ruleName, itemId: itemId, isViewMode: this.isViewMode()
+        });
     }
 
 

@@ -108,6 +108,8 @@ class RulesLoad extends AbstractCmsLoad
             return [];
         }
 
+        $rules = $ngsRuleManager->filterOnlyItemRules($rules, $itemDto);
+        $rules = $rules['filteredRules'];
         $appliedRules = $ngsRuleManager->prioritizeRules($rules, $itemDto);
 
         $result = [];

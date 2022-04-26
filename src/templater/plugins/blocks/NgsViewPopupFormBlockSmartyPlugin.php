@@ -50,7 +50,9 @@ class NgsViewPopupFormBlockSmartyPlugin extends AbstractPopupFormBlockSmartyPlug
                 'display_name' => $params['display_name'] ??  ' ',
                 'header' => !(isset($params['no_header']) && $params['no_header']),
                 'footer' => !(isset($params['no_footer']) && $params['no_footer']),
-                'close_btn_icon' => !(isset($params['no_close_btn_icon']) && $params['no_close_btn_icon'])
+                'close_btn_icon' => !(isset($params['no_close_btn_icon']) && $params['no_close_btn_icon']),
+                'custom_header' => isset($params['custom_header']) ? $params['custom_header'] : '',
+                'custom_footer' => isset($params['custom_footer']) ? $params['custom_footer'] : ''
             ];
 
             $this->deletePluginVariables();
@@ -74,9 +76,9 @@ class NgsViewPopupFormBlockSmartyPlugin extends AbstractPopupFormBlockSmartyPlug
     {
         //TODO: should be rechecked and modified
 
-        $header = $this->getHeaderOfPopupForm($params['header'], $params['display_name']);
+        $header = $this->getHeaderOfPopupForm($params['header'], $params['display_name'], $params['custom_header']);
         $closeButtonIcon = $this->getCloseBtnIconOfPopupForm($params['close_btn_icon']);
-        $footer = $this->getFooterOfPopupForm($params['footer'], false);
+        $footer = $this->getFooterOfPopupForm($params['footer'], false, $params['custom_footer']);
 
         return '<div class="g_scrolable-section">
                     <form onsubmit="return false;" class="g_scrolable-section f_addUpdateForm edit-form">'

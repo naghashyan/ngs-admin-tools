@@ -84,7 +84,7 @@ class NgsFlexibleHeightFormBlockSmartyPlugin extends AbstractPopupFormBlockSmart
     }
 
 
-    protected function getHeaderOfPopupForm($header, $displayName): string
+    protected function getHeaderOfPopupForm($header, $displayName, $customHeader = ""): string
     {
         if($header) {
             return '<div class="toast-header-box f_toast-header-box">
@@ -102,12 +102,12 @@ class NgsFlexibleHeightFormBlockSmartyPlugin extends AbstractPopupFormBlockSmart
     }
 
 
-    protected function getFooterOfPopupForm($footer, $buttons) {
+    protected function getFooterOfPopupForm($footer, $buttons, $customFooter = "") {
         if($footer) {
             $res =  ' <div class="f_toast-footer-box">';
             if($buttons) {
                 $res .= '
-                    <div class="popup-buttons">
+                    <div class="popup-buttons buttons-right-aligned">
                         <button type="button" id="" class="button min-width basic light cancel f_cancel">Cancel</button>
                         <button type="button" id="" class="button min-width basic primary cancel f_saveItem">Save</button>
                     </div>';

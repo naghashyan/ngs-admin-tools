@@ -134,6 +134,7 @@
 
 .view-text, .view-textarea {
   display: block;
+  word-break: break-all;
 
   p {
     margin-bottom: 0;

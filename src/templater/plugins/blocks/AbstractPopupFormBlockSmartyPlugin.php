@@ -22,9 +22,11 @@ abstract class AbstractPopupFormBlockSmartyPlugin extends AbstractFormBlockSmart
      * this function adds header if its default, or empty space if property 'no_header' was passed from template
      * @param $header
      * @param $displayName
+     * @param $customHeader
+     *
      * @return string
      */
-    protected function getHeaderOfPopupForm($header, $displayName): string {
+    protected function getHeaderOfPopupForm($header, $displayName, $customHeader = ""): string {
         if($header) {
             return '<div class="g_fixed-box modal-title-box border"><div class="t4">' .
                 $displayName .
@@ -38,9 +40,11 @@ abstract class AbstractPopupFormBlockSmartyPlugin extends AbstractFormBlockSmart
      * this function adds footer if its default, or empty space if property 'no_footer' was passed from template
      * @param $footer
      * @param $buttons
+     * @param $customFooter
+     * 
      * @return string
      */
-    protected function getFooterOfPopupForm($footer, $buttons) {
+    protected function getFooterOfPopupForm($footer, $buttons, $customFooter = "") {
         if($footer) {
             $res =  ' <div class="g_fixed-box modal-action-box f_form-actions">';
             if($buttons) {
@@ -52,6 +56,7 @@ abstract class AbstractPopupFormBlockSmartyPlugin extends AbstractFormBlockSmart
                         Save
                     </button>';
             }
+            $res .= $customFooter;
             $res .= '</div>';
             return $res;
         }

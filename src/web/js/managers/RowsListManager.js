@@ -3,6 +3,7 @@ export default class RowsListManager {
     static listAndAddLoadsBindData = {};
 
     constructor(container, listLevel = null) {
+        this.isShiftKeyPressed = false;
         this.listLoadContainer = container;
         if (listLevel) {
             this.listLevel = listLevel;
@@ -27,7 +28,7 @@ export default class RowsListManager {
 
 
     getSelectionInfoInput() {
-        if(!this.listLoadContainer) {
+        if (!this.listLoadContainer) {
             return null;
         }
         if (this.listLevel) {
@@ -50,6 +51,15 @@ export default class RowsListManager {
             selectionInfoInput.value = JSON.stringify(info);
         }
     };
+
+    setIsShiftPressed(value) {
+        this.isShiftKeyPressed = value;
+    }
+
+
+    getIsShiftPressed() {
+        return this.isShiftKeyPressed;
+    }
 
 
     handleMainSelectionCheckbox(checkboxItem) {
@@ -88,91 +98,108 @@ export default class RowsListManager {
 
     handleElementSelectionChange(checkboxItem, isNew) {
         let totalSelectionInfo = this.getSelectionInfo();
+        let checkedElements = totalSelectionInfo.checkedElements ?? [];
+        let elementId = checkboxItem.closest('.f_table_row').getAttribute("data-im-id");
+        this.previousItem = this.lastSelectdIndex;
 
         if (!isNew) {
-            let elementId = checkboxItem.closest('.f_table_row').getAttribute("data-im-id");
-            if (checkboxItem.checked) {
-                if (!totalSelectionInfo.checkedElements) {
-                    totalSelectionInfo.checkedElements = [];
-                }
-                if (totalSelectionInfo.checkedElements.indexOf(elementId) === -1) {
-                    totalSelectionInfo.checkedElements.push(elementId);
-                }
+            this.lastSelectdIndex = checkboxItem.closest('.f_table_row').getAttribute("data-im-index");
 
-                if (totalSelectionInfo.unCheckedElements) {
-                    let elementIndex = totalSelectionInfo.unCheckedElements.indexOf(elementId);
-                    if (elementIndex !== -1) {
-                        totalSelectionInfo.unCheckedElements.splice(elementIndex, 1);
-                        if (!totalSelectionInfo.unCheckedElements.length) {
-                            delete totalSelectionInfo.unCheckedElements;
-                        }
+            if (this.isShiftKeyPressed && this.previousItem) {
+                let elementsPositionsInInterval = [];
+                let startPosition = parseInt(this.lastSelectdIndex);
+                let endPosition = parseInt(this.previousItem);
+
+                if (startPosition > endPosition) {
+                    while (startPosition >= endPosition) {
+                        elementsPositionsInInterval.push(startPosition--);
+                    }
+                } else {
+                    while (startPosition <= endPosition) {
+                        elementsPositionsInInterval.push(startPosition++);
                     }
                 }
-            } else {
-                if (!totalSelectionInfo.unCheckedElements) {
-                    totalSelectionInfo.unCheckedElements = [];
-                }
-                if (totalSelectionInfo.unCheckedElements.indexOf(elementId) === -1) {
-                    totalSelectionInfo.unCheckedElements.push(elementId);
-                }
 
-                if (totalSelectionInfo.checkedElements) {
-                    let elementIndex = totalSelectionInfo.checkedElements.indexOf(elementId);
-                    if (elementIndex !== -1) {
-                        totalSelectionInfo.checkedElements.splice(elementIndex, 1);
-                        if (!totalSelectionInfo.checkedElements.length) {
-                            delete totalSelectionInfo.checkedElements;
+                elementsPositionsInInterval.forEach(item => {
+                    let index = parseInt(item);
+                    let element = document.querySelectorAll("#itemsContent .f_table_row");
+                    let currentElementId = element[index].getAttribute('data-im-id');
+
+                    if (checkboxItem.checked) {
+                        element[index].querySelector('.f_check-item').checked = true;
+                        if (checkedElements.indexOf(currentElementId) === -1) {
+                            checkedElements.push(currentElementId);
                         }
+                    } else {
+                        element[index].querySelector('.f_check-item').checked = false;
+                        let elementIndex = checkedElements.indexOf(currentElementId);
+                        if (elementIndex !== -1) {
+                            checkedElements.splice(elementIndex, 1);
+                        }
+                    }
+                })
+            } else {
+                if (checkboxItem.checked) {
+                    if (checkedElements.indexOf(elementId) === -1) {
+                        checkedElements.push(elementId);
+                    }
+                } else {
+                    let elementIndex = checkedElements.indexOf(elementId);
+                    if (elementIndex !== -1) {
+                        checkedElements.splice(elementIndex, 1);
                     }
                 }
             }
-
-
         } else {
-            let tempIdOfRow = checkboxItem.closest('.f_table_row').getAttribute('data-im-index');
-
-            if (checkboxItem.checked) {
-                if (!totalSelectionInfo.newAddedCheckedElements) {
-                    totalSelectionInfo.newAddedCheckedElements = [];
-                }
-                if (totalSelectionInfo.newAddedCheckedElements.indexOf(tempIdOfRow === -1)) {
-                    totalSelectionInfo.newAddedCheckedElements.push(tempIdOfRow);
-                }
-                if (totalSelectionInfo.newAddedUnCheckedElements) {
-                    let elementIndex = totalSelectionInfo.newAddedUnCheckedElements.indexOf(tempIdOfRow);
-                    if (elementIndex !== -1) {
-                        totalSelectionInfo.newAddedUnCheckedElements.splice(elementIndex, 1);
-                        if (!totalSelectionInfo.newAddedUnCheckedElements.length) {
-                            delete totalSelectionInfo.newAddedUnCheckedElements;
-                        }
-                    }
-                }
-                if (totalSelectionInfo.hasOwnProperty('totalSelection') && !totalSelectionInfo.totalSelection) {
-                    delete totalSelectionInfo.totalSelection;
-                }
-            } else {
-                if (!totalSelectionInfo.newAddedUnCheckedElements) {
-                    totalSelectionInfo.newAddedUnCheckedElements = [];
-                }
-                if (totalSelectionInfo.newAddedUnCheckedElements.indexOf(tempIdOfRow) === -1) {
-                    totalSelectionInfo.newAddedUnCheckedElements.push(tempIdOfRow);
-                }
-
-                if (totalSelectionInfo.newAddedCheckedElements) {
-                    let elementIndex = totalSelectionInfo.newAddedCheckedElements.indexOf(tempIdOfRow);
-                    if (elementIndex !== -1) {
-                        totalSelectionInfo.newAddedCheckedElements.splice(elementIndex, 1);
-                        if (!totalSelectionInfo.newAddedCheckedElements.length) {
-                            delete totalSelectionInfo.newAddedCheckedElements;
-                        }
-                    }
-                }
-            }
-
+            this.handleNewElementSelectionChange(checkboxItem, totalSelectionInfo);
         }
+
+        totalSelectionInfo.checkedElements = checkedElements;
+
         this.setSelectionInfo(totalSelectionInfo);
     };
 
+    handleNewElementSelectionChange(checkboxItem, totalSelectionInfo) {
+        let tempIdOfRow = checkboxItem.closest('.f_table_row').getAttribute('data-im-index');
+
+        if (checkboxItem.checked) {
+            if (!totalSelectionInfo.newAddedCheckedElements) {
+                totalSelectionInfo.newAddedCheckedElements = [];
+            }
+            if (totalSelectionInfo.newAddedCheckedElements.indexOf(tempIdOfRow === -1)) {
+                totalSelectionInfo.newAddedCheckedElements.push(tempIdOfRow);
+            }
+            if (totalSelectionInfo.newAddedUnCheckedElements) {
+                let elementIndex = totalSelectionInfo.newAddedUnCheckedElements.indexOf(tempIdOfRow);
+                if (elementIndex !== -1) {
+                    totalSelectionInfo.newAddedUnCheckedElements.splice(elementIndex, 1);
+                    if (!totalSelectionInfo.newAddedUnCheckedElements.length) {
+                        delete totalSelectionInfo.newAddedUnCheckedElements;
+                    }
+                }
+            }
+            if (totalSelectionInfo.hasOwnProperty('totalSelection') && !totalSelectionInfo.totalSelection) {
+                delete totalSelectionInfo.totalSelection;
+            }
+        } else {
+            if (!totalSelectionInfo.newAddedUnCheckedElements) {
+                totalSelectionInfo.newAddedUnCheckedElements = [];
+            }
+            if (totalSelectionInfo.newAddedUnCheckedElements.indexOf(tempIdOfRow) === -1) {
+                totalSelectionInfo.newAddedUnCheckedElements.push(tempIdOfRow);
+            }
+
+            if (totalSelectionInfo.newAddedCheckedElements) {
+                let elementIndex = totalSelectionInfo.newAddedCheckedElements.indexOf(tempIdOfRow);
+                if (elementIndex !== -1) {
+                    totalSelectionInfo.newAddedCheckedElements.splice(elementIndex, 1);
+                    if (!totalSelectionInfo.newAddedCheckedElements.length) {
+                        delete totalSelectionInfo.newAddedCheckedElements;
+                    }
+                }
+            }
+        }
+    }
 
     changeItemsCountInUi(number) {
         let itemsCountTag = this.listLoadContainer.querySelector('.f_pageingBox .f_items-count');
@@ -219,21 +246,21 @@ export default class RowsListManager {
 
 
     setListAndAddLoadsBindData(tab, data) {
-        if(!RowsListManager.listAndAddLoadsBindData.hasOwnProperty(tab)) {
+        if (!RowsListManager.listAndAddLoadsBindData.hasOwnProperty(tab)) {
             RowsListManager.listAndAddLoadsBindData[tab] = {};
         }
-        for(let key in data) {
+        for (let key in data) {
             RowsListManager.listAndAddLoadsBindData[tab][key] = data[key];
         }
     }
 
     getListAndAddLoadsBindData(tab, key = null) {
-        if(RowsListManager.listAndAddLoadsBindData.hasOwnProperty(tab)) {
-            if(key) {
-                if(RowsListManager.listAndAddLoadsBindData[tab].hasOwnProperty(key)) {
+        if (RowsListManager.listAndAddLoadsBindData.hasOwnProperty(tab)) {
+            if (key) {
+                if (RowsListManager.listAndAddLoadsBindData[tab].hasOwnProperty(key)) {
                     return RowsListManager.listAndAddLoadsBindData[tab][key];
                 }
-            }else {
+            } else {
                 return RowsListManager.listAndAddLoadsBindData[tab];
             }
         }
@@ -271,7 +298,7 @@ export default class RowsListManager {
 
                 function doResizeOnDrag(e) {
                     let movedPixels = e.clientX - startPosition;
-                    if(movedPixels + initialWidthOfColumn < 60) {
+                    if (movedPixels + initialWidthOfColumn < 60) {
                         return;
                     }
 
@@ -281,7 +308,7 @@ export default class RowsListManager {
                     column.style.minWidth = movedPixels + initialWidthOfColumn + 'px';
                     column.style.width = movedPixels + initialWidthOfColumn + 'px';
 
-                    if(verticalDownAllItemsOfCurrentColumn.length) {
+                    if (verticalDownAllItemsOfCurrentColumn.length) {
                         verticalDownAllItemsOfCurrentColumn.forEach(liElement => {
                             liElement.style.maxWidth = movedPixels + initialWidthOfColumn + 'px';
                             liElement.style.minWidth = movedPixels + initialWidthOfColumn + 'px';
@@ -294,6 +321,10 @@ export default class RowsListManager {
             })
 
         })
+    }
+
+    removeSelectedItems() {
+        this.setSelectionInfo({});
     }
 
 };

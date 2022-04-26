@@ -3,7 +3,6 @@
   z-index: 11000;
 }
 .datepicker-modal {
-
   .datepicker-date-display {
     background: transparent;
   }
@@ -44,7 +43,6 @@
     }
   }
 }
-
 
 
 .im-dialog-info, .im-dialog-success, .im-dialog-error {
@@ -241,7 +239,7 @@
     vertical-align: middle;
 
     fieldset {
-      &.ilyov_validate {
+      &.ngs_validate {
         font-size: 13px;
       }
     }
@@ -261,7 +259,7 @@
         vertical-align: top;
         position: relative;
 
-        .ilyov_validate {
+        .ngs_validate {
           padding: 3px 0 0 20px;
           top: -15px;
           width: 100%;
@@ -304,7 +302,7 @@
       /*
         fast resolution
       */
-      .ilyov_validate {
+      .ngs_validate {
         &:before {
           position: absolute;
           content: "";

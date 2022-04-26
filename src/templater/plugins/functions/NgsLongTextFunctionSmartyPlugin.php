@@ -38,6 +38,7 @@ class NgsLongTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $containerId = isset($params['id']) ? 'id="' . $params['id'] .'" ' : " ";
         $helpText = $this->getHelpText($params);
         $fieldGetter = 'get' . $this->underlinesToCamelCase($params['name']);
+        $isViewMode = isset($params['view_mode']) ? true : false;
 
         if(!$dto->hasReadAccess($params['name'])){
             return "";
@@ -69,7 +70,8 @@ class NgsLongTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             'container_id' => $containerId,
             'element_id' => $dto->getTableName() . '_' . $params['name'] . '_input',
             'isTranslatable' => $isTranslatable,
-            'translations' => $translateInputs
+            'translations' => $translateInputs,
+            'isViewMode'=>$isViewMode,
         ];
 
         return $this->getFunctionTemplate($templateParams);
@@ -85,25 +87,26 @@ class NgsLongTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
     protected function getFunctionTemplate(array $params): string
     {
         $syncSage = $params['sage_sync'] ? '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>' : '';
-        $originalLanguage = $params['isTranslatable']? ' language-id="original" ' : ' ';
+        $originalLanguage = $params['isTranslatable'] ? ' language-id="original" ' : ' ';
 
-        return '<div '.$params['container_id'].' class="form-item richtext' .$params['class_to_form_item'] .'">
+        return '<div ' . $params['container_id'] . ' class="form-item richtext' . $params['class_to_form_item'] . '">
                     <div class="form-group">
-                        <div class="input-field date-box col s6'. $params['class_to_input_field'] .'">
+                        <div class="input-field date-box col s6' . $params['class_to_input_field'] . '">
                         <div' . $originalLanguage . '>
-                                <label>' . $params['displayName'] . '</label>' . $syncSage .'
+                                <label>' . $params['displayName'] . '</label>' . $syncSage . '
                                     <textarea id="' . $params['element_id'] . '"
+                                      data-view-mode="' . $params['isViewMode'] . '"
                                       name="' . $params['name'] . '"
                                       class="f_tinymce"
                                       placeholder="' . $params['displayName'] . '" '
-                                     . '>' . $params['innerText'] . '
+            . '>' . $params['innerText'] . '
                                     </textarea>
                             </div>'
-                            . $params['translations'] .
-                        '</div>
+            . $params['translations'] .
+            '</div>
                         
                         <div class="icons-box">
-                            ' .$params['helpText']. '
+                            ' . $params['helpText'] . '
                         </div>
                     </div>
                 </div>';

@@ -5,8 +5,23 @@
                 <div class="header-box-inner border">
                     {*            <a id="showHideMenu" href="javascript:void(0);"><i class="material-icons">menu</i></a>*}
                     <div class="left-box">
+                        {block name="cms-main-header-mobile-menu"}
+                            <a href="javascript:void(0);" class="mobile-menu-open-btn f_minimize-button f_mobile-menu-open-btn">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </a>
+                        {/block}
+
                         {block name="cms-main-header-breadcrumb"}
-                            <a href="javascript:void(0);" class="t2">{$ns.sectionName}</a>
+                            <a href="javascript:void(0);" class="t2 title-box">{$ns.sectionName}</a>
+                        {/block}
+                    </div>
+                    <div class="center-box">
+                        {block name="cms-main-header-mobile-logo"}
+                            <a href="{ngs cmd=get_http_host}" class="header-logo-box">
+                                <img src="{ngs cmd=get_http_host ns='admin'}/img/logo-mobile-header.png">
+                            </a>
                         {/block}
                     </div>
                     <div class="right-box">
@@ -20,13 +35,16 @@
 
                                 <div id="unread_notifications_container" class="unread-notifications bgweb3">
                                     <div class="unread-notifications-title border">
+                                        <a class="back-button-popup f_notification-icon" href="javascript:void(0);">
+                                            <i class="icon-svg17l"></i>
+                                        </a>
                                         <div class="t2">Notifications</div>
 
                                         <div class="notification-more-btn dropdown">
                                             <button class="button medium-button with-icon dropdown-toggle f_delete-all-notifications-btn" type="button">
                                                 <i class="icon-svg155"></i>
                                             </button>
-                                            <div class="dropdown-box show notifications-action-container">
+                                            <div class="dropdown-box notifications-action-container">
                                                 <a href="javascript:void(0)" class="f_bulk-action" data-type="delete">Delete</a>
                                             </div>
                                         </div>
@@ -35,9 +53,14 @@
                                     <div id="unread_notifications_content" class="notification-content"></div>
                                 </div>
 
-                                <template id="notificationTemplate">
+                                                       
+                                 <template id="notificationTemplate">
                                     <div class="notification-container border f_notification">
-                                        <h3 class="t5 title f_title"></h3>
+                                        <div class="title-container">
+                                            <h3 class="t5 title f_title"></h3>
+                                            <p class="f_notification-dateTime"></p>
+                                        </div>
+
                                         <h4 class="t6 content f_content"></h4>
                                         <div class="progress-container extrasmall f_progress" data-percent="0">
                                             <div class="progress-bar">
@@ -60,6 +83,9 @@
                                 </a>
 
                                 <div class="dropdown-box f_profile-box-inner">
+                                    <div class="dropdown-title-box medium1">
+                                        {$ns.firstName} {$ns.lastName}
+                                    </div>
                                     <div class="content-box">
                                         <a href="javascript:void(0);" class="f_goToProfilePage">
                                             <i class="icon-svg241"></i>

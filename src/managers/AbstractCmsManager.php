@@ -90,15 +90,18 @@ abstract class AbstractCmsManager extends AbstractManager
                 $relativeValues = isset($dtoRelativeValues[$fieldName]) ? $dtoRelativeValues[$fieldName] : [];
             }
 
+
             $setter = StringUtil::getSetterByDbName($fieldName);
             $getter = StringUtil::getGetterByDbName($fieldName);
 
             if(!method_exists($dto, $getter)) {
                 continue;
             }
-            
-            $valuesArray = ArrayUtil::findInArray($possibleValues, 'id', $relativeValues ? $relativeValues : $dto->$getter());
 
+            $valuesArray = ArrayUtil::findInArray($possibleValues, 'id', $relativeValues ? $relativeValues : $dto->$getter());
+            if(!$valuesArray) {
+                $valuesArray = ArrayUtil::findInArray($possibleValues, 'id', $relativeValues ? $relativeValues : (int) $dto->$getter());
+            }
             $valueToSet = $dto->$getter();
             if($valuesArray) {
                 if(isset($valuesArray[0])) {
@@ -128,7 +131,6 @@ abstract class AbstractCmsManager extends AbstractManager
             return $this->modifySelectionValues($this->possibleValues[get_class($itemDto)]);
         }
         $selectValues = $this->getPossibleValuesForSelects($itemDto, $forFilter);
-
         $relationEntities = $this->getRelationEntities();
         foreach ($relationEntities as $key => $relationEntity) {
             if (isset($relationEntity['relation_type']) && $relationEntity['relation_type'] === 'many_to_many') {
@@ -312,7 +314,10 @@ abstract class AbstractCmsManager extends AbstractManager
     {
         $mapper = $this->getMapper();
         $user = NGS()->getSessionManager()->getUser() && NGS()->getSessionManager()->getUser()->getId() ? NGS()->getSessionManager()->getUser() : null;
-
+        if(!$user) {
+            $userManager = UserManager::getInstance();
+            $user = $userManager->getSystemUser();
+        }
         if ($mapper->hasCreator() && $setCreator && $user) {
             $params['created_by'] = $user->getId();
         }
@@ -478,7 +483,13 @@ abstract class AbstractCmsManager extends AbstractManager
     {
         $mapper = $this->getMapper();
         if ($mapper->hasCreator() && $setUpdator) {
-            $params['updated_by'] = NGS()->getSessionManager()->getUser()->getId();
+            $user = NGS()->getSessionManager()->getUser() && NGS()->getSessionManager()->getUser()->getId() ? NGS()->getSessionManager()->getUser() : null;
+            if(!$user) {
+                $userManager = UserManager::getInstance();
+                $user = $userManager->getSystemUser();
+            }
+
+            $params['updated_by'] = $user ? $user->getId() : null;
         }
         if(!isset($params['updated'])) {
             $params['updated'] = date('Y-m-j H:i:s');
@@ -511,7 +522,13 @@ abstract class AbstractCmsManager extends AbstractManager
     {
         $mapper = $this->getMapper();
         if ($mapper->hasCreator()) {
-            $params['updated_by'] = NGS()->getSessionManager()->getUser()->getId();
+            $user = NGS()->getSessionManager()->getUser() && NGS()->getSessionManager()->getUser()->getId() ? NGS()->getSessionManager()->getUser() : null;
+            if(!$user) {
+                $userManager = UserManager::getInstance();
+                $user = $userManager->getSystemUser();
+            }
+
+            $params['updated_by'] = $user->getId();
         }
         return $mapper->updateByPk($item);
     }
@@ -532,10 +549,11 @@ abstract class AbstractCmsManager extends AbstractManager
             if (isset($relationEntity['only_for_rule']) && $relationEntity['only_for_rule']) {
                 continue;
             }
+            /** @var AbstractCmsManager $manager */
             $manager = $relationEntity['manager'];
 
-            $itemFromRequest = [];
-            if (is_array($requestArgs) && isset($requestArgs[$key]) && $requestArgs[$key]) {
+            $itemFromRequest = null;
+            if (is_array($requestArgs)) {
                 if (!isset($requestArgs[$key])) {
                     $requestArgs[$key] = [];
                 }
@@ -549,8 +567,22 @@ abstract class AbstractCmsManager extends AbstractManager
             if (is_null($itemFromRequest)) {
                 continue;
             }
-            $manager->deleteByField($relationEntity['relation_field'], $itemId);
+            $items = $manager->getListByField($relationEntity['relation_field'], $itemId);
+            $executedItems = [];
+            $existingRelations = [];
             foreach ($itemFromRequest as $relativeTableId) {
+                $existingItem = $manager->getDtoFromListByField($items, $relationEntity['field'], $relativeTableId);
+                if($existingItem) {
+                    $executedItems[] = $existingItem->getId();
+                    $existingRelations[] = $relativeTableId;
+                }
+            }
+            $manager->deleteByField($relationEntity['relation_field'], $itemId, $executedItems);
+            foreach($itemFromRequest as $relativeTableId) {
+                if(in_array($relativeTableId, $existingRelations)) {
+                    continue;
+                }
+
                 $dataToSave = [];
                 $dataToSave[$relationEntity['relation_field']] = $itemId;
                 $dataToSave[$relationEntity['field']] = $relativeTableId;
@@ -661,11 +693,12 @@ abstract class AbstractCmsManager extends AbstractManager
     /**
      * @param $fieldName
      * @param $fieldValue
+     * @param array $expectIds
      * @return bool
      */
-    public function deleteByField($fieldName, $fieldValue)
+    public function deleteByField($fieldName, $fieldValue, ?array $expectIds = [])
     {
-        return $this->getMapper()->deleteByField($fieldName, $fieldValue);
+        return $this->getMapper()->deleteByField($fieldName, $fieldValue, $expectIds);
     }
 
 
@@ -776,7 +809,6 @@ abstract class AbstractCmsManager extends AbstractManager
     {
         return $this->getMapper()->deleteItemsByIds($ids);
     }
-
 
     /**
      * @param string $itemId

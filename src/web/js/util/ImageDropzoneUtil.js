@@ -2,28 +2,32 @@ import Dropzone from "../../../ngs/AdminTools/lib/dropzone.min.js";
 import DialogUtility from "./DialogUtility.js";
 
 
-let ImageDropzoneUtil = {
+export default class ImageDropzoneUtil {
+
+    constructor() {
+        this.totalErrorFiles = [];
+        this.variables = {};
+        this.dropzones = {};
+        this.existingImagesIds = [];
+        this.images = [];
+    }
 
 
     /**
      * need for collecting file names with error messages
      */
-    totalErrorFiles: [],
-    variables: {},
-    dropzones: {},
 
 
-
-    initVariables: function(variables) {
-        for(let key in variables) {
-            if(variables.hasOwnProperty(key)) {
-                ImageDropzoneUtil.variables[key] = variables[key];
+    initVariables(variables) {
+        for (let key in variables) {
+            if (variables.hasOwnProperty(key)) {
+                this.variables[key] = variables[key];
             }
         }
-    },
+    };
 
 
-    initDropzoneForViewMode: function (isDropzoneMultiple) {
+    initDropzoneForViewMode(isDropzoneMultiple) {
         const _this = this;
         let dropzone = new Dropzone('.dropzone', {
             url: "/target-url", // Set the url
@@ -33,11 +37,11 @@ let ImageDropzoneUtil = {
                 _this.showExistingImages(this, isDropzoneMultiple);
             }
         });
-    },
+    };
 
-    initSingleDropzoneForAddEditMode: function() {
+    initSingleDropzoneForAddEditMode() {
         try {
-            if ((document.querySelectorAll('#' + ImageDropzoneUtil.variables.container + ' .f_singleDropzone')).length === 0) {
+            if ((document.querySelectorAll('#' + this.variables.container + ' .f_singleDropzone')).length === 0) {
                 return;
             }
             const _this = this;
@@ -102,29 +106,13 @@ let ImageDropzoneUtil = {
                         }, 500);
                     });
 
-                        //this is made by by Aram , this is old version after discuss need to leave one of two versions
-                    // this.on("complete", function (file) {
-                    //
-                    //     if (_this.images.length) {
-                    //         _this.images.splice(0, 1);
-                    //     }
-                    //
-                    //     let removeButton = file.previewElement.querySelector('.dz-remove');
-                    //     let attributeValue = String((++index) + (new Date()).getTime());
-                    //     removeButton.setAttribute('data-unique-id', attributeValue);
-                    //     let currentImage = {
-                    //         [attributeValue]: file
-                    //     };
-                    //     _this.images.push(currentImage);
-                    // });
-
                 }
 
             });
         } catch (e) {
             console.log(e);
         }
-    },
+    };
 
     /**
      * dropzone initializing functionality for multiple images
@@ -133,10 +121,9 @@ let ImageDropzoneUtil = {
      * @param f_class
      * @param shouldShowExistingImages
      */
-    initMultipleDropzoneForAddEditMode: function(f_class = 'f_1', shouldShowExistingImages = true) {
-
+    initMultipleDropzoneForAddEditMode(f_class = 'f_1', shouldShowExistingImages = true) {
         try {
-            if ((document.querySelectorAll('#' + ImageDropzoneUtil.variables.container + ' .f_multipleDropzone')).length === 0) {
+            if ((document.querySelectorAll('#' + this.variables.container + ' .f_multipleDropzone')).length === 0) {
                 return;
             }
 
@@ -159,9 +146,9 @@ let ImageDropzoneUtil = {
                 thumbnail: function (file, dataUrl) {
                     if (file.previewElement) {
                         file.previewElement.classList.remove("dz-file-preview");
-                        var images = file.previewElement.querySelectorAll("[data-dz-thumbnail]");
-                        for (var i = 0; i < images.length; i++) {
-                            var thumbnailElement = images[i];
+                        let images = file.previewElement.querySelectorAll("[data-dz-thumbnail]");
+                        for (let i = 0; i < images.length; i++) {
+                            let thumbnailElement = images[i];
                             thumbnailElement.alt = file.name;
                             thumbnailElement.src = dataUrl;
                         }
@@ -175,28 +162,29 @@ let ImageDropzoneUtil = {
                         _this.showExistingImages(this, true, _this.dropzones[f_class]);
                     }
 
-                    //seems it works fine only with this listener
+
                     // this.on("successmultiple", function() {
 
                     //need to choose the listener, which is better
-                    this.on("queuecomplete", function() {
 
+                   this.on("queuecomplete", function () {
                         let files = this.files;
-                        if(!files.length) {
+                        if (!files.length) {
                             return;
                         }
 
                         for (let i = 0; i < files.length; i++) {
 
                             //this is part is added from development branch, but its is under testing
-                            if(files[i].status === 'error') {
+                            if (files[i].status === 'error') {
                                 continue;
                             }
 
 
                             let uniqueIdentifier = String((i) + (new Date()).getTime());
                             _this._setUniqueIdToRemoveButton(files[i], uniqueIdentifier);
-                            _this.images.push({[uniqueIdentifier] : files[i]});
+
+                            _this.images.push({[uniqueIdentifier]: files[i]});
                             _this.addTitleAndRadioButtonToImageForNewAddedImage(uniqueIdentifier, f_class);
                         }
 
@@ -205,21 +193,27 @@ let ImageDropzoneUtil = {
                     });
 
 
-                    this.on("error", function(file, errormessage) {
+                    this.on("error", function (file, errormessage) {
                         _this.totalErrorFiles.push({fileName: file.name, text: errormessage});
                         this.removeFile(file);
 
-                        setTimeout(()=> {
-                            if((_this.totalErrorFiles).length > 1) {
+                        setTimeout(() => {
+                            if ((_this.totalErrorFiles).length > 1) {
                                 let errorTextOfEachError = '';
-                                for(let i = 0; i < _this.totalErrorFiles.length; i++) {
+                                for (let i = 0; i < _this.totalErrorFiles.length; i++) {
                                     errorTextOfEachError += 'file <b>' + _this.totalErrorFiles[i].fileName + '</b> : ' + _this.totalErrorFiles[i].text + '<br />';
                                 }
 
-                                DialogUtility.showInfoDialog('Error', 'Was an error uploading these files. This is the error texts<br/>' + errorTextOfEachError, {actionResultShow: false, noButton: true, 'timeout' : _this.totalErrorFiles.length * 2500});
+                                DialogUtility.showInfoDialog('Error', 'Was an error uploading these files. This is the error texts<br/>' + errorTextOfEachError, {
+                                    actionResultShow: false,
+                                    noButton: true,
+                                    'timeout': _this.totalErrorFiles.length * 2500
+                                });
 
-                            }else {
-                                DialogUtility.showInfoDialog('Error', 'Was an error uploading "<b>' + _this.totalErrorFiles[0].fileName + '"</b> file. This is the error text <br />' + _this.totalErrorFiles[0].text, {actionResultShow: false, noButton: true, 'timeout' : 4000});
+                            } else {
+                                DialogUtility.showInfoDialog('Error', 'Was an error uploading "<b>' + _this.totalErrorFiles[0].fileName + '"</b> file. This is the error text <br />' + _this.totalErrorFiles[0].text, {
+                                    actionResultShow: false, noButton: true, 'timeout': 4000
+                                });
                             }
 
                         }, 10);
@@ -239,10 +233,7 @@ let ImageDropzoneUtil = {
         } catch (e) {
             console.log(e);
         }
-    },
-
-
-
+    };
 
 
     /**
@@ -251,10 +242,10 @@ let ImageDropzoneUtil = {
      * @param uniqueId
      * @private
      */
-    _setUniqueIdToRemoveButton: function(file, uniqueId) {
+    _setUniqueIdToRemoveButton(file, uniqueId) {
         let removeButton = file.previewElement.querySelector('.dz-remove');
         removeButton.setAttribute('data-unique-id', uniqueId);
-    },
+    };
 
 
     /**
@@ -264,8 +255,8 @@ let ImageDropzoneUtil = {
      * @param isMultiple
      * @param dropzone
      */
-    showExistingImages: function(_this, isMultiple, dropzone = null) {
-        let existingImagesPaths = ImageDropzoneUtil.variables['imagesUrls'];
+    showExistingImages(_this, isMultiple, dropzone = null) {
+        let existingImagesPaths = this.variables['imagesUrls'];
 
         if (this._arrayIsNotEmpty(existingImagesPaths)) {
 
@@ -290,15 +281,15 @@ let ImageDropzoneUtil = {
                 progress.remove();
             }
 
-            if (ImageDropzoneUtil.variables.onlyOneDefaultImage) {
+            if (this.variables.onlyOneDefaultImage) {
                 let clickBtn = document.querySelector('.element-field .dz-remove');
                 if (clickBtn) {
                     setTimeout(() => {
                         clickBtn.click();
                     }, 0);
-                }else if(!ImageDropzoneUtil.variables.imagesHasWritePermission) {
+                } else if (!this.variables.imagesHasWritePermission) {
                     let defaultImage = document.querySelector('.f_image-element-main-box');
-                    if(defaultImage) {
+                    if (defaultImage) {
                         defaultImage.remove();
                     }
                 }
@@ -306,16 +297,16 @@ let ImageDropzoneUtil = {
         }
 
         if (isMultiple) {
-            if(dropzone) {
+            if (dropzone) {
                 dropzone.removeEventListeners();
             }
-            if(!ImageDropzoneUtil.variables.isViewMode) {
+            if (!this.variables.isViewMode) {
                 this._initNewDropzoneAppearingUnderLastOne('f_1', false);
             }
 
         }
 
-    },
+    };
 
 
     /**
@@ -323,13 +314,13 @@ let ImageDropzoneUtil = {
      * @param image
      * @returns {HTMLInputElement}
      */
-    createHiddenInputWithCurrentImageProperties: function(image) {
+    createHiddenInputWithCurrentImageProperties(image) {
         let hiddenInputWithProperties = document.createElement('input');
 
         let id = image.url.original.substring(image.url.original.lastIndexOf('/') + 1);
         let thumbsInfo = {};
 
-        if (!ImageDropzoneUtil.variables.onlyOneDefaultImage) {
+        if (!this.variables.onlyOneDefaultImage) {
             thumbsInfo.original = image.url.original;
         }
         if (image.url.small) {
@@ -347,14 +338,14 @@ let ImageDropzoneUtil = {
         hiddenInputWithProperties.classList.add('f_hidden-input-image-id');
 
         return hiddenInputWithProperties;
-    },
+    };
 
 
     /**
      * initializing remove buttons correct working for both, new added and old existing images
      * @private
      */
-    _initRemoveButtonsForMultiple: function() {
+    _initRemoveButtonsForMultiple() {
         let removeButtons = document.querySelectorAll('.dz-remove');
         let imageMainBoxes = [];
 
@@ -398,26 +389,23 @@ let ImageDropzoneUtil = {
                 }
             });
         })
-    },
+    };
 
 
-
-    _initRemoveButtonForSingle: function() {
+    _initRemoveButtonForSingle() {
         let removeButton = document.querySelector('.dz-remove');
-        if (removeButton) {
-            removeButton.addEventListener('click', () => {
-                this.existingImagesIds[0] = null;
-            })
+        if (!removeButton) {
+            return
         }
 
+        removeButton.addEventListener('click', () => {
+            this.existingImagesIds[0] = null;
+        })
 
-    },
+    };
 
 
-
-
-
-    _arrayIsNotEmpty: function(existingImagesPaths) {
+    _arrayIsNotEmpty(existingImagesPaths) {
         if (existingImagesPaths === undefined || existingImagesPaths === [undefined] || existingImagesPaths[0] === undefined || existingImagesPaths[0] === [undefined]) {
             return false;
         }
@@ -425,7 +413,7 @@ let ImageDropzoneUtil = {
             return false;
         }
         return true;
-    },
+    };
 
 
     /**
@@ -433,7 +421,7 @@ let ImageDropzoneUtil = {
      * @param identifier
      * @param f_class
      */
-    addTitleAndRadioButtonToImageForNewAddedImage: function(identifier, f_class) {
+    addTitleAndRadioButtonToImageForNewAddedImage(identifier, f_class) {
         let titleAndRadioButtonContainer = this.createTitleBox(identifier);
         let imageElementMainBox = document.createElement('div');
         imageElementMainBox.classList.add('image-upload-multiple-box', 'f_image-element-main-box', 'f_newAddedImage');
@@ -444,7 +432,7 @@ let ImageDropzoneUtil = {
         imageElementMainBox.appendChild(dzPreview);
         imageElementMainBox.appendChild(titleAndRadioButtonContainer);
         currentDropzone.appendChild(imageElementMainBox);
-    },
+    };
 
 
     /**
@@ -452,7 +440,7 @@ let ImageDropzoneUtil = {
      * @param imageElement
      * @param indexOfImage
      */
-    addTitleAndRadioButtonAndUrlBoxToImageForExistingImage: function(imageElement, indexOfImage) {
+    addTitleAndRadioButtonAndUrlBoxToImageForExistingImage(imageElement, indexOfImage) {
         let titleBox = this.createTitleBox(null, imageElement, indexOfImage);
 
         let containerForImageAndUrlBoxAndButtons = document.createElement('div');
@@ -462,7 +450,7 @@ let ImageDropzoneUtil = {
         containerForImageAndUrlBoxAndButtons.appendChild(imageElement);
         containerForImageAndUrlBoxAndButtons.appendChild(titleBox);
         firstDropzone.appendChild(containerForImageAndUrlBoxAndButtons);
-    },
+    };
 
 
     /**
@@ -475,7 +463,7 @@ let ImageDropzoneUtil = {
      * @param imageIndex
      * @returns {HTMLDivElement}
      */
-    createTitleBox: function(identifier, imageElement = null, imageIndex = null) {
+    createTitleBox(identifier, imageElement = null, imageIndex = null) {
         let containerOfTitleAndButtons = document.createElement('div');
         containerOfTitleAndButtons.classList.add('info-box');
         let radioButtonContainer = document.createElement('div');
@@ -503,15 +491,15 @@ let ImageDropzoneUtil = {
 
         if (!identifier && imageElement) {  //for existing images
             containerOfTitleAndButtons.appendChild(this.createUrlOfImageAndCopyButton(inputTagForTitle, imageIndex));
-            let imageId = imageElement.querySelector('.f_hidden-input-image-id').value;
+            let imageId = imageElement.querySelector('.f_hidden-input-image-id')?.value;
             inputTagForTitle.setAttribute('image-id', 'old_' + imageId);
-        }else {                             //for new added images
+        } else {                             //for new added images
             let imageId = 'new_' + identifier;
             inputTagForTitle.setAttribute('image-id', imageId);
         }
 
         return containerOfTitleAndButtons;
-    },
+    };
 
 
     /**
@@ -521,7 +509,7 @@ let ImageDropzoneUtil = {
      * @returns {HTMLDivElement}
      */
     createUrlOfImageAndCopyButton(inputTagForTitle, imageIndex) {
-        let existingImagesPaths = ImageDropzoneUtil.variables['imagesUrls'];
+        let existingImagesPaths = this.variables['imagesUrls'];
 
         let urlAndCopyButtonContainer = document.createElement('div');
         urlAndCopyButtonContainer.classList.add('url-box', 'col-8');
@@ -545,20 +533,20 @@ let ImageDropzoneUtil = {
 
         urlAndCopyButtonContainer.appendChild(urlTextItem);
         return urlAndCopyButtonContainer
-    },
+    };
 
 
     //todo: check this
-    createIsMainRadioButton: function(index) {
+    createIsMainRadioButton(index) {
         let isMainRadioButtonContainer = document.createElement('div');
         isMainRadioButtonContainer.classList.add('radiobox-item');
         let labelForIsMainRadioTextBox = document.createElement('div');
         labelForIsMainRadioTextBox.classList.add('text-item-box', 'medium1');
         labelForIsMainRadioTextBox.innerText = 'Main Image';
 
-        if(ImageDropzoneUtil.variables.isViewMode || !ImageDropzoneUtil.variables.imagesHasWritePermission) {
-            if(index !== null) {
-                if(ImageDropzoneUtil.variables['imagesUrls'][index].isMain) {
+        if (this.variables.isViewMode || !this.variables.imagesHasWritePermission) {
+            if (index !== null) {
+                if (this.variables['imagesUrls'][index].isMain) {
                     isMainRadioButtonContainer.classList.add('checkbox-item');
                     let isMainRadioButtonLabel = document.createElement('label');
                     let isMainRadioButtonSpan = document.createElement('span');
@@ -572,7 +560,7 @@ let ImageDropzoneUtil = {
                     isMainRadioButtonContainer.appendChild(isMainRadioButtonLabel);
                 }
             }
-        }else {
+        } else {
 
             let isMainRadioButton = document.createElement('input');
             isMainRadioButton.classList.add('f_isMainRadioButton');
@@ -592,34 +580,31 @@ let ImageDropzoneUtil = {
             isMainRadioButtonContainer.appendChild(labelForIsMainRadioBoxLabel);
             isMainRadioButtonContainer.appendChild(labelForIsMainRadio);
 
-            if(index !== null) {
-                if(ImageDropzoneUtil.variables['imagesUrls'][index].isMain) {
+            if (index !== null) {
+                if (this.variables['imagesUrls'][index].isMain) {
                     isMainRadioButton.checked = true;
                 }
+
             }
         }
 
         return isMainRadioButtonContainer;
+    };
 
-    },
 
-
-    removeDefaultImageIfHasNoWritePermission: function() {
-        if(ImageDropzoneUtil.variables.onlyOneDefaultImage && !ImageDropzoneUtil.variables.imagesHasWritePermission) {
+    removeDefaultImageIfHasNoWritePermission() {
+        if (this.variables.onlyOneDefaultImage && !this.variables.imagesHasWritePermission) {
             let imageContainer = document.querySelector('.f_all-dropzones-container');
-            if(imageContainer) {
+            if (imageContainer) {
                 let containerParent = imageContainer.closest('.form-item');
-                if(containerParent) {
+                if (containerParent) {
                     containerParent.remove();
-                }else {
+                } else {
                     imageContainer.remove();
                 }
             }
         }
-    },
-
-
-
+    }
 
 
     /**
@@ -629,10 +614,10 @@ let ImageDropzoneUtil = {
      * @param f_class
      * @private
      */
-    _initNewDropzoneAppearingUnderLastOne: function(f_class) {
+    _initNewDropzoneAppearingUnderLastOne(f_class) {
         let allDropzonesContainer = document.querySelector(".f_all-dropzones-container");
 
-        if(!allDropzonesContainer.querySelector('.f_image-element-main-box')) {
+        if (!allDropzonesContainer.querySelector('.f_image-element-main-box')) {
             return;
         }
 
@@ -652,8 +637,7 @@ let ImageDropzoneUtil = {
 
         allDropzonesContainer.appendChild(newDropzone);
         this.initMultipleDropzoneForAddEditMode(newClass, false);
-    },
-
+    };
 
 
     /**
@@ -662,12 +646,12 @@ let ImageDropzoneUtil = {
      * @returns {HTMLDivElement}
      * @private
      */
-    _createNewDropzone: function(f_class) {
+    _createNewDropzone(f_class) {
         let newDropzone = document.createElement('div');
         let newClass = this._createNewClass(f_class);
         newDropzone.classList.add('element-field', 'image-select-box', 'dropzone', newClass, 'f_multipleDropzone');
         return newDropzone;
-    },
+    };
 
 
     /**
@@ -676,18 +660,18 @@ let ImageDropzoneUtil = {
      * @returns {string}
      * @private
      */
-    _createNewClass: function(f_class) {
+    _createNewClass(f_class) {
         let index = f_class.indexOf('_');
         let increment = +f_class.substr(index + 1) + 1;
         return 'f_' + increment;
-    },
+    };
 
 
     /**
      * if images have description boxes (only in products for now), in view mode that descriptions should be not editable, that is should be spans
      * @private
      */
-    _changeInputsIntoSpanInViewModeOnly: function() {
+    _changeInputsIntoSpanInViewModeOnly() {
         let allDescriptionInputsFormItems = document.querySelectorAll('.f_multipleDropzone .f_image-element-main-box .info-box .form-item');
         let allValuesOfInputs = [...allDescriptionInputsFormItems].map((item) => item.querySelector('.input-field input[name="imageDescription"]').value);
         allValuesOfInputs.forEach((input, i) => {
@@ -701,10 +685,8 @@ let ImageDropzoneUtil = {
         });
     }
 
-
 };
 
-export default ImageDropzoneUtil;
 
 
 

@@ -133,12 +133,14 @@ table {
 }
 
 .table-box {
-  min-height: 356px;
+  min-height: 285px;
   width: 100%;
 
   .table-header {
     padding-bottom: 16px;
     display: flex;
+    align-items: flex-start;
+    position: relative;
   }
   .table-box-inner {
     min-height: 255px;

@@ -17,6 +17,7 @@
 namespace ngs\AdminTools\dal\dto;
 
 use ngs\AdminTools\dal\dto\AbstractCmsDto;
+use ngs\AdminTools\managers\MediasManager;
 
 class MediasDto extends AbstractCmsDto
 {
@@ -31,6 +32,7 @@ class MediasDto extends AbstractCmsDto
     protected $objectType;
     protected $objectKey;
     protected $isMain;
+    protected $filePath;
     protected $created;
     protected $updated;
 
@@ -44,6 +46,7 @@ class MediasDto extends AbstractCmsDto
         'object_type' => ['type' => 'text'],
         'object_key' => ['type' => 'number'],
         'is_main' => ['type' => 'checkbox'],
+        'file_path' => ['type' => 'text'],
         'created' => ['type' => 'date'],
         'updated' => ['type' => 'date']
     ];
@@ -202,12 +205,68 @@ class MediasDto extends AbstractCmsDto
         return $this->updated;
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param mixed $filePath
+     */
+    public function setFilePath($filePath): void
+    {
+        $this->filePath = $filePath;
+    }
+
     /**
      * @param mixed $updated
      */
     public function setUpdated($updated): void
     {
         $this->updated = $updated;
+    }
+
+
+    /**
+     * @param string|null $thumbType
+     * @return string|null
+     */
+    public function getFullPath(?string $thumbType = null) :?string {
+        $rootDir = NGS()->get('MEDIA_STORE_DIR') . '/';
+        if($thumbType) {
+            $rootDir .= $thumbType . '/';
+        }
+        $path = $rootDir . $this->getFilePath();
+        if(file_exists($path)) {
+            return $path;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @param string|null $thumbType
+     * @param $getDefault
+     * @return string|null
+     */
+    public function getUrl(?string $thumbType = null, bool $getDefault = true) {
+        $filePath = $thumbType ? $thumbType . '/' . $this->getFilePath() : $this->getFilePath();
+        $fullPath = NGS()->get('MEDIA_STORE_DIR') . '/' . $filePath;
+
+        if(file_exists($fullPath) && !is_dir($fullPath)) {
+            return NGS()->get('MEDIA_STREAM_URL') . '/' . $filePath;
+        }
+        if(!$getDefault) {
+            return null;
+        }
+
+        $mediaManager = MediasManager::getInstance();
+        return $mediaManager->getDefaultImage($this->getObjectType());
     }
 
 

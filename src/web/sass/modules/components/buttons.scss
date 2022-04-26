@@ -32,14 +32,13 @@
   .#{$class}, .#{$class} a								{ @each $prop, $value in $properties { #{$prop}: $value; } }
 }
 
-/*   1280px   */
-@media only screen and (max-width: $mediaDesktopXL) {
+@include media-breakpoint-down(lg) {
   @each $class, $properties in $buttonsDescMin {
     .#{$class}, .#{$class} a								{ @each $prop, $value in $properties { #{$prop}: $value; } }
   }
 }
 
-@include media-breakpoint-down(lg) {
+@include media-breakpoint-down(md) {
   @each $class, $properties in $buttonsTablet {
     .#{$class}, .#{$class} a								{ @each $prop, $value in $properties { #{$prop}: $value; } }
   }
@@ -61,8 +60,10 @@
     border: none !important;
     background: none !important;
 
-    &:hover {
-      background: transparent;
+    @include media-breakpoint-up(md) {
+      &:hover {
+        background: transparent;
+      }
     }
   }
 
@@ -75,16 +76,20 @@
       border-color: $buttonPrimaryColor;
       color: $buttonPrimaryColor;
 
-      &:hover {
-        border-color: $buttonPrimaryHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonPrimaryHoverColor;
+        }
       }
     }
     &.secondary {
       border-color: $buttonSecondaryColor;
       color: $buttonSecondaryColor;
 
-      &:hover {
-        border-color: $buttonSecondaryHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonSecondaryHoverColor;
+        }
       }
     }
 
@@ -92,32 +97,40 @@
       border-color: $buttonSuccessColor;
       color: $buttonSuccessColor;
 
-      &:hover {
-        border-color: $buttonSuccessHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonSuccessHoverColor;
+        }
       }
     }
     &.info {
       border-color: $buttonInfoColor;
       color: $buttonInfoColor;
 
-      &:hover {
-        border-color: $buttonInfoHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonInfoHoverColor;
+        }
       }
     }
     &.warning {
       border-color: $buttonWarningColor;
       color: $buttonWarningColor;
 
-      &:hover {
-        border-color: $buttonWarningHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonWarningHoverColor;
+        }
       }
     }
     &.danger {
       border-color: $buttonDangerColor;
       color: $buttonDangerColor;
 
-      &:hover {
-        border-color: $buttonDangerHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonDangerHoverColor;
+        }
       }
     }
 
@@ -125,16 +138,20 @@
       border-color: $buttonDarkColor;
       color: $buttonDarkColor;
 
-      &:hover {
-        border-color: $buttonDarkHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonDarkHoverColor;
+        }
       }
     }
     &.light {
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        border-color: $buttonLightHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonLightHoverColor;
+        }
       }
     }
   }
@@ -146,61 +163,77 @@
       background-color: $buttonPrimaryColor;
       border-color: $buttonPrimaryColor;
 
-      &:hover {
-        background-color: $buttonPrimaryHoverColor;
-        border-color: $buttonPrimaryColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonPrimaryHoverColor;
+          border-color: $buttonPrimaryColor;
+        }
       }
     }
     &.secondary {
       background-color: $buttonSecondaryColor;
 
-      &:hover {
-        background-color: $buttonSecondaryHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonSecondaryHoverColor;
+        }
       }
     }
 
     &.success {
       background-color: $buttonSuccessColor;
 
-      &:hover {
-        background-color: $buttonSuccessHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonSuccessHoverColor;
+        }
       }
     }
     &.info {
       background-color: $buttonInfoColor;
 
-      &:hover {
-        background-color: $buttonInfoHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonInfoHoverColor;
+        }
       }
     }
     &.warning {
       background-color: $buttonWarningColor;
 
-      &:hover {
-        background-color: $buttonWarningHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonWarningHoverColor;
+        }
       }
     }
     &.danger {
       background-color: $buttonDangerColor;
 
-      &:hover {
-        background-color: $buttonDangerHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonDangerHoverColor;
+        }
       }
     }
 
     &.dark {
       background-color: $buttonDarkColor;
 
-      &:hover {
-        background-color: $buttonDarkHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonDarkHoverColor;
+        }
       }
     }
     &.light {
       background-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        background-color: $buttonLightHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonLightHoverColor;
+        }
       }
     }
   }
@@ -214,20 +247,24 @@
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonPrimaryColor;
-        border-color: $buttonPrimaryColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonPrimaryColor;
+          border-color: $buttonPrimaryColor;
+        }
       }
     }
     &.secondary {
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonSecondaryColor;
-        border-color: $buttonSecondaryColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonSecondaryColor;
+          border-color: $buttonSecondaryColor;
+        }
       }
     }
 
@@ -235,40 +272,48 @@
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonSuccessColor;
-        border-color: $buttonSuccessColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonSuccessColor;
+          border-color: $buttonSuccessColor;
+        }
       }
     }
     &.info {
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonInfoColor;
-        border-color: $buttonInfoColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonInfoColor;
+          border-color: $buttonInfoColor;
+        }
       }
     }
     &.warning {
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonWarningColor;
-        border-color: $buttonWarningColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonWarningColor;
+          border-color: $buttonWarningColor;
+        }
       }
     }
     &.danger {
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonDangerColor;
-        border-color: $buttonDangerColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonDangerColor;
+          border-color: $buttonDangerColor;
+        }
       }
     }
 
@@ -276,18 +321,22 @@
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        color: $buttonBasicTypeTextColor;
-        background-color: $buttonDarkColor;
-        border-color: $buttonDarkColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonBasicTypeTextColor;
+          background-color: $buttonDarkColor;
+          border-color: $buttonDarkColor;
+        }
       }
     }
     &.light {
       border-color: $buttonLightColor;
       color: $buttonLightTextColor;
 
-      &:hover {
-        border-color: $buttonLightHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          border-color: $buttonLightHoverColor;
+        }
       }
     }
   }
@@ -298,8 +347,10 @@
       color: $buttonPrimaryColor;
       border: 1px solid rgba($buttonPrimaryColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonPrimaryHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonPrimaryHoverColor, 0.1);
+        }
       }
     }
     &.secondary {
@@ -307,8 +358,10 @@
       color: $buttonSecondaryColor;
       border: 1px solid rgba($buttonSecondaryColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonSecondaryHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonSecondaryHoverColor, 0.1);
+        }
       }
     }
 
@@ -317,8 +370,10 @@
       color: $buttonSuccessColor;
       border: 1px solid rgba($buttonSuccessColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonSuccessHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonSuccessHoverColor, 0.1);
+        }
       }
     }
     &.info {
@@ -326,8 +381,10 @@
       color: $buttonInfoColor;
       border: 1px solid rgba($buttonInfoColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonInfoHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonInfoHoverColor, 0.1);
+        }
       }
     }
     &.warning {
@@ -335,8 +392,10 @@
       color: $buttonWarningColor;
       border: 1px solid rgba($buttonWarningColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonWarningHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonWarningHoverColor, 0.1);
+        }
       }
     }
     &.danger {
@@ -344,8 +403,10 @@
       color: $buttonDangerColor;
       border: 1px solid rgba($buttonDangerColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonDangerHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonDangerHoverColor, 0.1);
+        }
       }
     }
 
@@ -354,8 +415,10 @@
       color: $buttonDarkColor;
       border: 1px solid rgba($buttonDarkColor, 0.4);
 
-      &:hover {
-        background-color: rgba($buttonDarkHoverColor, 0.1);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: rgba($buttonDarkHoverColor, 0.1);
+        }
       }
     }
     &.light {
@@ -363,8 +426,10 @@
       color: $buttonLightTextColor;
       border: 1px solid rgba($buttonLightTextColor, 0.4);
 
-      &:hover {
-        background-color: $buttonLightHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          background-color: $buttonLightHoverColor;
+        }
       }
     }
   }
@@ -375,59 +440,75 @@
     &.primary {
       color: $buttonPrimaryColor;
 
-      &:hover {
-        color: $buttonPrimaryHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonPrimaryHoverColor;
+        }
       }
     }
     &.secondary {
       color: $buttonSecondaryColor;
 
-      &:hover {
-        color: $buttonSecondaryHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonSecondaryHoverColor;
+        }
       }
     }
 
     &.success {
       color: $buttonSuccessColor;
 
-      &:hover {
-        color: $buttonSuccessHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonSuccessHoverColor;
+        }
       }
     }
     &.info {
       color: $buttonInfoColor;
 
-      &:hover {
-        color: $buttonInfoHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonInfoHoverColor;
+        }
       }
     }
     &.warning {
       color: $buttonWarningColor;
 
-      &:hover {
-        color: $buttonWarningHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonWarningHoverColor;
+        }
       }
     }
     &.danger {
       color: $buttonDangerColor;
 
-      &:hover {
-        color: $buttonDangerHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonDangerHoverColor;
+        }
       }
     }
 
     &.dark {
       color: $buttonDarkColor;
 
-      &:hover {
-        color: $buttonDarkHoverColor;
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: $buttonDarkHoverColor;
+        }
       }
     }
     &.light {
       color: rgba($buttonLightTextColor, 0.5);
 
-      &:hover {
-        color: rgba($buttonLightTextColor, 0.3);
+      @include media-breakpoint-up(md) {
+        &:hover {
+          color: rgba($buttonLightTextColor, 0.3);
+        }
       }
     }
   }
@@ -446,6 +527,10 @@
       font-size: 20px;
       position: relative;
       margin-bottom: 1px;
+
+      @include media-breakpoint-down(md) {
+        margin-bottom: 0;
+      }
     }
   }
   &.with-small-icon {
@@ -490,9 +575,18 @@
     display: inline-block;
     vertical-align: middle;
 
+    @include media-breakpoint-down(md) {
+      margin-right: 3px;
+    }
+
     & + span {
       margin-top: 2px;
       display: inline-block;
+      vertical-align: middle;
+
+      @include media-breakpoint-down(md) {
+        margin-top: 4px;
+      }
     }
   }
   .right-icon {

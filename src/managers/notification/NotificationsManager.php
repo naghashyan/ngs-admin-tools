@@ -51,16 +51,20 @@ class NotificationsManager extends AbstractManager {
      * @param string $title
      * @param string $content
      * @param bool $withProgress
+     * @param int|null $jobId
+     * @param string $type
      *
      * @return NotificationDto|null
      */
-    public function createNotification(int $userId, string $title, string $content, bool $withProgress = false) :?NotificationDto
+    public function createNotification(int $userId, string $title, string $content, bool $withProgress = false, ?int $jobId = null, string $type = 'system') :?NotificationDto
     {
         $mapper = $this->getMapper();
         $notificationDto = $mapper->createDto();
 
         $notificationDto->setUserId($userId);
         $notificationDto->setTitle($title);
+        $notificationDto->setJobId($jobId);
+        $notificationDto->setType($type);
         $notificationDto->setContent($content);
         $notificationDto->setWithProgress($withProgress ? 1 : 0);
         $notificationDto->setRead(0);
@@ -77,6 +81,34 @@ class NotificationsManager extends AbstractManager {
         catch (\Exception $exp) {
             return null;
         }
+    }
+
+
+    /**
+     * returns count of notification by job id
+     *
+     * @param int $jobId
+     * @return int
+     */
+    public function getJobNotificationsCount(int $jobId) :int
+    {
+        $mapper = $this->getMapper();
+        return $mapper->getJobNotificationsCount($jobId);
+    }
+
+
+    /**
+     * @param string $title
+     * @param string $content
+     * @param float $progress
+     * @param int $jobId
+     *
+     * @return int|null
+     */
+    public function updateJobNotifications(string $title, string $content, float $progress, int $jobId) :?int
+    {
+        $mapper = $this->getMapper();
+        return $mapper->updateJobNotifications($title, $content, $progress, $jobId);
     }
 
 
@@ -166,6 +198,9 @@ class NotificationsManager extends AbstractManager {
      */
     public function markUserNotificationAsRead(int $userId, int $notificationId) :bool
     {
+        if($notificationId === -1) {
+            return $this->getMapper()->markUserNotificationsAsRead($userId);
+        }
         return $this->getMapper()->markUserNotificationAsRead($userId, $notificationId);
     }
 

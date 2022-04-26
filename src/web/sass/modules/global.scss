@@ -76,6 +76,12 @@ template {
   display: none;
 }
 
+@include media-breakpoint-down(md) {
+  body {
+    @include glob-map-get-sectionColors(bgweb2);
+  }
+}
+
 
 /*--------------------------------*/
 
@@ -83,8 +89,11 @@ template {
   display: flex;
   flex-flow: column;
   height: 100%;
+  padding-bottom: 12px;
 
-  @include glob-map-get-fluid(padding-bottom, 12, 10, 5, 5);
+  @include media-breakpoint-down(lg) {
+    padding-bottom: 5px
+  }
 
   .main-load-container {
     height: 100%;
@@ -111,38 +120,51 @@ template {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: $zindex-tooltip;
+
+  svg {
+    width: 80px;
+    height: 80px;
+
+    circle {
+      stroke: $primaryColor;
+    }
+  }
 }
 
+/*---------------------*/
 
+@include media-breakpoint-up(lg) {
+  .vertical-tabs-content {
+    border-style: solid !important;
+    border-image: linear-gradient( to top, #b5b2b226, #bfbdbd ) 0 0 1;
 
+    &.col-12 {
+      padding: 0;
+    }
+  }
+}
 
+/*---------------------*/
 
+.button{
+  &.addItemBtn {
+    white-space: nowrap;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-left: 6px;
 
+    @include media-breakpoint-down(md) {
+      padding: 0;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      .left-icon {
+        & + span {
+          display: none;
+        }
+      }
+      i {
+        margin-right: 0;
+      }
+    }
+  }
+}
 

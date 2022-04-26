@@ -183,7 +183,8 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             $selectCondition = $this->getTableName() . ".id, " . $this->getTableName() . ".name as value" . $additionalSelect;
         }
         $sqlQuery = sprintf($sql, $selectCondition, $creatorAndUpdaterSelects, $this->getTableName(),
-            $joinCondition, $paramsBin->getWhereCondition(), $sortBySql);
+            $joinCondition, $this->getWhereCondition($paramsBin), $sortBySql);
+
         if(!$forSelect) {
             $res = $this->fetchRows($sqlQuery, $bindArray);
             return $res;
@@ -237,7 +238,7 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     public function deleteByParams(NgsCmsParamsBin $paramsBin)
     {
         try {
-            $sqlQuery = sprintf($this->DELETE_BY_PARAMS, $this->getTableName(), $paramsBin->getWhereCondition());
+            $sqlQuery = sprintf($this->DELETE_BY_PARAMS, $this->getTableName(), $this->getWhereCondition($paramsBin));
             $res = $this->executeUpdate($sqlQuery, []);
             if (is_numeric($res)) {
                 return true;
@@ -253,15 +254,31 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
      * @var string
      */
     private $DELETE_BY_FIELD = 'DELETE FROM %s WHERE `%s` = :fieldValue';
+    /**
+     * @var string
+     */
+    private $DELETE_BY_FIELD_EXPECT_IDS = 'DELETE FROM %s WHERE `%s` = :fieldValue AND %s.id NOT IN %s';
 
-    public function deleteByField($fieldName, $fieldValue)
+    public function deleteByField($fieldName, $fieldValue, ?array $expectIds = [])
     {
         try {
-            $sqlQuery = sprintf($this->DELETE_BY_FIELD, $this->getTableName(), $fieldName);
-            $res = $this->executeUpdate($sqlQuery, ['fieldValue' => $fieldValue]);
-            if (is_numeric($res)) {
-                return true;
+            if(!$expectIds) {
+                $sqlQuery = sprintf($this->DELETE_BY_FIELD, $this->getTableName(), $fieldName);
+                $res = $this->executeUpdate($sqlQuery, ['fieldValue' => $fieldValue]);
+                if (is_numeric($res)) {
+                    return true;
+                }
             }
+            else {
+                $notInCondition = '(' . implode(",", $expectIds) . ')';
+                $tableName = $this->getTableName();
+                $sqlQuery = sprintf($this->DELETE_BY_FIELD_EXPECT_IDS, $tableName, $fieldName, $tableName, $notInCondition);
+                $res = $this->executeUpdate($sqlQuery, ['fieldValue' => $fieldValue]);
+                if (is_numeric($res)) {
+                    return true;
+                }
+            }
+
             return false;
         } catch (\Exception $exp) {
             return false;
@@ -329,7 +346,7 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     public function getItemsCount(NgsCmsParamsBin $paramsBin): int
     {
         $sqlQuery = sprintf($this->GET_COUNT, $this->getTableName(),
-            $paramsBin->getJoinCondition(), $paramsBin->getWhereCondition());
+            $paramsBin->getJoinCondition(), $this->getWhereCondition($paramsBin));
         return $this->fetchField($sqlQuery, 'count', []);
     }
 
@@ -382,8 +399,6 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
                 $sql .= ' LIMIT ' . $offset . ', ' . $limit;
             }
             $items = $this->fetchRows($sql, []);
-
-
             if(!$items) {
                 return [];
             }
@@ -441,4 +456,15 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
         return $this->logger;
     }
 
+
+    /**
+     * can modify bin params before generating where condition
+     * 
+     * @param NgsCmsParamsBin $paramsBin
+     * 
+     * @return string
+     */
+    protected function getWhereCondition(NgsCmsParamsBin $paramsBin) :string {
+        return $paramsBin->getWhereCondition();
+    }
 }

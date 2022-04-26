@@ -9,15 +9,12 @@
 // mixin used classes
 // Here are the styles for mixin used classes styles.
 
-
-
-.ilyov_validate {
+.ngs_validate {
   color: $dangerColor !important;
   margin-top: 5px;
   font-size: 11px;
   width: 100%;
 }
-
 
 /*-------------Text-colors--------------*/
 // classes - text-primary, text-secondary, text-success, text-info, text-warning, text-danger, text-light
@@ -130,20 +127,6 @@ a.text-light:hover, a.text-light:focus {
 .is_hidden {
   display: none !important;
 }
-
-//todo: need to check
-.main-overlay-for-all-purposes {
-  background-color: #000000;
-  opacity: 0.7;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  z-index: 99000;
-}
-
-
 .is_visibility-hidden {
   visibility: hidden;
 }

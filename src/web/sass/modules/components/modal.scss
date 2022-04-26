@@ -43,6 +43,7 @@
       max-width: 870px;
       margin: 100px auto 80px;
       border-radius: 8px;
+      width: 95%;
 
       @include glob-map-get-sectionColors(bgweb);
 
@@ -206,5 +207,14 @@
   }
   .popup-buttons {
     margin-top: 20px;
+
+    &.buttons-right-aligned {
+      justify-content: right;
+      display: flex;
+
+      button {
+        margin-left: 10px;
+      }
+    }
   }
 }

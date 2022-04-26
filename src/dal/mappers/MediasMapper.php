@@ -89,6 +89,70 @@ class MediasMapper extends AbstractCmsMapper
         return $this->fetchRows($sqlQuery, ['itemId' => $itemId, 'itemType' => $itemType]);
     }
 
+    private $GET_ITEM_MAIN_IMAGE = "SELECT * FROM %s WHERE `object_key` = :itemId AND `object_type` = :itemType AND `type` = 'image' AND is_main=1 LIMIT 1";
+    private $GET_ITEM_IMAGE = "SELECT * FROM %s WHERE `object_key` = :itemId AND `object_type` = :itemType AND `type` = 'image' LIMIT 1";
+
+    /**
+     * @param $itemId
+     * @param $itemType
+     * @return \ngs\dal\dto\AbstractDto[]
+     */
+    public function getItemImage($itemId, $itemType) {
+        $sqlQuery = sprintf($this->GET_ITEM_MAIN_IMAGE, $this->getTableName());
+
+        $image = $this->fetchRow($sqlQuery, ['itemId' => $itemId, 'itemType' => $itemType]);
+        if($image) {
+            return $image;
+        }
+
+        $sqlQuery = sprintf($this->GET_ITEM_IMAGE, $this->getTableName());
+        return $this->fetchRow($sqlQuery, ['itemId' => $itemId, 'itemType' => $itemType]);
+    }
+
+
+    private $GET_ITEMS_MAIN_IMAGE = "SELECT * FROM %s WHERE `object_key` IN %s AND `object_type` = :itemType AND `type` = 'image' AND is_main=1 GROUP BY object_key";
+    private $GET_ITEMS_IMAGE = "SELECT * FROM %s WHERE `object_key` IN %s AND `object_type` = :itemType AND `type` = 'image' GROUP BY object_key";
+
+    /**
+     * @param array $itemIds
+     * @param string $itemType
+     * @return \ngs\dal\dto\AbstractDto[]
+     */
+    public function getItemsImage(array $itemIds, string $itemType) {
+        if(!$itemIds) {
+            return [];
+        }
+        $inCondition = '('. implode(",", $itemIds) . ')';
+        $sqlQuery = sprintf($this->GET_ITEMS_MAIN_IMAGE, $this->getTableName(), $inCondition);
+        /** @var MediasDto[] $images */
+        $images = $this->fetchRows($sqlQuery, ['itemType' => $itemType]);
+
+        $leftItemIds = [];
+        $foundIds = [];
+        foreach($images as $image) {
+            if(!in_array((int) $image->getObjectKey(), $foundIds)) {
+                $foundIds[] = $image->getObjectKey();
+            }
+        }
+        foreach($itemIds as $itemId) {
+            if(!in_array($itemId, $foundIds) && !in_array($itemId, $leftItemIds)) {
+                $leftItemIds[] = $itemId;
+            }
+        }
+        if(!$leftItemIds) {
+            return $images;
+        }
+
+        $inCondition = '('. implode(",", $leftItemIds) . ')';
+        $sqlQuery = sprintf($this->GET_ITEMS_IMAGE, $this->getTableName(), $inCondition);
+        $leftImages = $this->fetchRows($sqlQuery, ['itemType' => $itemType]);
+        foreach($leftImages as $leftImage) {
+            $images[] = $leftImage;
+        }
+
+        return $images;
+    }
+
 
     private $GET_MEDIA_BY_KEY_OBJECT_TYPE_AND_MEDIA_TYPE = "SELECT `id` FROM %s WHERE `object_key` = :objectKey AND `object_type` = :objectType AND `type` = :mediaType";
 
@@ -128,6 +192,14 @@ class MediasMapper extends AbstractCmsMapper
         return $this->fetchRow($sqlQuery, ['itemId' => $objectKey, 'itemType' => $objectType, 'fileName' => $mediaName]);
     }
 
+    private $ITEM_IMAGES_COUNT = "SELECT COUNT(*) AS count FROM %s WHERE `object_key` = :itemId AND `object_type` = :itemType";
+
+    public function itemHasImage(int $objectKey, string $objectType) {
+        $sqlQuery = sprintf($this->ITEM_IMAGES_COUNT, $this->getTableName());
+        $count = $this->fetchField($sqlQuery, 'count', ['itemId' => $objectKey, 'itemType' => $objectType]);
+        return !!$count;
+    }
+
 
     /**
      * set all rows of current item to isMain=null
@@ -139,27 +211,4 @@ class MediasMapper extends AbstractCmsMapper
         $query = sprintf('UPDATE %s SET `is_main` = NULL WHERE `object_type` = :objectType AND `object_key` = :objectKey AND `is_main` = 1', $this->getTableName());
         $this->fetchRows($query, ['objectType' => $tableName, 'objectKey' => $itemId]);
     }
-
-
-    private $GET_ITEM_MAIN_IMAGE = "SELECT * FROM %s WHERE `object_key` = :objectId AND `object_type` = :objectType AND `is_main` = 1";
-
-    /**
-     * @param $objectId
-     * @param $objectType
-     * @return MediasDto|null
-     */
-    public function getMainImage($objectId, $objectType) {
-        try {
-            $query = sprintf($this->GET_ITEM_MAIN_IMAGE, $this->getTableName());
-            return $this->fetchRow($query, ['objectId' => $objectId, 'objectType' => $objectType]);
-        }
-        catch(\Exception $exp) {
-            $this->getLogger()->error('failed to get main media: ' . $exp->getMessage());
-            return null;
-        }
-
-    }
-
-
-
 }

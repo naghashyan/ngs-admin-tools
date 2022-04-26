@@ -10,7 +10,7 @@
 // for changes use subject.json
 
 $iconmoon-font-path: $NGS_MODULE_PATH+"/fonts/iconmoon/fonts/" !default;
-$iconmoon-font-prop: "mky5db";
+$iconmoon-font-prop: "rf8j8g";
 
 @font-face {
   font-family: 'icomoon';
@@ -39,6 +39,9 @@ $iconmoon-font-prop: "mky5db";
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-search:before {
+  content: "\e90a";
+}
 .icon-arrows-up-down-feel:before {
   content: "\ea27";
 }

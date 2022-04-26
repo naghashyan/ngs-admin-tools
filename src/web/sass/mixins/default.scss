@@ -91,7 +91,7 @@ body {
 	.morelink													{ @each $prop, $value in $morelinkTablet { #{$prop}: $value; } }
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
 
 	body 														{ @each $prop, $value in map-get($fontSizesMobile, "default") { #{$prop}: $value; } }
 
@@ -115,37 +115,6 @@ body {
 
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

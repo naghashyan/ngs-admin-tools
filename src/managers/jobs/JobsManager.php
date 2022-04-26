@@ -17,9 +17,14 @@ namespace ngs\AdminTools\managers\jobs;
 use ngs\AdminTools\dal\dto\job\JobDto;
 use ngs\AdminTools\dal\mappers\job\JobMapper;
 use ngs\AdminTools\exceptions\NgsJobException;
+use ngs\AdminTools\event\structure\JobFailedEventStructure;
+use ngs\AdminTools\event\structure\JobFinishedEventStructure;
+use ngs\AdminTools\event\structure\JobStartedEventStructure;
+use ngs\AdminTools\event\structure\JobOnProgressEventStructure;
 use ngs\AdminTools\managers\executors\AbstractJobExecutor;
 use ngs\AdminTools\managers\notification\NotificationsManager;
 use ngs\AbstractManager;
+use ngs\event\EventManager;
 
 class JobsManager extends AbstractManager {
 
@@ -28,6 +33,12 @@ class JobsManager extends AbstractManager {
     const FINISHED_STATUS = 'finished';
 
     private static ?JobsManager $instance = null;
+    private EventManager $eventManager;
+
+
+    public function __construct() {
+        $this->eventManager = EventManager::getInstance();
+    }
 
     /**
      * Returns an singleton instance of this class
@@ -141,7 +152,6 @@ class JobsManager extends AbstractManager {
         if($job->getStatus() !== self::TO_EXECUTE_STATUS) {
             throw new NgsJobException('job should be in to_execute state');
         }
-
         $executor = $job->getExecutor();
         if(!$executor) {
             throw new NgsJobException('executor is not set');
@@ -171,7 +181,6 @@ class JobsManager extends AbstractManager {
             if(!$updateStatusResult) {
                 throw new NgsJobException('something went wrong');
             }
-
             if($executorObject->isAsync()) {
                 $this->runJobAsync($job->getId());
             }
@@ -188,7 +197,7 @@ class JobsManager extends AbstractManager {
             }
 
         }
-        catch(\Exception $exp) {
+        catch(\Throwable $exp) {
             throw new NgsJobException($exp->getMessage());
         }
     }
@@ -240,18 +249,16 @@ class JobsManager extends AbstractManager {
         $notificationManager = NotificationsManager::getInstance();
         $notification = null;
 
-        if($executorObject->isNotifiable() && $job->getUserId()) {
-            $notification = $notificationManager->createNotification($job->getUserId(), $executorObject->getJobName(), "processing...", true);
-        }
+        $jobStartedEvent = new JobStartedEventStructure(['async' => true, 'job_params' => $params], $job, $executorObject->getJobName());
+        $this->eventManager->dispatch($jobStartedEvent);
 
-        $result = $executorObject->runJob(function(int $progress) use ($job, $mapper, $notification, $notificationManager) {
+        $result = $executorObject->runJob(function(int $progress) use ($job, $mapper, $params, $executorObject) {
             $job->setProgress($progress);
             $mapper->updateByPK($job);
-            if($notification) {
-                $notificationManager->updateNotification($notification->getId(), $progress);
-            }
+            
+            $jobOnProgressEvent = new JobOnProgressEventStructure(['job_params' => $params], $job, $executorObject->getJobName(), $progress);
+            $this->eventManager->dispatch($jobOnProgressEvent);
         });
-
 
         try {
             $job->setStatus(self::FINISHED_STATUS);
@@ -259,15 +266,24 @@ class JobsManager extends AbstractManager {
             $job->setProgress(100);
             $updateStatusResult = $mapper->updateByPK($job);
 
-            if($notification) {
-                $resultMessage = $executorObject->getResultMessage();
-                $notificationManager->updateNotification($notification->getId(), 100, $resultMessage);
-            }
+            $jobOnProgressEvent = new JobOnProgressEventStructure(['job_params' => $params], $job, $executorObject->getJobName(), 100);
+            $this->eventManager->dispatch($jobOnProgressEvent);
+
+            $resultMessage = $executorObject->getResultMessage();
+            $jobFinishedEvent = new JobFinishedEventStructure(['job_params' => $params], $job, $executorObject->getJobName(), $resultMessage);
+            $this->eventManager->dispatch($jobFinishedEvent);
         }
         catch (\Exception $exp) {
-            if($notification) {
-                $notificationManager->updateNotification($notification->getId(), 100, $exp->getMessage());
-            }
+            $job->setStatus(self::FINISHED_STATUS);
+            $job->setResult(json_encode(['success' => false, 'message' => $exp->getMessage()]));
+            $job->setProgress(100);
+            $updateStatusResult = $mapper->updateByPK($job);
+
+            $jobOnProgressEvent = new JobOnProgressEventStructure(['job_params' => $params], $job, $executorObject->getJobName(), 100);
+            $this->eventManager->dispatch($jobOnProgressEvent);
+
+            $jobFailedEvent = new JobFailedEventStructure(['job_params' => $params], $job, $executorObject->getJobName(), $exp->getMessage());
+            $this->eventManager->dispatch($jobFailedEvent);
             throw new NgsJobException($exp->getMessage());
         }
     }
@@ -290,7 +306,8 @@ class JobsManager extends AbstractManager {
         $os = substr(php_uname(), 0, 7);
         $backgroundExecutor = 'php ' .  __DIR__ . '/../../bin/run_job_in_background.php -job_id=' . $jobId . ' -env=' . NGS()->getEnvironment();
         if ($os == "Windows"){
-            pclose(popen("start /B ". $backgroundExecutor, "r"));
+            $resource = popen("start /B ". $backgroundExecutor, "r");
+            pclose($resource);
         }
         else {
             exec($backgroundExecutor . " > /dev/null &");

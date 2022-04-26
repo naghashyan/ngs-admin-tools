@@ -14,7 +14,7 @@
 					{/foreach}
 				</select>
 			</div>
-			<span> items | {$ns.itemsCount} items</span>
+			<span class="items-count"> items | <span class="items-count-main">{$ns.itemsCount} items</span></span>
 		</div>
 	</div>
 	<div class="pagination-box">

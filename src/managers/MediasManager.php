@@ -28,10 +28,21 @@ class MediasManager extends AbstractCmsManager
         ]
     ];
 
+    public const SMALL_THUMB = 'small';
+    public const MEDIUM_THUMB = 'medium';
+    public const BIG_THUMB = 'big';
+
+    public const CONTENT_TYPES = [
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'pdf' => 'application/pdf'
+    ];
+
     private $thumbOptions = [
-        'small' => [150, 150],
-        'medium' => [500, 500],
-        'big' => [800, 800]
+        self::SMALL_THUMB => [150, 150],
+        self::MEDIUM_THUMB => [500, 500],
+        self::BIG_THUMB => [800, 800]
     ];
 
 
@@ -159,7 +170,7 @@ class MediasManager extends AbstractCmsManager
      */
     public function getMainImage($objectId, $objectType) {
         $mapper = $this->getMapper();
-        $item = $mapper->getMainImage($objectId, $objectType);
+        $item = $mapper->getItemImage($objectId, $objectType);
         return $item;
     }
 
@@ -174,6 +185,20 @@ class MediasManager extends AbstractCmsManager
     public function itemHasMedia(int $objectKey, string $objectType, string $mediaName) {
         $mapper = $this->getMapper();
         $media = $mapper->getItemMediaByName($objectKey, $objectType, $mediaName);
+        return !!$media;
+    }
+
+
+    /**
+     * returns true if media for this object with given name exists
+     * @param int $objectKey
+     * @param string $objectType
+     * @param string $mediaName
+     * @return bool
+     */
+    public function itemHasImage(int $objectKey, string $objectType) {
+        $mapper = $this->getMapper();
+        $media = $mapper->itemHasImage($objectKey, $objectType);
         return !!$media;
     }
 
@@ -202,8 +227,12 @@ class MediasManager extends AbstractCmsManager
             'original_name' => $fileName,
             'description' => $description
         ];
-
+        /** @var MediasDto $dto */
         $dto = $this->createItem($params);
+        $path = $this->defineFolder($dto->getId(), '');
+        $dto->setFilePath(str_replace(NGS()->get('MEDIA_STORE_DIR') . '/', '', $path) . '/' . $dto->getId() . '.' . $dto->getExtension());
+        $this->updateItemByPk($dto);
+
         return $dto->getId();
     }
 
@@ -229,6 +258,7 @@ class MediasManager extends AbstractCmsManager
         $newMediaDto->setObjectKey($newItemId);
         $mapper = $this->getMapper();
         $newMediaId = $mapper->insertDto($newMediaDto);
+        $newMediaDto->setId($newMediaId);
         if(!$newMediaId) {
             return false;
         }
@@ -237,7 +267,15 @@ class MediasManager extends AbstractCmsManager
         $imageExtension = $mediaDto->getExtension();
         $fileType = $this->getTypeByExtension($imageExtension);
         $subFolder = $fileType === 'image' ? 'images' : 'files';
-        $filePath = $this->defineFolder($mediaId, $subFolder) . '/' . $mediaId . '.' . $imageExtension;
+        $filePath = $this->defineFolder($mediaId, $subFolder);
+        if(!$filePath) {
+            return false;
+        }
+        $filePath .=  '/' . $mediaId . '.' . $imageExtension;
+
+        $newMediaDto->setFilePath(str_replace(NGS()->get('MEDIA_STORE_DIR') . '/', '', $filePath));
+        $mapper->updateByPK($newMediaDto);
+
         $destPath = $this->defineFolder($newMediaId, $subFolder) . '/' . $newMediaId . '.' . $imageExtension;
         if(file_exists($filePath)) {
             $copied = copy($filePath, $destPath);
@@ -314,20 +352,16 @@ class MediasManager extends AbstractCmsManager
         $images = $this->getItemImages($itemId, $itemType);
         $result = [];
         foreach($images as $index => $image) {
-            $folder = $image->getId() % NGS()->getDefinedValue('FOLDERS_COUNT_DELIMITER');
-            $result[$index]['url']['original'] = NGS()->getDefinedValue('MY_HOST') . '/streamer/' . $image->getType() . 's/' .$image->getObjectType() .'/'. $image->getId();
-            if(file_exists(NGS()->getDataDir() . '/' . $image->getType() . 's/thumbs/small/' . $folder .'/'. $image->getId() . '.' .$image->getExtension())){
-                $result[$index]['url']['small'] = NGS()->getDefinedValue('MY_HOST') . '/streamer/' . $image->getType() . 's/' .$image->getObjectType() .'/'. $image->getId() . '?thumb=small';
-            }
-            if(file_exists(NGS()->getDataDir() . '/' . $image->getType() . 's/thumbs/medium/' . $folder .'/'. $image->getId() . '.' .$image->getExtension())){
-                $result[$index]['url']['medium'] = NGS()->getDefinedValue('MY_HOST') . '/streamer/' . $image->getType() . 's/' .$image->getObjectType() .'/'. $image->getId() . '?thumb=medium';
-            }
-            if(file_exists(NGS()->getDataDir() . '/' . $image->getType() . 's/thumbs/big/' . $folder .'/'. $image->getId() . '.' .$image->getExtension())){
-                $result[$index]['url']['big'] = NGS()->getDefinedValue('MY_HOST') . '/streamer/' . $image->getType() . 's/' .$image->getObjectType() .'/'. $image->getId() . '?thumb=big';
+            $result[$index]['url']['original'] = $image->getUrl();
+            foreach($this->thumbOptions as $type => $options) {
+                $thumbUrl = $image->getUrl($type, false);
+                if($thumbUrl) {
+                    $result[$index]['url'][$type] = $thumbUrl;
+                }
             }
 
             $result[$index]['description'] = $image->getDescription();
-
+            $result[$index]['id'] = $image->getId();
             if($image->getIsMain()) {
                 $result[$index]['isMain'] = true;
             }
@@ -354,15 +388,85 @@ class MediasManager extends AbstractCmsManager
     }
 
 
+    /**
+     * returns items images
+     *
+     * @param int $itemId
+     * @param string $itemType
+     * @return MediasDto[]
+     */
+    public function getItemsImage(array $itemIds, string $itemType) :array
+    {
+        $mapper = $this->getMapper();
+        /** @var MediasDto[] $images */
+        $images = $mapper->getItemsImage($itemIds, $itemType);
+        return $images;
+    }
+
+    /**
+     * returns items image
+     *
+     * @param int $itemId
+     * @param string $itemType
+     * @param string|null $thumbType
+     * @return string|null
+     */
+    public function getItemImageUrl(int $itemId, string $itemType, ?string $thumbType = null) :string
+    {
+        $mapper = $this->getMapper();
+        /** @var MediasDto $image */
+        $image = $mapper->getItemImage($itemId, $itemType);
+        if($image) {
+            return $image->getUrl($thumbType);
+        }
+        
+        return $this->getDefaultImage($itemType);
+    }
+
+
+    /**
+     * returns items image
+     *
+     * @param int $itemId
+     * @param string $itemType
+     * @param string|null $thumbType
+     * @return MediasDto|null
+     */
+    public function getItemImage(int $itemId, string $itemType) :?MediasDto
+    {
+        $mapper = $this->getMapper();
+        /** @var MediasDto $image */
+        $image = $mapper->getItemImage($itemId, $itemType);
+        return $image;
+    }
+
+
+    /**
+     * returns default image by type, if not exists returns default.jpg
+     *
+     * @param string $type
+     * @return string
+     */
+    public function getDefaultImage(string $type) {
+        $fullPath = NGS()->get('MEDIA_STORE_DIR') . '/' . $type . '_default.jpg';
+        if(file_exists($fullPath)) {
+            return NGS()->get('MEDIA_STREAM_URL') . '/' . $type . '_default.jpg';
+        }
+
+        return NGS()->get('MEDIA_STREAM_URL') . '/' . 'default.jpg';
+    }
+
+
     public function getItemAttachedFilesProperties($itemId, $itemType){
         $mapper = $this->getMapper();
+        /** @var MediasDto[] $files */
         $files = $mapper->getItemAttachedFiles($itemId, $itemType);
         $result = [];
         foreach($files as $index => $file) {
             $result[$index]['id'] = $file->getId();
             $result[$index]['name'] = $file->getOriginalName();
             $result[$index]['description'] = $file->getDescription();
-            $result[$index]['url'] = NGS()->getDefinedValue('MY_HOST') . '/streamer/' . $file->getType() . 's/' .$file->getObjectType() .'/'. $file->getId();
+            $result[$index]['url'] = $file->getUrl();
         }
         return $result;
     }
@@ -380,15 +484,14 @@ class MediasManager extends AbstractCmsManager
     public function getImageUrlByObjectKeyAndObjectType($id, $type):string {
         $mapper = $this->getMapper();
         if(empty($mapper->getItemImages($id, $type))){
-            return '';
+            return $this->getDefaultImage($type);
         }
-        $image = $mapper->getItemImages($id, $type)[0];
-        $id = $image->getId();
-
-        if(!$id || !$type) {
-            return '';
+        /** @var MediasDto[] $images */
+        $images = $mapper->getItemImages($id, $type);
+        if(!$images) {
+            return $this->getDefaultImage($type);
         }
-        return NGS()->getDefinedValue('MY_HOST') . '/streamer/images/' . $type . '/' . $id;
+        return $images[0]->getUrl();
     }
 
 
@@ -400,27 +503,44 @@ class MediasManager extends AbstractCmsManager
      * @param null $thumbFolder
      * @return string
      */
-    private function defineFolder($num, $baseFolder = 'images', $thumbFolder = null)
+    private function defineFolder($mediaId, $baseFolder = 'images', $thumbFolder = null)
     {
-        $folderName = $num % NGS()->getDefinedValue('FOLDERS_COUNT_DELIMITER');
+        $rootDir = NGS()->get('MEDIA_STORE_DIR');
+        if(!is_dir($rootDir)) {
+            return null;
+        }
         if($thumbFolder) {
-            if(!is_dir(NGS()->getDataDir('admin') . '/' .$baseFolder . '/thumbs')) {
-                mkdir(NGS()->getDataDir('admin') . '/' .$baseFolder . '/thumbs');
-            }
-            if(!is_dir(NGS()->getDataDir('admin') . '/' .$baseFolder . '/thumbs/' . $thumbFolder)) {
-                mkdir(NGS()->getDataDir('admin') . '/' .$baseFolder . '/thumbs/' . $thumbFolder);
-            }
-            $folderName = 'thumbs/' . $thumbFolder . '/' . $folderName;
+            $rootDir .= '/' . $thumbFolder;
+        }
+        if(!is_dir($rootDir)) {
+            mkdir($rootDir);
+        }
+        
+        $filePath = $rootDir;
+
+        $folderLevel1 = NGS()->get('FOLDERS_COUNT_DELIMITER_1');
+        $folderLevel2 = NGS()->get('FOLDERS_COUNT_DELIMITER_2');
+
+        if(!$folderLevel1) {
+            return $filePath;
         }
 
-        if(!is_dir(NGS()->getDataDir('admin') . '/' .$baseFolder)) {
-            mkdir(NGS()->getDataDir('admin') . '/' .$baseFolder);
-        }
-        if (!is_dir(NGS()->getDataDir('admin') . '/' .$baseFolder . '/' . $folderName)) {
-            mkdir(NGS()->getDataDir('admin') . '/' .$baseFolder . '/' . $folderName);
+        $filePath .= '/' . $mediaId % $folderLevel1;
+        if(!is_dir($filePath)) {
+            mkdir($filePath);
         }
 
-        return NGS()->getDataDir('admin') . '/' .$baseFolder . '/' . $folderName;
+        if(!$folderLevel2) {
+            return $filePath;
+        }
+
+        $filePath .= '/' . $mediaId % $folderLevel2;
+
+        if(!is_dir($filePath)) {
+            mkdir($filePath);
+        }
+
+        return $filePath;
     }
 
 
@@ -436,7 +556,7 @@ class MediasManager extends AbstractCmsManager
 
     private function createImageThumbnails($src, $id, $extension) {
         foreach($this->thumbOptions as $thumbName => $option) {
-            $folder = $this->defineFolder($id, 'images', $thumbName);       //todo: need to define file type, for example image and send 'images' to defineFolder
+            $folder = $this->defineFolder($id, 'images', $thumbName); //todo: need to define file type, for example image and send 'images' to defineFolder
             $destination = $folder . '/' . $id . '.' . $extension;
             $this->createImageThumbnail($src, $destination, $option[0], $option[1]);
             $this->removeFolder($folder); //we do this because maybe createImageThumbnail will return null, and the created folder will stay empty
@@ -543,8 +663,4 @@ class MediasManager extends AbstractCmsManager
             $this->removeFolder($folder);
         }
     }
-
-    //todo: till here
-
-
 }

@@ -157,7 +157,6 @@ textarea {
     max-width: 100%;
   }
 
-  /*      min-width: 1200px        */
   @include media-breakpoint-up(lg) {
     &.small-box {
       -ms-flex: 0 0 23%;
@@ -229,7 +228,7 @@ textarea {
         padding: 3px 7px;
         border-radius: 6px;
         color: #2d3748;
-        box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.14);
+        box-shadow: 0 3px 20px rgba(0, 0, 0, 0.14);
         transition: opacity 0.3s ease-in-out, left 0.2s;
         z-index: 150;
         pointer-events: none;

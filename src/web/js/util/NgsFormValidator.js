@@ -9,7 +9,7 @@ let NgsFormValidator = function (formElement, options) {
     }
     elem.addClass('invalid');
     elem.addClass('ngs');
-    elem.parentNode.insertAdjacentHTML('beforeend', "<div class='ilyov_validate'>" + msg + "</div>");
+    elem.parentNode.insertAdjacentHTML('beforeend', "<div class='ngs_validate'>" + msg + "</div>");
   };
 
   let hideError = function (elem) {
@@ -18,7 +18,7 @@ let NgsFormValidator = function (formElement, options) {
     }
     elem.removeClass('invalid');
     elem.addClass('ngs');
-    let errorElement = elem.parentNode.getElementsByClassName('ilyov_validate');
+    let errorElement = elem.parentNode.getElementsByClassName('ngs_validate');
     if(errorElement.length === 0){
       return;
     }

@@ -32,6 +32,10 @@ export default class AbstractAddUpdateAction extends AbstractAction {
   }
 
   initSuccessMessageShowing() {
+    if(this.args().warningMessage) {
+      DialogUtility.showWarningDialog('Warning', this.args().warningMessage, {actionResultShow: true, 'timeout' : 1500});
+      return;
+    }
     let successText = '';
     if(this.action) {
       successText = this.getSuccessMessage(this.args().tableName, this.action);

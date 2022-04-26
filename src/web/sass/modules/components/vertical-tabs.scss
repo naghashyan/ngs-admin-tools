@@ -37,8 +37,10 @@
         a {
           @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "default") { #{$prop}: $value; }
 
-          &:hover {
-            @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "hover") { #{$prop}: $value; }
+          @include media-breakpoint-up(md) {
+            &:hover {
+              @each $prop, $value in glob-map-deep-get($bgtype, "vertical-tabs", "item", "hover") { #{$prop}: $value; }
+            }
           }
           &.error,
           &.error:hover {
@@ -113,8 +115,105 @@
 }
 
 
+@include media-breakpoint-down(md) {
+  .v-tabs {
+    padding: 0;
+    overflow: auto;
+    white-space: nowrap;
+    background: transparent;
+    min-height: unset;
+    margin-bottom: 10px;
 
+    @include glob-hide-scrollbar();
 
+    .tab {
+      display: inline-block;
+      width: auto;
+      margin-right: 4px;
+
+      &:nth-last-child(2) {
+        margin-right: 20px;
+      }
+
+      &.col {
+        a {
+          padding: 5px 12px 5px;
+          border-radius: 4px;
+          border: 1px solid rgba($buttonLightTextColor, 0.15);
+          background-color: $buttonOutlineTypeBgColor;
+          color: $buttonLightTextColor;
+
+          &.security-active {
+            border: 0;
+          }
+          &.active {
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*------------------------*/
+
+.vertical-tabs {
+  padding: 21px 8px 15px;
+  border-radius: 6px;
+  margin: 0;
+
+  @include media-breakpoint-down(md) {
+    padding: 0;
+    margin-bottom: 24px;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 0;
+    box-shadow: 0 0 0;
+    font-size: 14px;
+  }
+
+  input {
+    border-style: solid;
+    border-width: 1px;
+    font-size: 14px;
+    height: 38px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  .vertical-tab-list-item {
+    display: flex;
+    flex-flow: column;
+
+    .vertical-tab-list-item-title {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0;
+      width: 100%;
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      .vertical-tab-list-item-name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .vertical-tab-list-item-actions {
+        display: flex;
+      }
+    }
+  }
+}
 
 
 

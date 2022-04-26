@@ -27,10 +27,20 @@ let PagingManager = {
             });
         });
         pagingBox.querySelectorAll(".f_go_to_page")[0].addEventListener('keyup', function (evt) {
-            if(evt.keyCode === 13){
+            evt.preventDefault();
+            if (evt.keyCode === 13) {
                 goTo(parseInt(evt.currentTarget.value));
             }
         });
+
+        pagingBox.querySelectorAll(".f_go_to_page")[0].addEventListener('keypress', function (evt) {
+            evt.preventDefault();
+            if (evt.keyCode === 13) {
+                goTo(parseInt(evt.currentTarget.value));
+            }
+        });
+
+
         pagingBox.querySelectorAll(".f_count_per_page")[0].addEventListener('change', function (evt) {
             goTo(1, parseInt(evt.currentTarget.value));
         });

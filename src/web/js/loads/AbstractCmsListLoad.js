@@ -142,6 +142,7 @@ export default class AbstractListLoad extends AbstractLoad {
         for (let i = 0; i < choicesElems.length; i++) {
             let choiceElem = choicesElems[i];
             if (choiceElem.choices) {
+                this.choices[choiceElem.id] = choiceElem.choices;
                 continue;
             }
             this.choices[choiceElem.id] = new Choices(choiceElem,
@@ -327,6 +328,23 @@ export default class AbstractListLoad extends AbstractLoad {
         if (totalSelectionInfo.totalSelection) {
             this.rowsListManager.changeAllCheckboxItems(true);
         }
+        if((totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.length) ||
+          (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.length)) {
+            for(let i=0; i<checkItemBtn.length; i++) {
+                let itemRow = checkItemBtn[i].closest(".f_table_row");
+                if(!itemRow) {
+                    continue;
+                }
+
+                if(totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.indexOf(itemRow.getAttribute("data-im-id")) !== -1) {
+                    checkItemBtn[i].checked = true;
+                }
+                else if(totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.indexOf(itemRow.getAttribute("data-im-id")) !== -1) {
+                    checkItemBtn[i].checked = false;
+                }
+            }
+        }
+
         checkItemBtn.change((evt) => {
             let checkboxItem = evt.target;
             let isAllCheckboxChanged = !checkboxItem.closest('.f_table_row');
@@ -773,20 +791,21 @@ export default class AbstractListLoad extends AbstractLoad {
      */
     deleteItemById(itemId) {
         DialogUtility.showAlertDialog("Delete item", "Do you want to remove this item ? This item can be used in other places.").then(function (confirmationMessage) {
-
-            NGS.action(this.args().deleteAction, {
+            let filter = this.filterManager ? this.filterManager.getCurrentFilter() : null;
+            let params = {
                 itemId: itemId,
-                confirmationMessage: confirmationMessage
-            }, function (success) {
+                confirmationMessage: confirmationMessage,
+            };
+            params.filter = filter;
+
+            NGS.action(this.args().deleteAction, params, function (success) {
 
             }, function (error) {
                 if (error.params.confirmation_required) {
                     DialogUtility.showConfirmDialog("Delete Confirmation", "Do you want to remove this item ? This item can be used in other places.", null, error.params.confirmation_text, error.params.error_reason).then(function (confirmationMessage) {
                         //null, this.args().deleteConfirmationMessage
-                        NGS.action(this.args().deleteAction, {
-                            itemId: itemId,
-                            confirmationMessage: confirmationMessage
-                        });
+                        params.confirmationMessage = confirmationMessage;
+                        NGS.action(this.args().deleteAction, params);
                     }.bind(this)).catch(function (error) {
                         console.log("canceled");
                     });
@@ -808,7 +827,9 @@ export default class AbstractListLoad extends AbstractLoad {
     initPaging() {
         PagingManager.init((args) => {
             let params = Object.assign(this._getNgsParams(), args);
-            params.filter = this.filterManager.getCurrentFilter();
+            if (this.filterManager) {
+                params.filter = this.filterManager.getCurrentFilter();
+            }
             if (this.args().cmsUUID) {
                 params.cmsUUID = this.args().cmsUUID;
             }

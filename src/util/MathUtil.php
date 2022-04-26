@@ -7,7 +7,29 @@ use FormulaParser\FormulaParser;
 
 class MathUtil
 {
+    /**
+     * compare 2 decimal numbers
+     *
+     * @param $number1
+     * @param $number2
+     * @return bool
+     */
+    public static function compareTwoDecimals($number1, $number2) {
+        if($number1 === $number2) {
+            return true;
+        }
 
+        $formatedNumber1 = (float)$number1;
+        $formatedNumber2 = (float)$number2;
+        $formatedNumber1 = number_format($formatedNumber1, 2, '.', '');
+        $formatedNumber2 = number_format($formatedNumber2, 2, '.', '');
+
+        if($formatedNumber1 != $formatedNumber2 || $number1 === null || $number2 === null) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * returns new value by formula and params

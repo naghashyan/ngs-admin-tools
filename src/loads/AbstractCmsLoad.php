@@ -14,6 +14,7 @@
 namespace ngs\AdminTools\loads;
 
 use ngs\AdminTools\exceptions\NoAccessException;
+use ngs\event\EventManager;
 use ngs\AdminTools\util\LoggerFactory;
 use ngs\Dispatcher;
 use ngs\exceptions\NgsErrorException;
@@ -26,11 +27,23 @@ abstract class AbstractCmsLoad extends AbstractLoad
 
     protected $im_limit = 30;
     protected $im_pagesShowed = 9;
+    protected $im_mobilePagesShowed = 3;
     private ?Logger $logger = null;
+    private EventManager $eventManager;
 
     public function __construct()
     {
         $this->logger = LoggerFactory::getLogger(get_class($this), get_class($this));
+        $this->eventManager = EventManager::getInstance();
+    }
+
+    /**
+     * returns event manager
+     * 
+     * @return EventManager|\ngs\AdminTools\managers\event\FilterManager|null
+     */
+    public function getEventManager() {
+        return $this->eventManager;
     }
 
 
@@ -60,6 +73,10 @@ abstract class AbstractCmsLoad extends AbstractLoad
      */
     public function getPagesShowed(): int
     {
+        if ($this->isRequestDeviceMobile()) {
+            return $this->im_mobilePagesShowed;
+        }
+
         return $this->im_pagesShowed;
     }
 
@@ -218,5 +235,13 @@ abstract class AbstractCmsLoad extends AbstractLoad
         }
         return [];
 
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRequestDeviceMobile(): bool
+    {
+        return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
     }
 }

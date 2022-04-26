@@ -14,7 +14,7 @@
 
 		.category-name {
 			&.active {
-				font-weight: 700;
+				color: $primaryColor;
 			}
 
 			&.added {

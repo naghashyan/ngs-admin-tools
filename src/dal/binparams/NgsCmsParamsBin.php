@@ -394,7 +394,14 @@ class NgsCmsParamsBin
                 } else {
                     $_value = ' ' . $_value;
                 }
-                $whereConditionSql .= $operator . $whereConditionGeoupOperator . $queryData['field'] . ' ' . $queryData['comparison'] . $_value;
+                $compresion = $queryData['comparison'];
+                if($compresion === 'in') {
+                    $compresion = "IN";
+                }
+                else if($compresion === 'not_in') {
+                    $compresion = "NOT IN";
+                }
+                $whereConditionSql .= $operator . $whereConditionGeoupOperator . $queryData['field'] . ' ' . $compresion . $_value;
                 $operator = ' ' . $queryData['operator'] . ' ';
             }
 
@@ -522,7 +529,6 @@ class NgsCmsParamsBin
                     if ($filterItem['conditionType'] == 'number') {
                         $result .= $this->getConditionAndSearchValueForNumberField($result, $filterItem);
                     } else {
-
                         $condition = $this->getConditionByType($filterItem);
                         if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) &&
                             ($filterItem['searchValue'] === 'is_null' || $filterItem['searchValue'] === 'is_not_null')) {
@@ -688,7 +694,22 @@ class NgsCmsParamsBin
         if ($filterItem['conditionType'] === 'checkbox') {
             return ' ' . $filterItem['searchValue'] . ' ';
         } else if ($filterItem['conditionType'] === 'in' || $filterItem['conditionType'] === 'not_in') {
-            return ' (' . implode(',', $filterItem['searchValue']) . ') ';
+            if(is_array($filterItem['searchValue'])) {
+                $values = [];
+                foreach($filterItem['searchValue'] as $filerSearchValue) {
+                    if(is_string($filerSearchValue)) {
+                        $values[] = '"' . $filerSearchValue . '"';
+                    }
+                    else {
+                        $values[] = $filerSearchValue;
+                    }
+                }
+                return ' (' . implode(',', $values) . ') ';
+            }
+            else {
+                return ' ' . $filterItem['searchValue'] . ' ';
+            }
+
         }
 
         $searchValue = $filterItem['searchValue'];
