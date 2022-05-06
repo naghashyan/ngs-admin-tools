@@ -1,4 +1,5 @@
 import Choices from "../lib/choices.min.js";
+import sortable from "../lib/html5sortable.min.js";
 
 export default class ExportTemplatesManager {
 
@@ -9,7 +10,6 @@ export default class ExportTemplatesManager {
             this.itemType = itemType;
             this.possibleFields = possibleFields;
             this._initSavedTemplates(data.items);
-            this._initNewTemplateFiledSelection(possibleFields);
             this._openExcelExportPupUp();
             this._initSavedTemplatesActions();
             this._initSaveTemplate();
@@ -30,7 +30,7 @@ export default class ExportTemplatesManager {
 
         templatesContainer.innerHTML = "";
 
-        if(savedTemplates.length) {
+        if (savedTemplates.length) {
             let templatesTitle = document.querySelector('.f_existing-templates-title');
             templatesTitle.classList.remove('is_hidden');
         }
@@ -51,26 +51,25 @@ export default class ExportTemplatesManager {
      * @private
      */
     _initNewTemplateFiledSelection(possibleFields) {
-        let fieldSelect = document.createElement("select");
-        fieldSelect.setAttribute('multiple', 'multiple');
-
-        fieldSelect.classList.add('select-field', 'f_select-field', 'ngs-choice');
-        fieldSelect.setAttribute('data-ngs-searchable', (possibleFields.length > 10) ? 'true' : 'false');
-        fieldSelect.setAttribute('data-ngs-remove', 'true');
-
-        fieldSelect.innerHTML = `<option value="">Please select</option>`;
+        let fieldsContainer = document.querySelector('.f_select-fields-info-container');
+        let selectRowTemplate = document.getElementById('selectFieldColumnToCreate').innerHTML;
 
         for (let i = 0; i < possibleFields.length; i++) {
-            let option = document.createElement("option");
-            option.value = possibleFields[i]['id'];
-            option.text = possibleFields[i]['value'];
-            fieldSelect.appendChild(option);
+            fieldsContainer.appendChild(this._renderTemplate(selectRowTemplate, {
+                id: possibleFields[i]['id'], value: possibleFields[i]['value']
+            }));
         }
-        let selectContainer = document.getElementById('exportExcelContainer').querySelector('.f_select-fields');
-        selectContainer.innerHTML = "";
-        fieldSelect.setAttribute('id', 'templateFields');
-        selectContainer.appendChild(fieldSelect);
-        this._initSelect(fieldSelect);
+
+        this._initSortableFields();
+
+    }
+
+    /**
+     *
+     * @private
+     */
+    _initSortableFields() {
+        sortable('.f_select-fields-info-container', {items: 'ul', handle: '.f_drag-indicator_btn'});
     }
 
 
@@ -81,14 +80,13 @@ export default class ExportTemplatesManager {
      */
     _initSavedTemplatesActions(elem) {
         let elements = [];
-        if(!elem) {
+        if (!elem) {
             elements = document.getElementById('exportExcelContainer').querySelectorAll('.f_template-container');
-        }
-        else {
+        } else {
             elements = [elem];
         }
 
-        for(let i=0; i<elements.length; i++) {
+        for (let i = 0; i < elements.length; i++) {
             let templateSelectionBtn = elements[i].querySelector(".f_template");
             let deleteTemplateBtn = elements[i].querySelector(".f_delete-template");
 
@@ -109,16 +107,15 @@ export default class ExportTemplatesManager {
         let id = elem.getAttribute('data-im-id');
 
         NGS.action("admin.actions.exportTemplates.delete", {template_id: id}, (data) => {
-            if(data.error) {
+            if (data.error) {
                 this._setMessage("delete saved template failed", true);
-            }
-            else {
+            } else {
                 savedTemplate.remove();
 
                 let templatesTitle = document.getElementById('exportExcelContainer').querySelector('.f_existing-templates-title');
                 let allTemplatesContainer = document.querySelector('.f_existing-templates');
 
-                if(!allTemplatesContainer.querySelector('.f_template-container')) {
+                if (!allTemplatesContainer.querySelector('.f_template-container')) {
                     templatesTitle.classList.add('is_hidden');
                 }
 
@@ -130,7 +127,7 @@ export default class ExportTemplatesManager {
     _initExportAction() {
         $("#exportExcelContainer .f_export-excel").unbind('click').click(() => {
             let selectedTemplate = document.getElementById('exportExcelContainer').querySelector('.f_template-container.active');
-            if(!selectedTemplate) {
+            if (!selectedTemplate) {
                 this._setMessage('please select template', true);
                 return;
             }
@@ -138,7 +135,7 @@ export default class ExportTemplatesManager {
             let fields = selectedTemplate.querySelector('.f_template').getAttribute('data-im-template-info');
             fields = JSON.parse(fields);
 
-            if(this.downloadCallback) {
+            if (this.downloadCallback) {
                 this.downloadCallback(fields);
                 this._closeExcelExportPopUp();
             }
@@ -153,7 +150,7 @@ export default class ExportTemplatesManager {
      */
     _initSelectSavedTemplate(evt) {
         let savedTemplates = document.getElementById('exportExcelContainer').querySelectorAll('.f_existing-templates .f_template-container');
-        for(let i=0; i<savedTemplates.length; i++) {
+        for (let i = 0; i < savedTemplates.length; i++) {
             savedTemplates[i].classList.remove('active');
         }
 
@@ -168,6 +165,8 @@ export default class ExportTemplatesManager {
     _openExcelExportPupUp() {
         let overlay = document.getElementById('exportExcelOverlay');
         let container = document.getElementById('exportExcelContainer');
+
+        this._initNewTemplateFiledSelection(this.possibleFields);
 
         overlay.classList.add("active");
         container.classList.add("active");
@@ -195,6 +194,15 @@ export default class ExportTemplatesManager {
     _closeExcelExportPopUp() {
         let overlay = document.getElementById('exportExcelOverlay');
         let container = document.getElementById('exportExcelContainer');
+        let checkedElementsContainer = document.querySelector('.f_select-fields-info-container');
+        if (checkedElementsContainer) {
+            checkedElementsContainer.innerHTML = '';
+        }
+
+        let nameImport = document.getElementById('templateName');
+        if (nameImport) {
+            nameImport.value = '';
+        }
 
         overlay.classList.remove("active");
         container.classList.remove("active");
@@ -205,21 +213,21 @@ export default class ExportTemplatesManager {
         $('#exportExcelContainer .f_save-template').unbind('click').click((evt) => {
             let nameInput = document.getElementById('templateName');
             let name = nameInput.value;
-            let fields = $("#templateFields").val();
+            let fields = document.querySelectorAll(".f_sortable-field");
 
-            if(!name) {
+            if (!name) {
                 this._setMessage('name can not be empty', true);
-            }
-            else if(!fields.length) {
+            } else if (!fields.length) {
                 this._setMessage('please select fields', true);
-            }
-            else {
+            } else {
                 fields = this._findFromPossibleValues(fields);
-                NGS.action("admin.actions.exportTemplates.save", {name: name, fields: fields, item_type: this.itemType}, (data) => {
-                    if(data.error) {
+
+                NGS.action("admin.actions.exportTemplates.save", {
+                    name: name, fields: fields, item_type: this.itemType
+                }, (data) => {
+                    if (data.error) {
                         this._setMessage(data.message, true);
-                    }
-                    else {
+                    } else {
                         let templatesContainer = document.getElementById('exportExcelContainer').querySelector('.f_existing-templates');
 
                         let titleForTemplatesSelecting = document.getElementById('exportExcelContainer').querySelector('.f_existing-templates-title');
@@ -244,19 +252,37 @@ export default class ExportTemplatesManager {
      * @returns {[]}
      * @private
      */
-    _findFromPossibleValues(ids) {
+    _findFromPossibleValues(fieldsElements) {
         let result = [];
-        for(let i=0; i<ids.length; i++) {
-            for(let j=0; j<this.possibleFields.length; j++) {
-                if(this.possibleFields[j].id === ids[i]) {
-                    result.push({fieldName: this.possibleFields[j].id, displayName: this.possibleFields[j].value});
-                    break;
-                }
+        let selectedFields = [];
+
+        fieldsElements.forEach(field => {
+            let isExluded = field.querySelector('.f_check-select-field').checked;
+            if (isExluded) {
+                return;
             }
-        }
+
+            const fieldId = field.getAttribute("data-id");
+            const fieldName = field.querySelector('.f_column-system-name').textContent;
+            const displayName = field.querySelector('.f_column-export-name').value;
+
+            selectedFields.push({
+                id: fieldId, fieldName: fieldName.trim(), displayName: displayName.trim(),
+            })
+        })
+
+        selectedFields.forEach((selectedField, index) => {
+            this.possibleFields.forEach((posibleField) => {
+                if (posibleField.id === selectedField.id) {
+                    result.push({
+                        fieldName: selectedField.id, displayName: selectedField.displayName
+                    });
+                }
+            })
+        })
+
 
         return result;
-
     }
 
     /**
@@ -270,10 +296,9 @@ export default class ExportTemplatesManager {
         messageContainer.classList.remove('error', 'success');
 
         messageContainer.innerHTML = message;
-        if(error) {
+        if (error) {
             messageContainer.classList.add('error');
-        }
-        else {
+        } else {
             messageContainer.classList.add('success');
         }
 
@@ -292,25 +317,6 @@ export default class ExportTemplatesManager {
 
     /**
      *
-     * @param selectItem
-     * @private
-     */
-    _initSelect(selectItem) {
-        let searchable = selectItem.getAttribute('data-ngs-searchable') === 'true';
-        let removable = selectItem.getAttribute('data-ngs-remove') === 'true';
-
-        new Choices(selectItem, {
-            removeItemButton: removable,
-            searchEnabled: searchable,
-            renderChoiceLimit: 150,
-            searchResultLimit: 150,
-            shouldSort: true
-        });
-    }
-
-
-    /**
-     *
      * @param template
      * @param data
      * @param toObject
@@ -318,12 +324,8 @@ export default class ExportTemplatesManager {
      * @private
      */
     _renderTemplate(template, data, toObject = true) {
-        let htmlStr = template.replace(
-            /\$\{\s*([^\s\}]+)\s*\}/g,
-            (_, capturedIdentifier) =>
-                data[capturedIdentifier]
-        );
-        if(toObject){
+        let htmlStr = template.replace(/\$\{\s*([^\s\}]+)\s*\}/g, (_, capturedIdentifier) => data[capturedIdentifier]);
+        if (toObject) {
             return NGS.toNode(htmlStr);
         }
         return htmlStr;

@@ -121,6 +121,7 @@ export default class SelectionUtility {
                 }
             }
         } else {
+
             if (!totalSelectionInfo.unCheckedElements) {
                 totalSelectionInfo.unCheckedElements = [];
             }

@@ -28,6 +28,7 @@
         "lib/material-datetime-picker.min.js",
         "lib/dropzone.min.js",
         "lib/flatpickr.min.js",
+        "lib/html5sortable.min.js",
         "util/MaterialsUtils.js",
         "util/DialogUtility.js",
         "util/CookiesUtils.js",

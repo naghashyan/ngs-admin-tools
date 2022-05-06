@@ -251,22 +251,28 @@ class MediasDto extends AbstractCmsDto
 
     /**
      * @param string|null $thumbType
-     * @param $getDefault
+     * @param bool $getDefault
+     * @param bool $public
      * @return string|null
      */
-    public function getUrl(?string $thumbType = null, bool $getDefault = true) {
+    public function getUrl(?string $thumbType = null, bool $getDefault = true, bool $public = false) {
         $filePath = $thumbType ? $thumbType . '/' . $this->getFilePath() : $this->getFilePath();
         $fullPath = NGS()->get('MEDIA_STORE_DIR') . '/' . $filePath;
 
         if(file_exists($fullPath) && !is_dir($fullPath)) {
-            return NGS()->get('MEDIA_STREAM_URL') . '/' . $filePath;
+            $streamUrl = NGS()->get('MEDIA_STREAM_URL');
+            if($public && NGS()->get('MEDIA_PUBLIC_STREAM_URL')) {
+                $streamUrl = NGS()->get('MEDIA_PUBLIC_STREAM_URL');
+            }
+
+            return $streamUrl . '/' . $filePath;
         }
         if(!$getDefault) {
             return null;
         }
 
         $mediaManager = MediasManager::getInstance();
-        return $mediaManager->getDefaultImage($this->getObjectType());
+        return $mediaManager->getDefaultImage($this->getObjectType(), $public);
     }
 
 

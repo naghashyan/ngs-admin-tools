@@ -26,6 +26,9 @@
   "autoload": {
     "psr-4": {
       "ngs\\AdminTools\\": "src/"
-    }
+    },
+    "files": [
+      "src/system/NgsDefaultConstants.php"
+    ]
   }
 }

@@ -292,18 +292,6 @@ abstract class NgsApiAction extends AbstractAction
         throw new NgsValidationException($type . ' validation failed: ' . $errorText, 0, null, $errors);
     }
 
-
-    /**
-     * make this function private to not allow calling this from the extended classes
-     * getValidatedArgs should be called instead
-     *
-     * @return NgsArgs
-     */
-    public function args(): NgsArgs
-    {
-        return parent::args();
-    }
-
     /**
      * returns additional validators for fields
      *

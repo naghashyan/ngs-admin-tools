@@ -7,6 +7,23 @@ namespace ngs\AdminTools\util;
 class ArrayUtil
 {
 
+    /**
+     * remove item from array
+     * 
+     * @param array $array
+     * @param $value
+     * @return array
+     */
+    public static function removeValueFromArrray(array $array, $value) {
+        $result = [];
+        foreach($array as $item) {
+            if($item !== $value) {
+                $result[] = $item;
+            }
+        }
+
+        return $result;
+    }
 
     /**
      *

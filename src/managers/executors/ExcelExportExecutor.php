@@ -339,7 +339,12 @@ class ExcelExportExecutor extends AbstractJobExecutor
         }
 
         if(($this->params['totalSelection'] === true || $this->params['totalSelection'] === 'true') && $this->params['unCheckedElements']) {
-            $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => explode(',', $this->params['unCheckedElements'])];
+            if(is_array($this->params['unCheckedElements'])) {
+                $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => $this->params['unCheckedElements']];
+            }
+            else {
+                $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => explode(',', $this->params['unCheckedElements'])];
+            }
         }
         else if(($this->params['totalSelection']) && !$this->params['unCheckedElements']) {
             $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => [-1]];

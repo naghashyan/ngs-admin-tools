@@ -445,15 +445,21 @@ class MediasManager extends AbstractCmsManager
      * returns default image by type, if not exists returns default.jpg
      *
      * @param string $type
+     * @param bool $public
+     *
      * @return string
      */
-    public function getDefaultImage(string $type) {
+    public function getDefaultImage(string $type, bool $public = false) {
         $fullPath = NGS()->get('MEDIA_STORE_DIR') . '/' . $type . '_default.jpg';
+        $streamUrl = NGS()->get('MEDIA_STREAM_URL');
+        if($public && NGS()->get('MEDIA_PUBLIC_STREAM_URL')) {
+            $streamUrl = NGS()->get('MEDIA_PUBLIC_STREAM_URL');
+        }
         if(file_exists($fullPath)) {
-            return NGS()->get('MEDIA_STREAM_URL') . '/' . $type . '_default.jpg';
+            return $streamUrl . '/' . $type . '_default.jpg';
         }
 
-        return NGS()->get('MEDIA_STREAM_URL') . '/' . 'default.jpg';
+        return $streamUrl . '/' . 'default.jpg';
     }
 
 

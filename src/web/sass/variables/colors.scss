@@ -134,7 +134,7 @@ $bgweb: (
                                 "border-bottom": 1px solid #E5E5E5,
                         ),
                         "hover": (
-                                "opacity": 0.8
+                                "background": lighten($primaryColor, 35%)
                         )
                 ),
                 "row": (
@@ -147,11 +147,17 @@ $bgweb: (
                 "row-even": (
                         "default": (
                                 "background": #ffffff
+                        ),
+                        "hover": (
+                                "background": lighten($primaryColor, 35%)
                         )
                 ),
                 "row-odd": (
                         "default": (
                                 "background": #F6F6F6
+                        ),
+                        "hover": (
+                                "background": lighten($primaryColor, 35%)
                         )
                 ),
                 "temporary": (

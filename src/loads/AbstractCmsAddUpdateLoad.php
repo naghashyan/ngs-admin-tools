@@ -251,6 +251,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             'pagesShowed' => $this->getPagesShowed(), 'ordering' => $this->args()->ordering,
             'sorting' => $this->args()->sorting, 'searchKey' => $this->args()->searchKey];
         $this->addJsonParam('fromViewPage', !!$this->args()->fromViewPage);
+        $this->addJsonParam('rowClickLoad', $manager->getRowClickLoad());
         $this->addJsonParam('fromListingPage', !!$this->args()->fromListingPage);
         $this->addJsonParam('pageParams', $jsParams);
         $this->addItemImagesProperties($itemDto);

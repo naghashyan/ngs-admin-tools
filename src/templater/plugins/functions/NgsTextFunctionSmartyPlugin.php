@@ -59,7 +59,8 @@ class NgsTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $classToFormItem = isset($params['class_form_item']) ? " " .$params['class_form_item'] : " ";
         $classToInputField = isset($params['class_input_field']) ? " " .$params['class_input_field'] : " ";
         $containerId = isset($params['id']) ? 'id="' . $params['id'] .'" ' : " ";
-        $helpText = $this->getHelpText($params);
+        $customText = isset($params['help_text']) ? $params['help_text'] : '';
+        $helpText = $this->getHelpText($params, $customText);
         $rule = $this->getRule($params);
 
         $fieldGetter = 'get' . $this->underlinesToCamelCase($name);

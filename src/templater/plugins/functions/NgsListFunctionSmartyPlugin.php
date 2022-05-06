@@ -117,11 +117,11 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
      */
     private function getCheckboxContent()
     {
-        return '<li class="f_check-items check-items left-align">
+        return '<li class="f_check-items check-items  left-align">
                <div class="checkbox-item">
                 <label>
                  <input type="checkbox" class="filled-in check-item f_check-item"/>
-                 <span></span>
+                 <span class="checkbox-span"></span>
                 </label>
                </div>
               </li>';

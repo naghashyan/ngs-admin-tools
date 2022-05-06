@@ -54,6 +54,22 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
 
+    initViewChildLoad(itemRow, object, inputSelector) {
+        if(!this.args().rowClickLoad){
+            return;
+        }
+        
+        itemRow.addEventListener('click', (event) => {
+            event.stopPropagation();
+            let itemDto = this.getItemFromExisting(inputSelector, object);
+            let params = {};
+            params.itemDto = itemDto;
+            params.tempId = object.tempId;
+            NGS.load(this.args().rowClickLoad, params);
+            return false;
+        })
+    }
+
     getItemFromExisting(inputSelector, item) {
         let itemsInput = document.getElementById(inputSelector);
         let itemsData = itemsInput.value;
@@ -169,9 +185,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             let actionPath = this.args().saveAction.split(".");
             let actionName = actionPath[actionPath.length - 1].split("_").join(" ");
             title = actionName.replace(/\b[a-z]/g,
-              function (firstLatter) {
-                  return firstLatter.toUpperCase();
-              })
+                function (firstLatter) {
+                    return firstLatter.toUpperCase();
+                })
         }
         return title;
     }
@@ -437,9 +453,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
 
         tinymce.init({
-            selector: '#' + this.getContainer() + ' .f_tinymce', resize: false, mobile: {
+            selector: '#' + this.getContainer() + ' .f_tinymce',
+            resize: false,
+            mobile: {
                 menubar: true
-            }
+            },
+            plugins: [ 'preview', 'code'],
+            doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+
         })
 
         let tinymceElement = document.querySelector('#' + this.getContainer() + ' .f_tinymce');
@@ -556,6 +577,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             if (this.getModalLevel() !== 1) {
                 return;
             }
+            if (!this.args().isViewMode && this.args().fromViewPage && this.args().rowClickLoad) {
+                NGS.load(this.args().rowClickLoad, {itemId:this.args().itemId});
+                return;
+            }
+
             NGS.load(this.args().cancelLoad, this.setCancelParams());
         });
     }
@@ -660,6 +686,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             }
 
             this.iniEditChildLoad(contactRow, formData, this.getUiStorage());
+            this.initViewChildLoad(contactRow, formData, this.getUiStorage());
             this.initRemoveChildItem(contactRow, this.getUiStorage());
 
             let checkElementCheckbox = contactRow.querySelector('.f_check-item');
@@ -940,12 +967,12 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     _initDropzone() {
-       this.imageDropzone = new ImageDropzoneUtil();
+        this.imageDropzone = new ImageDropzoneUtil();
 
-       if (this.args()['imagesUrls']) {
+        if (this.args()['imagesUrls']) {
             this.imageDropzone.existingImagesIds = this.args()['imagesUrls'].map((item) => {
                 if (item.url.original) {
-                    return item.url.original.substring(item.url.original.lastIndexOf('/') + 1);
+                    return item.id;
                 }
             });
         }
@@ -1021,26 +1048,31 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         if (allIsMainRadioButtons) {
             let checkedIsMainButton = Array.from(allIsMainRadioButtons).find((radioButton) => radioButton.checked);
 
-            if (checkedIsMainButton) {
+            if (!checkedIsMainButton) {
+                return formData
+            }
 
-                if (checkedIsMainButton.closest('.f_image-element-main-box').classList.contains('f_newAddedImage')) {
+            if (checkedIsMainButton.closest('.f_image-element-main-box').classList.contains('f_newAddedImage')) {
 
-                    let allNewAddedImages = document.querySelectorAll('.f_newAddedImage');
-                    for (let i = 0; i < allNewAddedImages.length; i++) {
-                        if (allNewAddedImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
-                            formData.append('mainImage', JSON.stringify({newImageIndex: i}));
-                            break;
-                        }
+                let allNewAddedImages = document.querySelectorAll('.f_newAddedImage');
+                for (let i = 0; i < allNewAddedImages.length; i++) {
+                    if (allNewAddedImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
+                        formData.append('mainImage', JSON.stringify({newImageIndex: i}));
+                        break;
                     }
-                } else {
+                }
+            } else {
 
-                    let allOldImages = document.querySelectorAll('.f_oldImage');
-                    for (let i = 0; i < allOldImages.length; i++) {
-                        let imageId = allOldImages[i].querySelector('.f_hidden-input-image-id').value;
-                        if (allOldImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
-                            formData.append('mainImage', JSON.stringify({oldImageId: imageId}));
-                            break;
-                        }
+                let allOldImages = document.querySelectorAll('.f_oldImage');
+                for (let i = 0; i < allOldImages.length; i++) {
+                    if(!allOldImages[i].querySelector('.f_hidden-input-image-id')){
+                        continue;
+                    }
+
+                    let imageId = allOldImages[i].querySelector('.f_hidden-input-image-id') ?.value;
+                    if (allOldImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
+                        formData.append('mainImage', JSON.stringify({oldImageId: imageId}));
+                        break;
                     }
                 }
             }
@@ -1070,7 +1102,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     _removeImageDescriptionIfItsDefault() {
-        if (this.imageDropzone.onlyOneDefaultImage) {
+        if (this.imageDropzone.variables.onlyOneDefaultImage) {
             if (document.querySelector('.f_multipleDropzone .info-box')) {
                 // we can either remove just the description of the image or remove the default image too
 
@@ -1598,6 +1630,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let logShowBtn = document.getElementById('showItemsLogBtn');
         const logsList = document.getElementById('logs_list');
         const lastLog = document.getElementById('items_last_log');
+
+        if(!logShowBtn){
+            return
+        }
 
         logShowBtn.addEventListener('mouseenter', (e) => {
             e.stopPropagation();

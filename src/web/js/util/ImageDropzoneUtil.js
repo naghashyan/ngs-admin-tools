@@ -317,7 +317,7 @@ export default class ImageDropzoneUtil {
     createHiddenInputWithCurrentImageProperties(image) {
         let hiddenInputWithProperties = document.createElement('input');
 
-        let id = image.url.original.substring(image.url.original.lastIndexOf('/') + 1);
+        let id = image.id;
         let thumbsInfo = {};
 
         if (!this.variables.onlyOneDefaultImage) {
@@ -355,9 +355,11 @@ export default class ImageDropzoneUtil {
 
                 let hiddenInputWithCurrentImageProperties = evt.target.closest('.dz-image-preview')?.querySelector('.f_hidden-input-image-id');
                 if (hiddenInputWithCurrentImageProperties) {
-                    let clickedImageId = hiddenInputWithCurrentImageProperties.value;
-                    let indexOfCurrentImageIdInImagesArray = this.existingImagesIds.findIndex((imageId) => imageId === clickedImageId);
-                    this.existingImagesIds[indexOfCurrentImageIdInImagesArray] = null;
+                    let clickedImageId = +hiddenInputWithCurrentImageProperties.value;
+                    let indexOfCurrentImageIdInImagesArray = this.existingImagesIds.indexOf(clickedImageId);
+                    if(indexOfCurrentImageIdInImagesArray !== -1) {
+                        this.existingImagesIds[indexOfCurrentImageIdInImagesArray] = null;
+                    }
                 }
 
                 imageMainBoxes[buttonIndex].remove();

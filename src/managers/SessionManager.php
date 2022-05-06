@@ -59,29 +59,6 @@ class SessionManager extends AbstractSessionManager {
             ]);
 
         $this->token = $token;
-        $userManager = UserManager::getInstance();
-        $userId = $this->getUser() ? $this->getUser()->getId() : null;
-        $userData = [];
-
-        if ($userId) {
-            $user = $userManager->getUserById($this->getUser()->getId());
-            $userData = [
-                'id' => $userId,
-                'firstName' => $user->getFirstName(),
-                'lastName' => $user->getLastName(),
-                'userName' => $user->getUserName(),
-            ];
-        }
-
-        setcookie('user_data', json_encode($userData, JSON_UNESCAPED_UNICODE),
-            [
-                'expires' => $sessionTimeout,
-                'path' => '/',
-                'secure' => false,
-                'samesite' => 'Strict',
-                'domain' => '.' . NGS()->getHttpUtils()->getMainDomain(),
-                'httponly' => false
-            ]);
     }
 
     /**

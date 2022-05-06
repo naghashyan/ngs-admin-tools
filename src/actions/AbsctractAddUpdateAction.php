@@ -117,7 +117,6 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
                 $this->getLogger()->info('update action started', $params);
                 $this->loggerActionStart($params, $this->args()->id);
                 $itemDto = $manager->updateItem($this->args()->id, $params, false);
-
                 if($manager->hasImage()){
                     $this->updateImagesTitles($itemDto);
                     $this->removeOldImages($itemDto);
@@ -125,6 +124,7 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
                         $this->addNewImages($manager, $itemDto);
                     }
                 }
+
                 if($manager->hasAttachedFile() && !empty($_FILES)){
                     $this->addAttachedFile($manager, $itemDto);
                 }

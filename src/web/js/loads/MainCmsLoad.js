@@ -209,7 +209,6 @@ export default class MainCmsLoad extends AbstractLoad {
         });
 
         $("#main-overlay-for-all-purposes").on("click", (event) => {
-            event.currentTarget.classList.add('is_hidden');
             $("#navBar").toggleClass('minimal-nav');
             $("#minimize-button").toggleClass('btn-to-close');
         });
@@ -218,11 +217,11 @@ export default class MainCmsLoad extends AbstractLoad {
             event.stopImmediatePropagation();
             $("#navBar").toggleClass('minimal-nav');
             $("#minimize-button").toggleClass('btn-to-close');
-          
+
         });
     }
 
-  
+
     afterCmsLoad() {
     }
 

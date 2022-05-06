@@ -405,6 +405,7 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             return $items;
 
         } catch (\Exception $exp) {
+            $this->getLogger()->error("failed to get list: " . $exp->getMessage());
             return [];
         }
     }

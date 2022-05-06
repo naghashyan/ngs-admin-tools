@@ -27,16 +27,16 @@ let PagingManager = {
             });
         });
         pagingBox.querySelectorAll(".f_go_to_page")[0].addEventListener('keyup', function (evt) {
-            evt.preventDefault();
             if (evt.keyCode === 13) {
                 goTo(parseInt(evt.currentTarget.value));
+                evt.preventDefault();
             }
         });
 
         pagingBox.querySelectorAll(".f_go_to_page")[0].addEventListener('keypress', function (evt) {
-            evt.preventDefault();
-            if (evt.keyCode === 13) {
+             if (evt.keyCode === 13) {
                 goTo(parseInt(evt.currentTarget.value));
+                evt.preventDefault();
             }
         });
 

@@ -99,10 +99,11 @@ export default class RowsListManager {
     handleElementSelectionChange(checkboxItem, isNew) {
         let totalSelectionInfo = this.getSelectionInfo();
         let checkedElements = totalSelectionInfo.checkedElements ?? [];
-        let elementId = checkboxItem.closest('.f_table_row').getAttribute("data-im-id");
-        this.previousItem = this.lastSelectdIndex;
+        let unCheckedElements = totalSelectionInfo.unCheckedElements ?? [];
+        let totalSelection = totalSelectionInfo.totalSelection;
 
         if (!isNew) {
+            this.previousItem = this.lastSelectdIndex;
             this.lastSelectdIndex = checkboxItem.closest('.f_table_row').getAttribute("data-im-index");
 
             if (this.isShiftKeyPressed && this.previousItem) {
@@ -123,41 +124,49 @@ export default class RowsListManager {
                 elementsPositionsInInterval.forEach(item => {
                     let index = parseInt(item);
                     let element = document.querySelectorAll("#itemsContent .f_table_row");
-                    let currentElementId = element[index].getAttribute('data-im-id');
 
-                    if (checkboxItem.checked) {
-                        element[index].querySelector('.f_check-item').checked = true;
-                        if (checkedElements.indexOf(currentElementId) === -1) {
-                            checkedElements.push(currentElementId);
-                        }
-                    } else {
-                        element[index].querySelector('.f_check-item').checked = false;
-                        let elementIndex = checkedElements.indexOf(currentElementId);
-                        if (elementIndex !== -1) {
-                            checkedElements.splice(elementIndex, 1);
-                        }
-                    }
+                    element[index].querySelector('.f_check-item').checked = checkboxItem.checked;
+                    totalSelectionInfo = this.checkUncheckElement(element[index], checkedElements, unCheckedElements, totalSelection, checkboxItem.checked);
                 })
             } else {
-                if (checkboxItem.checked) {
-                    if (checkedElements.indexOf(elementId) === -1) {
-                        checkedElements.push(elementId);
-                    }
-                } else {
-                    let elementIndex = checkedElements.indexOf(elementId);
-                    if (elementIndex !== -1) {
-                        checkedElements.splice(elementIndex, 1);
-                    }
-                }
+                totalSelectionInfo = this.checkUncheckElement(checkboxItem, checkedElements, unCheckedElements, totalSelection, checkboxItem.checked);
             }
         } else {
-            this.handleNewElementSelectionChange(checkboxItem, totalSelectionInfo);
+            totalSelectionInfo = this.handleNewElementSelectionChange(checkboxItem, totalSelectionInfo)
         }
-
-        totalSelectionInfo.checkedElements = checkedElements;
 
         this.setSelectionInfo(totalSelectionInfo);
     };
+
+    checkUncheckElement(checkboxItem, checkedElements, unCheckedElements, totalSelection, isChecked) {
+        let elementId = parseInt(checkboxItem.closest('.f_table_row').getAttribute("data-im-id"));
+
+        if (isChecked) {
+            if (checkedElements.indexOf(elementId) === -1 && !totalSelection) {
+                checkedElements.push(elementId);
+            }
+
+            let uncheckedIndex = unCheckedElements.indexOf(elementId)
+            if (uncheckedIndex !== -1) {
+                unCheckedElements.splice(uncheckedIndex, 1);
+            }
+        } else {
+            let elementIndex = checkedElements.indexOf(elementId);
+
+            if (elementIndex !== -1) {
+                checkedElements.splice(elementIndex, 1);
+            }
+
+            let uncheckedIndex = unCheckedElements.indexOf(elementId)
+
+            if (uncheckedIndex === -1) {
+                unCheckedElements.push(elementId);
+            }
+        }
+
+        return {unCheckedElements: unCheckedElements, checkedElements: checkedElements, totalSelection: totalSelection};
+
+    }
 
     handleNewElementSelectionChange(checkboxItem, totalSelectionInfo) {
         let tempIdOfRow = checkboxItem.closest('.f_table_row').getAttribute('data-im-index');
@@ -199,6 +208,7 @@ export default class RowsListManager {
                 }
             }
         }
+        return totalSelectionInfo;
     }
 
     changeItemsCountInUi(number) {

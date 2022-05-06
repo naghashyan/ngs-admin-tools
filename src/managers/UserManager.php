@@ -90,6 +90,18 @@ class UserManager extends \ngs\AbstractManager
     }
 
     /**
+     * returns users by group ids
+     *
+     * @param array $groupIds
+     * @return UserDto[]
+     */
+    public function getUsersByGroups(array $groupIds) :array
+    {
+        return UserMapper::getInstance()->getUsersByGroups($groupIds);
+    }
+
+
+    /**
      * get user by username
      *
      * @param string $userName

@@ -415,6 +415,7 @@ table {
         min-width: 40px;
         max-width: 40px;
         padding-right: 0;
+        pointer-events: none;
 
         [type="checkbox"] + span:not(.lever) {
           padding-left: 22px;
@@ -424,6 +425,10 @@ table {
           [type="checkbox"] + span {
             margin-right: 0;
           }
+        }
+
+        .checkbox-span{
+          pointer-events: all;
         }
       }
 

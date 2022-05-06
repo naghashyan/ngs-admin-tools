@@ -323,7 +323,6 @@ abstract class AbstractCmsManager extends AbstractManager
         }
         $itemDto = $mapper->createDto();
         $itemDto->fillDtoFromArray($params);
-
         $id = $this->getMapper()->insertDto($itemDto);
         if(!$id) {
             return null;
@@ -570,6 +569,7 @@ abstract class AbstractCmsManager extends AbstractManager
             $items = $manager->getListByField($relationEntity['relation_field'], $itemId);
             $executedItems = [];
             $existingRelations = [];
+
             foreach ($itemFromRequest as $relativeTableId) {
                 $existingItem = $manager->getDtoFromListByField($items, $relationEntity['field'], $relativeTableId);
                 if($existingItem) {
@@ -577,7 +577,9 @@ abstract class AbstractCmsManager extends AbstractManager
                     $existingRelations[] = $relativeTableId;
                 }
             }
+
             $manager->deleteByField($relationEntity['relation_field'], $itemId, $executedItems);
+
             foreach($itemFromRequest as $relativeTableId) {
                 if(in_array($relativeTableId, $existingRelations)) {
                     continue;
@@ -588,7 +590,9 @@ abstract class AbstractCmsManager extends AbstractManager
                 $dataToSave[$relationEntity['field']] = $relativeTableId;
                 $manager->createItem($dataToSave);
             }
+
         }
+
 
     }
 

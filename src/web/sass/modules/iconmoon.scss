@@ -10,7 +10,7 @@
 // for changes use subject.json
 
 $iconmoon-font-path: $NGS_MODULE_PATH+"/fonts/iconmoon/fonts/" !default;
-$iconmoon-font-prop: "rf8j8g";
+$iconmoon-font-prop: "u941lk";
 
 @font-face {
   font-family: 'icomoon';
@@ -39,6 +39,15 @@ $iconmoon-font-prop: "rf8j8g";
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-bell-notify:before {
+  content: "\ea2c";
+}
+.icon-drag-handle:before {
+  content: "\ea2a";
+}
+.icon-export-arrow:before {
+  content: "\ea2b";
+}
 .icon-search:before {
   content: "\e90a";
 }

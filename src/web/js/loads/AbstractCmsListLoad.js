@@ -174,10 +174,13 @@ export default class AbstractListLoad extends AbstractLoad {
             let actionType = clickedBtn.getAttribute('data-type');
             let totalSelectionInfo = this.rowsListManager.getSelectionInfo();
 
-            let currentFilter = this.filterManager.getCurrentFilter();
-            if (Object.keys(totalSelectionInfo).length && ((currentFilter.and && currentFilter.and.length) || currentFilter.search)) {
-                totalSelectionInfo.filter = JSON.stringify(currentFilter);
+            if(this.filterManager) {
+                let currentFilter = this.filterManager.getCurrentFilter();
+                if (Object.keys(totalSelectionInfo).length && ((currentFilter.and && currentFilter.and.length) || currentFilter.search)) {
+                    totalSelectionInfo.filter = JSON.stringify(currentFilter);
+                }
             }
+
             if (this.rowsListManager.nothingIsSelected()) {
                 DialogUtility.showAlertDialog("No items", "Please, select items to", {
                     'oneButton': true,
@@ -344,6 +347,20 @@ export default class AbstractListLoad extends AbstractLoad {
                 }
             }
         }
+        
+        checkItemBtn.keyup((evt) => {
+            evt.stopImmediatePropagation();
+            if (evt.key === 'Shift' && this.rowsListManager.getIsShiftPressed()) {
+                this.rowsListManager.setIsShiftPressed(false);
+            }
+        });
+
+        checkItemBtn.keydown((evt) => {
+            evt.stopImmediatePropagation();
+            if (evt.key === 'Shift') {
+                this.rowsListManager.setIsShiftPressed(true);
+            }
+        });
 
         checkItemBtn.change((evt) => {
             let checkboxItem = evt.target;
@@ -402,11 +419,14 @@ export default class AbstractListLoad extends AbstractLoad {
             errorMessage.innerText = 'name can not be empty';
             return;
         }
-        let currentFilter = this.filterManager.getCurrentFilter();
-        if ((currentFilter.and && !currentFilter.and.length) && !currentFilter.search) {
-            errorMessage.innerText = 'you can not save empty filter';
-            return;
+        if(this.filterManager) {
+            let currentFilter = this.filterManager.getCurrentFilter();
+            if ((currentFilter.and && !currentFilter.and.length) && !currentFilter.search) {
+                errorMessage.innerText = 'you can not save empty filter';
+                return;
+            }
         }
+
         currentFilter = JSON.stringify(currentFilter);
         NGS.action("admin.actions.filter.save", {
             item_type: itemType,
@@ -841,7 +861,7 @@ export default class AbstractListLoad extends AbstractLoad {
     initAjaxPaging() {
         this.initPaging();
         let params = Object.assign(this._getNgsParams(), {});
-        params.filter = this.filterManager.getCurrentFilter()
+        params.filter = this.filterManager ? this.filterManager.getCurrentFilter() : {}
         if (this.args().cmsUUID) {
             params.cmsUUID = this.args().cmsUUID;
         }
@@ -858,7 +878,10 @@ export default class AbstractListLoad extends AbstractLoad {
     initSorting() {
         document.querySelectorAll("#" + this.getContainer() + " .f_sorting").forEach((sortableElem) => {
             sortableElem.addEventListener('click', evt => {
-
+  							evt.preventDefault();
+                if(this.rowsListManager){
+                    this.rowsListManager.removeSelectedItems();
+                }
                 if (this.columnsResizingClicked) {
                     this.columnsResizingClicked = false;
                     return;
@@ -878,7 +901,7 @@ export default class AbstractListLoad extends AbstractLoad {
                 if (this.args().parentId) {
                     params.parentId = this.args().parentId;
                 }
-                params.filter = this.filterManager.getCurrentFilter();
+                params.filter = this.filterManager ? this.filterManager.getCurrentFilter() : {};
                 NGS.load(this.args().listLoad, this.modifyFilterForLoad(params));
             });
         });
