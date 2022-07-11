@@ -12,7 +12,7 @@ export default class BaseValidator {
         if(!value || value === ''.trim()) {
             if(validationInfo.hasOwnProperty('is_required')) {
                 if(validationInfo.is_required) {
-                    return "field <b class='f_fieldName'>" +  fieldName + "</b> is required";
+                    throw new Error("field <b class='f_fieldName'>" +  fieldName + "</b> is required");
                 }
             }
             return "";

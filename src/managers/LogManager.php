@@ -89,7 +89,7 @@ class LogManager extends AbstractCmsManager {
         }
         catch(\Exception $exp) {
             $logger = LoggerFactory::getLogger(get_class($this), get_class($this));
-            $logger->error('save log for user failed', ['userId' => $userId, 'action' => $action, 'data' => $data, 'table' =>$tableName, 'itemId' => $itemId, 'success' => $success]);
+            $logger->error('save log for user failed: ' . $exp->getMessage(), ['userId' => $userId, 'action' => $action, 'data' => $data, 'table' =>$tableName, 'itemId' => $itemId, 'success' => $success]);
         }
 
 

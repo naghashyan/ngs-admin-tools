@@ -77,10 +77,11 @@ abstract class AbstractCmsManager extends AbstractManager
      * fill dto with possible values
      * @param $dto
      * @param array $possibleValues
+     * @param array|null $onlyFields
      */
-    public function fillDtoWithRelationalData($dto, array $possibleValues) {
+    public function fillDtoWithRelationalData($dto, array $possibleValues, ?array $onlyFields = null) {
         $relationalFields = $this->getRelationEntities();
-        $dtoRelativeValues = $this->getRelativeSelectedValues($dto);
+        $dtoRelativeValues = $this->getRelativeSelectedValues($dto, $onlyFields);
         foreach($possibleValues as $fieldName => $possibleValues) {
             $relativeValues = [];
             if(isset($relationalFields[$fieldName]) && $relationalFields[$fieldName]['relation_type'] === 'many_to_many') {
@@ -160,9 +161,11 @@ abstract class AbstractCmsManager extends AbstractManager
 
     /**
      * @param $itemDto
+     * @param array|null $onlyFields
+     *
      * @return array
      */
-    public function getRelativeSelectedValues($itemDto)
+    public function getRelativeSelectedValues($itemDto, ?array $onlyFields = null)
     {
         $relationEntities = $this->getRelationEntities();
         $result = [];
@@ -170,10 +173,15 @@ abstract class AbstractCmsManager extends AbstractManager
         $itemId = $itemDto ? $itemDto->getId() : -1;
 
         foreach ($relationEntities as $key => $relationEntity) {
+            if($onlyFields && !isset($onlyFields[$key])) {
+                continue;
+            }
+            
             if (isset($relationEntity['relation_type']) && $relationEntity['relation_type'] === 'many_to_many') {
                 if (isset($relationEntity['only_for_rule']) && $relationEntity['only_for_rule']) {
                     continue;
                 }
+                /** @var AbstractCmsManager $manager */
                 $manager = $relationEntity['manager'];
                 $result[$key] = $manager->getRelativeValues($relationEntity['field'], $relationEntity['relation_field'], $itemId);
 
@@ -478,7 +486,7 @@ abstract class AbstractCmsManager extends AbstractManager
      *
      * @return mixed
      */
-    public function updateItem(int $itemId, array $params, bool $updateRelations = true, bool $setUpdator = true)
+    public function updateItem(int $itemId, array $params, bool $updateRelations = true, bool $setUpdator = true, bool $onlyNotSetFields = false)
     {
         $mapper = $this->getMapper();
         if ($mapper->hasCreator() && $setUpdator) {
@@ -494,7 +502,7 @@ abstract class AbstractCmsManager extends AbstractManager
             $params['updated'] = date('Y-m-j H:i:s');
         }
         $itemDto = $mapper->createDto();
-        $itemDto->fillDtoFromArray($params);
+        $itemDto->fillDtoFromArray($params, $onlyNotSetFields);
 
         $itemDto->setId($itemId);
 
@@ -963,6 +971,16 @@ abstract class AbstractCmsManager extends AbstractManager
     public function getItemsCountByRule(NgsRuleDto $rule)
     {
         return $this->getMapper()->getItemsCountByRule($rule);
+    }
+
+
+    /**
+     * indicates if object can be saved without validation as draft item
+     *
+     * @return bool
+     */
+    public function hasDraftSupport() :bool {
+        return false;
     }
 
 

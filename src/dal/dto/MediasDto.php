@@ -267,6 +267,9 @@ class MediasDto extends AbstractCmsDto
 
             return $streamUrl . '/' . $filePath;
         }
+        if($thumbType) {
+            return $this->getUrl(null, $getDefault, $public);
+        }
         if(!$getDefault) {
             return null;
         }

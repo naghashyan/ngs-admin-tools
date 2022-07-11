@@ -236,8 +236,9 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
 
             if(isset($column['not_standard_column']) && isset($column['content'])) {
                 $result .= '<li ' . $customAttributesToColumn . $indexOfColumnAsAttribute . ' class="f_' . $fieldCamelCaseName . '">'
-                    . $column['content'] .
+                    . str_replace('@ns_value', $dto->$fieldGetter(), $column['content']) .
                     '</li>';
+                continue;
             }
             if(isset($column['is_checkbox']) && $column['is_checkbox']) {
                 $checked = strip_tags($dto->$fieldGetter()) ? ' checked ' : ' ';

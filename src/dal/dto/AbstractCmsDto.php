@@ -17,6 +17,10 @@ use ngs\AdminTools\util\StringUtil;
 
 abstract class AbstractCmsDto extends AbstractSecureDto
 {
+    public const ACTIVE_STATUS = 'active';
+    public const DELETED_STATUS = 'deleted';
+    public const INACTIVE_STATUS = 'inactive';
+    public const DRAFT_STATUS = 'draft';
 
     protected string $tableName = '';
     private $_cmsParentObject = null;

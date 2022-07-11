@@ -53,7 +53,6 @@
                                     <div id="unread_notifications_content" class="notification-content"></div>
                                 </div>
 
-                                                       
                                  <template id="notificationTemplate">
                                     <div class="notification-container border f_notification">
                                         <div class="title-container">
@@ -86,19 +85,18 @@
                                     <div class="dropdown-title-box medium1">
                                         {$ns.firstName} {$ns.lastName}
                                     </div>
-                                    <div class="content-box">
-                                        <a href="javascript:void(0);" class="f_goToProfilePage">
-                                            <i class="icon-svg241"></i>
-                                            Profile
-                                        </a>
-                                          <a href="javascript:void(0);" class="f_goToHelpPage">
-                                            <i class="icon-question-1"></i>
-                                            Help Page
-                                        </a>
-                                        <a href="javascript:void(0);" class="f_menu f_doLogout" data-im-load="admin.loads.main.home">
-                                            <i class="icon-svg138"></i>
-                                            Logout
-                                        </a>
+
+                                    {block name="contex-box-container"}
+                                        <div class="content-box">
+                                            <a href="javascript:void(0);" class="f_goToProfilePage">
+                                                <i class="icon-svg241"></i>
+                                                Profile
+                                            </a>
+                                            <a href="javascript:void(0);" class="f_menu f_doLogout" data-im-load="admin.loads.main.home">
+                                                <i class="icon-svg138"></i>
+                                                Logout
+                                            </a>
+                                     {/block}
                                     </div>
                                 </div>
                             </div>

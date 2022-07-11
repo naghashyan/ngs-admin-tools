@@ -259,23 +259,28 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
 
         $validationResult = $this->validateRequest($requestData);
         if($validationResult['errors']) {
-            $errorText = '<br />';
-            foreach ($validationResult['errors'] as $error) {
-                $errorText .= $error['message'] . '<br />';
-            }
-
             $emptyDto = $manager->getMapper()->createDto();
             $mapArray = $emptyDto->getCmsMapArray();
 
-            foreach ($mapArray as $key => $value) {
-                $errorText = str_replace('>' . $key . '<', '>' . $value['display_name'] . '<', $errorText);
-            }
+            $errorText = ValidateUtil::getErrorTextByErrors($validationResult['errors'], $mapArray);
 
-            throw new NgsValidationException($errorText, 0, null, $validationResult['errors']);
+            if(!$manager->hasDraftSupport()) {
+                throw new NgsValidationException($errorText, 0, null, $validationResult['errors']);
+            }
+            else {
+                $notEmptyErrors = ValidateUtil::getNotEmptyErrors($validationResult['errors']);
+                if(!$notEmptyErrors) {
+                    $validationResult['fields']['status'] = AbstractCmsDto::DRAFT_STATUS;
+                }
+                else {
+                    $errorText = ValidateUtil::getErrorTextByErrors($notEmptyErrors, $mapArray);
+                    throw new NgsValidationException($errorText, 0, null, $notEmptyErrors);
+                }
+            }
         }
-        else {
-            $requestData = $validationResult['fields'];
-        }
+
+        $requestData = $validationResult['fields'];
+
         foreach ($editFields as $methodKey => $methodValue) {
             if($methodValue['relative']) {
                 continue;

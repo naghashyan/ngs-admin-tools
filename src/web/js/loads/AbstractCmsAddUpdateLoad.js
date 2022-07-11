@@ -12,12 +12,11 @@ import ImageDropzoneUtil from "../util/ImageDropzoneUtil.js"
 
 export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
-    currentTabId = "";
-
-
+    
     constructor() {
         super();
         this.childLoadParams = null;
+        this.currentTabId = "";
     }
 
 
@@ -55,10 +54,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     initViewChildLoad(itemRow, object, inputSelector) {
-        if(!this.args().rowClickLoad){
+        if (!this.args().rowClickLoad) {
             return;
         }
-        
+
         itemRow.addEventListener('click', (event) => {
             event.stopPropagation();
             let itemDto = this.getItemFromExisting(inputSelector, object);
@@ -198,7 +197,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     afterLoad() {
-        if(this.isViewMode()) {
+        if (this.isViewMode()) {
             this.initHideAddBtn();
         }
         this._setMainImageIfNoExist();
@@ -219,7 +218,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
         this.ngsImageUpload();
-        if(this.args().editActionType !== "popup") {
+        if (this.args().editActionType !== "popup") {
             this.initBackBtn();
         }
 
@@ -290,7 +289,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             return;
         }
         let helpText = secondSelectContainer.querySelector('.f_help-text');
-        if(!helpText) {
+        if (!helpText) {
             let helpTextExample = document.querySelector('.f_help-text');
             helpTextExample.querySelector('span').innerText = dataForSelection.secondSelectHelpText ? dataForSelection.secondSelectHelpText : " ";
             helpText = helpTextExample;
@@ -312,10 +311,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         select.setAttribute("id", dataForSelection.secondSelectId);
         select.setAttribute("name", nameAttribute);
         select.classList.add("ngs-choice");
-        select.setAttribute('data-ngs-searchable', (data.length > 5)? 'true' : 'false');
+        select.setAttribute('data-ngs-searchable', (data.length > 5) ? 'true' : 'false');
         select.setAttribute('placeholder', labelOldText);
 
-        if(dataForSelection.hasOwnProperty('isMultiple') && dataForSelection.isMultiple) {
+        if (dataForSelection.hasOwnProperty('isMultiple') && dataForSelection.isMultiple) {
             select.setAttribute('multiple', 'multiple');
         }
 
@@ -352,12 +351,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      * @returns {string|*}
      */
     modifyNameAttributeIfItsForMultiple(nameAttribute) {
-        if(nameAttribute.charAt(nameAttribute.length - 1) === ']' && nameAttribute.charAt(nameAttribute.length - 2) === '[') {
+        if (nameAttribute.charAt(nameAttribute.length - 1) === ']' && nameAttribute.charAt(nameAttribute.length - 2) === '[') {
             return nameAttribute.substring(0, nameAttribute.length - 2);
         }
         return nameAttribute
     }
-
 
 
     initTabSelection() {
@@ -378,9 +376,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
         tabElements.click((evt) => {
             this.currentTabId = evt.target.closest(".f_tabTitle").getAttribute("id");
-            if(activePage) {
-                if(activePage.querySelector('.f_g-content-item-inner')) {
-                    activePage.querySelector('.f_g-content-item-inner').scrollTo(0,0);
+            if (activePage) {
+                if (activePage.querySelector('.f_g-content-item-inner')) {
+                    activePage.querySelector('.f_g-content-item-inner').scrollTo(0, 0);
                 }
             }
         });
@@ -388,19 +386,19 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     initPopupClosingInViewModeOnly() {
-        if(this.args().editActionType === "popup") {
+        if (this.args().editActionType === "popup") {
 
             let popupFormContainer = document.getElementById('modal_' + this.getModalLevel());
             let popupForm = popupFormContainer.querySelectorAll('form')[0];
             let button = popupForm.querySelector('.f_close-popup-button');
             button.classList.remove('is_hidden');
 
-            if(!popupForm.querySelector('.f_saveItem') && !popupForm.querySelector('.f_cancel')) {
+            if (!popupForm.querySelector('.f_saveItem') && !popupForm.querySelector('.f_cancel')) {
 
-                const popupOpen = function(e) {
+                const popupOpen = function (e) {
                     e.preventDefault();
 
-                    if(!e.target.closest('form')) {
+                    if (!e.target.closest('form')) {
                         if (MaterialsUtils.getActiveModalInstance()) {
                             MaterialsUtils.getActiveModalInstance().close();
                             popupFormContainer.removeEventListener('click', popupOpen);
@@ -435,7 +433,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      */
     initHideAddBtn() {
         let addButtons = document.querySelectorAll('.f_addItemBtn');
-        if(addButtons.length) {
+        if (addButtons.length) {
             addButtons.forEach(btn => {
                 btn.setAttribute('style', 'display: none;');
             })
@@ -453,13 +451,15 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
 
         tinymce.init({
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | numlist bullist | outdent indent ',
             selector: '#' + this.getContainer() + ' .f_tinymce',
             resize: false,
+            height:300,
             mobile: {
                 menubar: true
             },
-            plugins: [ 'preview', 'code'],
-            doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+            plugins: ['preview', 'code', 'lists'],
+            doctype: '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
 
         })
 
@@ -578,7 +578,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 return;
             }
             if (!this.args().isViewMode && this.args().fromViewPage && this.args().rowClickLoad) {
-                NGS.load(this.args().rowClickLoad, {itemId:this.args().itemId});
+                NGS.load(this.args().rowClickLoad, {itemId: this.args().itemId});
                 return;
             }
 
@@ -628,8 +628,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      */
     saveChildItemData(event) {
         let formElem = event.target.closest("form");
-        this.checkAllFields().then(function (isValid) {
-            if (!isValid) {
+        this.checkAllFields().then(function (validateResult) {
+            if (!validateResult.valid) {
                 formElem.querySelectorAll('.f_tabTitle').removeClass('error');
                 formElem.querySelectorAll('.f_cms_tab-container').forEach((element, index) => {
                     if (element.querySelector('.ngs.invalid') && element.id) {
@@ -760,42 +760,68 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
      */
     saveItemData(event) {
         let formElem = event.target.closest('form');
-
-        this.checkAllFields().then(function (isValid) {
-            if (!isValid) {
+        this.checkAllFields().then(function (validateResult) {
+            if (!validateResult.valid) {
                 formElem.querySelectorAll('.f_tabTitle').removeClass('error');
                 formElem.querySelectorAll('.f_cms_tab-container').forEach((element, index) => {
                     if (element.querySelector('.ngs.invalid') && element.id) {
                         document.getElementById(element.id + '_title').addClass('error');
                     }
                 });
-                return;
-            }
-            tinyMCE.triggerSave();
-            let formData = new FormData(formElem);
+                if(!validateResult.onlyEmptyError) {
+                    return;
+                }
 
-            try {
-                formData = this.beforeSave(formData);
-            } catch (e) {
-                console.log(e.message);
-                return false;
+                if(!this.args().hasDraftSupport) {
+                    return;
+                }
+                else {
+                    DialogUtility.showAlertDialog("Incomplete Issue", "This item has required fields that are not filled up, do you want to save it in DRAFT state?").then(function () {
+                        formElem.querySelectorAll('.f_tabTitle').removeClass('error');
+                        let invalidItems = document.querySelectorAll('.ngs.invalid');
+                        for(let i=0; i<invalidItems.length; i++) {
+                            invalidItems[i].classList.remove("invalid");
+                        }
+                        let errorMessages = document.querySelectorAll('.ngs_validate');
+                        for(let i=0; i<errorMessages.length; i++) {
+                            errorMessages[i].remove();
+                        }
+                        this.doSaveRequest(formElem);
+                    }.bind(this));
+                    return;
+                }
             }
-            this.removeEmptyFileInputs(formData);
-            if (formData === false) {
-                return false;
-            }
+            //HERE
+            return this.doSaveRequest(formElem);
 
-            if (this.args().parentId) {
-                formData.append('parentId', this.args().parentId);
-            }
-            formData = this._mergeWithPageParams(formData);
-            NGS.action(this.args().saveAction, formData, (data) => {
-                this.afterSaveItemDataAction(data);
-            }, (error) => {
-                this.handleErrorCase(formData, error);
-            });
         }.bind(this));
+    }
 
+
+    doSaveRequest(formElem) {
+        tinyMCE.triggerSave();
+        let formData = new FormData(formElem);
+
+        try {
+            formData = this.beforeSave(formData);
+        } catch (e) {
+            console.log(e.message);
+            return false;
+        }
+        this.removeEmptyFileInputs(formData);
+        if (formData === false) {
+            return false;
+        }
+
+        if (this.args().parentId) {
+            formData.append('parentId', this.args().parentId);
+        }
+        formData = this._mergeWithPageParams(formData);
+        NGS.action(this.args().saveAction, formData, (data) => {
+            this.afterSaveItemDataAction(data);
+        }, (error) => {
+            this.handleErrorCase(formData, error);
+        });
     }
 
 
@@ -849,7 +875,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let fieldValidators = this.args().fieldValidators;
         if (!fieldValidators) {
             return new Promise(resolve => {
-                resolve(true);
+                resolve({valid: true});
             });
         }
         let promises = [];
@@ -863,13 +889,16 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         return new Promise(function (resolve, reject) {
             Promise.all(promises).then(function (resolvedPromises) {
                 let isValid = true;
+                let hasErrorExpectEmpty = false;
                 for (let i = 0; i < resolvedPromises.length; i++) {
-                    if (!resolvedPromises[i]) {
+                    if (!resolvedPromises[i].valid) {
                         isValid = false;
-                        break;
+                        if(!resolvedPromises[i].isEmpty) {
+                            hasErrorExpectEmpty = true;
+                        }
                     }
                 }
-                resolve(isValid);
+                resolve({valid: isValid, onlyEmptyError: !hasErrorExpectEmpty});
             }.bind(this));
         });
 
@@ -1065,11 +1094,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
                 let allOldImages = document.querySelectorAll('.f_oldImage');
                 for (let i = 0; i < allOldImages.length; i++) {
-                    if(!allOldImages[i].querySelector('.f_hidden-input-image-id')){
+                    if (!allOldImages[i].querySelector('.f_hidden-input-image-id')) {
                         continue;
                     }
 
-                    let imageId = allOldImages[i].querySelector('.f_hidden-input-image-id') ?.value;
+                    let imageId = allOldImages[i].querySelector('.f_hidden-input-image-id')?.value;
                     if (allOldImages[i].querySelector('.f_isMainRadioButton').isSameNode(checkedIsMainButton)) {
                         formData.append('mainImage', JSON.stringify({oldImageId: imageId}));
                         break;
@@ -1159,7 +1188,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
         if (!element || this._elementIsNotRequired(element)) {                                 //todo: || this._elementIsNotRequired(element)   >>>>   this part was before made by me;  M.J. please tell should I remove this function?
             return new Promise(function (resolve, reject) {
-                resolve(true);
+                resolve({valid: true});
             });
         }
 
@@ -1189,7 +1218,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                     let elementsToShowError = this.getElementsWithMessages(fieldName, validators[i], allValidators, validateResult);
                     let elemIsValid = true;
                     for (let j = 0; j < elementsToShowError.length; j++) {
-
+                        if (!elementsToShowError[j].element) {
+                            continue;
+                        }
                         if (elementsToShowError[j].message) {
                             elemIsValid = false;
                             this.showInvalidError(elementsToShowError[j].element, elementsToShowError[j].message, validateResult.validator);
@@ -1197,7 +1228,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                             this.hideInvalidError(elementsToShowError[j].element, validateResult.validator);
                         }
                     }
-                    resolve(elemIsValid);
+
+                    resolve({valid: elemIsValid, isEmpty: validateResult.isEmpty});
 
                 }.bind(this));
             }.bind(this)));
@@ -1205,13 +1237,18 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
         return new Promise(function (resolve, reject) {
             Promise.all(promisesOfAllValidations).then(function (fieldAllValidationResults) {
+                let isValid = true;
+                let isEmpty = false;
+
                 for (let i = 0; i < fieldAllValidationResults.length; i++) {
-                    if (!fieldAllValidationResults[i]) {
-                        resolve(false);
-                        return;
+                    if (!fieldAllValidationResults[i].valid) {
+                        isValid = false;
+                        if(fieldAllValidationResults[i].isEmpty) {
+                            isEmpty = true;
+                        }
                     }
                 }
-                resolve(true);
+                resolve({valid: isValid, isEmpty: isEmpty});
             });
         });
 
@@ -1350,6 +1387,11 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         let fieldId = this.args().tableName + '_' + fieldName + '_input';
         let currentInput = document.getElementById(fieldId);
         let currentValue = currentInput;
+
+        if (!currentInput) {
+            return {}
+        }
+
         if (!getInputs) {
             if (currentInput.classList.contains('f_tinymce') && currentInput.tagName === 'TEXTAREA') {
                 let id = currentInput.getAttribute('id');
@@ -1384,6 +1426,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 if (getInputs) {
                     result[existingValidator.as] = fieldInput
                 } else {
+                    if (!fieldInput) {
+                        continue;
+                    }
                     if (this.isElementCheckbox(fieldInput)) {
                         result[existingValidator.as] = fieldInput.checked ? 'on' : '';
                     } else {
@@ -1610,7 +1655,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
         onlyPositiveNumbers.forEach((element) => {
             element.addEventListener('input', () => {
-                if(+element.value < 0) {
+                if (+element.value < 0) {
                     element.value = Math.abs(element.value);
                 }
             });
@@ -1631,7 +1676,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         const logsList = document.getElementById('logs_list');
         const lastLog = document.getElementById('items_last_log');
 
-        if(!logShowBtn){
+        if (!logShowBtn) {
             return
         }
 

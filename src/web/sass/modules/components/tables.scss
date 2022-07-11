@@ -110,11 +110,14 @@
 
 
   .table .table-head,
+  .table .table-head:nth-child(2n+1),
   .table .table-head.table-row .left-align,
   .table .table-head.table-row .right-align               { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header", "default") { #{$prop}: $value; } }
   .table .table-head:hover,
+  .table .table-head:nth-child(2n+1):hover,
   .table .table-head.table-row:hover .left-align,
   .table .table-head.table-row:hover .right-align         { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header", "hover") { #{$prop}: $value; } }
+  .table .table-head:hover li,
   .table .table-head li                                   { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header-cell", "default") { #{$prop}: $value; } }
   .table .table-head li:hover                             { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header-cell", "hover") { #{$prop}: $value; } }
 

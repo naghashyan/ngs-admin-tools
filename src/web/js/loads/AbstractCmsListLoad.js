@@ -632,7 +632,7 @@ export default class AbstractListLoad extends AbstractLoad {
      * row click action handler
      */
     initItemRowClick() {
-        document.querySelectorAll('#' + this.getContainer() + ' .f_table_row').click(event => {
+        document.querySelectorAll('#' + this.getContainer() + ' .f_table_row').dblclick(event => {
             if (!this.hasViewLoad()) {
                 return false;
             }

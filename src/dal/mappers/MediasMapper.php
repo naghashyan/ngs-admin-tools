@@ -76,7 +76,7 @@ class MediasMapper extends AbstractCmsMapper
     }
 
 
-    private $GET_ITEM_IMAGES = "SELECT * FROM %s WHERE `object_key` = :itemId AND `object_type` = :itemType AND `type` = 'image'";
+    private $GET_ITEM_IMAGES = "SELECT * FROM %s WHERE `object_key` = :itemId AND `object_type` = :itemType AND `type` = 'image' ORDER BY `is_main` DESC";
 
     /**
      * @param $itemId

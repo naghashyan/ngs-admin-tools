@@ -10,7 +10,7 @@ class TextValidator extends BaseValidator
     private $stringMinLength;
     private $stringMaxLength;
     private $allowedChars;
-
+    private $stringLength;
 
     /**
      * @return mixed
@@ -61,30 +61,49 @@ class TextValidator extends BaseValidator
     }
 
 
+    /**
+     * @return mixed
+     */
+    public function getStringLength()
+    {
+        return $this->stringLength;
+    }
+
+    /**
+     * @param mixed $length
+     */
+    public function setStringLength($length): void
+    {
+        $this->stringLength = $length;
+    }
 
 
     /**
      * @param $fieldName
      * @return bool
      */
-    protected function validate($fieldName) :bool {
+    protected function validate($fieldName): bool
+    {
         $value = $this->getValue();
 
-        if($this->getStringMinLength() !== null && $this->getStringMinLength() > strlen($value)) {
+        if ($this->getStringMinLength() !== null && $this->getStringMinLength() > strlen($value)) {
             $this->setErrorText('field <b class="f_fieldName">' . $fieldName . ' </b>should be not less than ' . $this->getStringMinLength() . ' symbols');
             return false;
-        }else if($this->getStringMaxLength() !== null && $this->getStringMaxLength() < strlen($value)) {
+        } else if ($this->getStringMaxLength() !== null && $this->getStringMaxLength() < strlen($value)) {
             $this->setErrorText('field <b class="f_fieldName">' . $fieldName . '</b> should be not more than ' . $this->getStringMaxLength() . ' symbols');
             return false;
-        }else if($this->getAllowedChars() !== null && !empty($this->getAllowedChars())) {
+        } else if ($this->getAllowedChars() !== null && !empty($this->getAllowedChars())) {
             $chars = str_split($value);
 
             foreach ($chars as $char) {
-                if(!in_array($char, $this->allowedChars)) {
+                if (!in_array($char, $this->allowedChars)) {
                     $this->setErrorText('field <b class="f_fieldName">' . $fieldName . '</b> can contain only chars ' . implode(', ', $this->allowedChars));
                     return false;
                 }
             }
+        } else if ($this->getStringLength() !== null && $this->getStringLength() != strlen($value)) {
+            $this->setErrorText('field <b class="f_fieldName">' . $fieldName . '</b> should be ' . $this->getStringLength() . ' symbols');
+            return false;
         }
 
         return true;

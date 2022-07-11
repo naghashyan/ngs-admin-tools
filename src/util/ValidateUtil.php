@@ -66,6 +66,51 @@ class ValidateUtil
 
 
     /**
+     * returns true if there are errors becide empty error
+     *
+     * @param array $errors
+     * @return array
+     */
+    public static function getNotEmptyErrors(array $errors) :array
+    {
+        $otherErrors = [];
+        foreach($errors as $error) {
+            if(strpos($error['message'], 'is required') === false) {
+                $otherErrors[] = $error;
+            }
+        }
+
+        return $otherErrors;
+    }
+
+
+    /**
+     * returns error text by errors
+     * 
+     * @param array $errors
+     * @param array $fieldsMapping
+     * @return string
+     */
+    public static function getErrorTextByErrors(array $errors, array $fieldsMapping) :string
+    {
+        if(!$errors) {
+            return "";
+        }
+
+        $errorText = '<br />';
+        foreach ($errors as $error) {
+            $errorText .= $error['message'] . '<br />';
+        }
+
+        foreach ($fieldsMapping as $key => $value) {
+            $errorText = str_replace('>' . $key . '<', '>' . $value['display_name'] . '<', $errorText);
+        }
+
+        return $errorText;
+    }
+
+
+    /**
      * validates params by validators 
      * 
      * @param $validators
@@ -80,6 +125,7 @@ class ValidateUtil
 
         foreach($validators as $validatorClass => $values) {
             if(isset($values[0])) {
+            	
                 foreach($values as $value) {
                     /** @var BaseValidator $validator */
                     $validator = new $validatorClass($value['value']);
@@ -97,6 +143,9 @@ class ValidateUtil
                     }
                     if(isset($value['string_max_length'])) {
                         $validator->setStringMaxLength($value['string_max_length']);
+                    }
+                    if(isset($value['string_length'])) {
+                        $validator->setStringLength($value['string_length']);
                     }
                     if(isset($value['allowed_chars'])) {
                         $validator->setAllowedChars($value['allowed_chars']);
@@ -188,6 +237,9 @@ class ValidateUtil
         }
         if(isset($validator['string_max_length'])) {
             $validatorInfo['string_max_length'] = $validator['string_max_length'];
+        }
+        if(isset($validator['string_length'])) {
+            $validatorInfo['string_length'] = $validator['string_length'];
         }
         if(isset($validator['allowed_chars'])) {
             $validatorInfo['allowed_chars'] = $validator['allowed_chars'];

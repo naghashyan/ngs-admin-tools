@@ -52,7 +52,7 @@
         border-bottom-width: 1px;
         border-bottom-style: solid;
         margin-bottom: 20px;
-        padding: 24px 19px 12px;
+        padding: 12px 19px 12px;
       }
       .modal-content-box {
         margin: 0 26px;
@@ -87,6 +87,14 @@
     position: absolute;
     top: 15px;
     right: 25px;
+    color: #afafaf;
+    font-size: 20px;
+  }
+  .popup-close-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 7px;
+    right: 3px;
     color: #afafaf;
     font-size: 20px;
   }
@@ -157,13 +165,6 @@
   max-height: 45%;
   border-radius: 0;
   will-change: bottom, opacity;
-}
-
-.edit-form {
-  .popup-close-btn {
-    position: absolute;
-    right: 0;
-  }
 }
 
 /*----------flexible height popup----------*/

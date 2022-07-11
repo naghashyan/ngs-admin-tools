@@ -25,6 +25,11 @@ export default class TextValidator extends BaseValidator {
                 }
             }
         }
+        if(validationInfo.hasOwnProperty('string_length')) {
+            if(validationInfo.string_length !== value.length) {
+                return "field <b class='f_fieldName'>" + fieldName + " </b> should be " + (validationInfo.string_length) + ' symbols';
+            }
+        }
 
 
         return "";

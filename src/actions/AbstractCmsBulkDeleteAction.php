@@ -14,6 +14,8 @@
 namespace ngs\AdminTools\actions;
 
 
+use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+
 abstract class AbstractCmsBulkDeleteAction extends CmsBulkAction
 {
 
@@ -28,11 +30,14 @@ abstract class AbstractCmsBulkDeleteAction extends CmsBulkAction
 
         $manager = $this->getManager();
         $itemDto = $manager->createDto();
+
         $this->initializeVisibleFieldsMethods($itemDto);
         $paramsBin = $this->getNgsListBinParams();
-        $this->getLogger()->info('bulk delete action started', (array) $paramsBin);
+        $paramsBin = $this->modifySystemsNgsListBinParams($paramsBin);
+
+        $this->getLogger()->info('bulk delete action started', (array)$paramsBin);
         $deleteResult = false;
-        if($paramsBin !== null) {
+        if ($paramsBin !== null) {
             $deleteResult = $manager->deleteByParams($paramsBin);
         }
         $this->addParam('success', $deleteResult);
@@ -40,12 +45,33 @@ abstract class AbstractCmsBulkDeleteAction extends CmsBulkAction
         $this->addParam('afterBulkDeleteActionLoad', $manager->getListLoad());
 
         $this->afterCmsAction();
-        if($deleteResult) {
+        if ($deleteResult) {
             $this->getLogger()->info('bulk delete action finished');
-        }
-        else {
+        } else {
             $this->getLogger()->error('bulk delete action failed');
         }
 
     }
+
+
+    /**
+     *
+     * modify already set params
+     *
+     * @param NgsCmsParamsBin $paramsBin
+     * @return NgsCmsParamsBin
+     */
+
+    protected function modifySystemsNgsListBinParams(NgsCmsParamsBin $paramsBin): NgsCmsParamsBin
+    {
+        $manager = $this->getManager();
+        $itemDto = $manager->createDto();
+
+        if (property_exists($itemDto, 'system')) {
+            $paramsBin->setWhereAndCondition(['dto' => $itemDto, 'field' => 'system', 'conditionType' => 'number'], 0);
+        }
+
+        return $paramsBin;
+    }
+
 }

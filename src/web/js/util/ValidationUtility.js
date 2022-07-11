@@ -76,12 +76,32 @@ let ValidationUtility = {
         }
         else {
             return new Promise(function(resolve, reject) {
-                let message = validatorObject.baseValidate(value, validator, fieldName);
+                let message = "";
+                let isEmpty = false;
+                try {
+                    message = validatorObject.baseValidate(value, validator, fieldName);
+                }
+                catch(error) {
+                    message = error.message;
+                    isEmpty = true;
+                }
+                if(message && typeof message !== 'string') {
+                    isEmpty = true;
+                    for(let attribute in message) {
+                        if(!message.hasOwnProperty(attribute)) {
+                            continue;
+                        }
+                        if(message[attribute] && message[attribute].indexOf('is required') === -1) {
+                            isEmpty = false;
+                        }
+                    }
+                }
+                
                 if(!message) {
                     resolve({success: true, validator: validator.class});
                 }
                 else {
-                    resolve({success: false, message: message, validator: validator.class});
+                    resolve({success: false, isEmpty: isEmpty, message: message, validator: validator.class});
                 }
 
             }.bind(this));

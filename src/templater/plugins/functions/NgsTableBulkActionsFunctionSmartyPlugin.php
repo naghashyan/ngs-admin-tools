@@ -46,10 +46,13 @@ class NgsTableBulkActionsFunctionSmartyPlugin extends AbstractFunctionSmartyPlug
         $class = isset($params['class_form_item']) ? " " .$params['class_form_item'] : "";
         $id = isset($params['id']) ? 'id="' . $params['id'] .'" ' : " ";
         $withoutExport = isset($params['without_export']) && $params['without_export'];
+        $withoutDelete = isset($params['without_delete']) && $params['without_delete'];
         $exportBtn = $withoutExport ? '' : '<a href="javascript:void(0)" class="f_bulk-action" data-type="export_excel">Export (.xls)</a>';
+        $deleteBtn = $withoutDelete ? '' : '<a href="javascript:void(0)" class="f_bulk-action" data-type="delete">Delete</a> ';
         $actions = "";
         $actions .= $exportBtn . ' ';
-        $actions .= '<a href="javascript:void(0)" class="f_bulk-action" data-type="delete">Delete</a> ';
+
+        $actions .= $deleteBtn ;
         if(isset($params['additional_actions']) && $params['additional_actions']) {
             foreach($params['additional_actions'] as $additionalAction) {
                 $actions .= '<a href="javascript:void(0)" class="f_bulk-action" data-type="' . $additionalAction['type'] . '">' .$additionalAction['name'] . '</a> ';

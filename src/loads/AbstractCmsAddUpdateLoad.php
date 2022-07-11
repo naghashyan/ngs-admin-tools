@@ -206,6 +206,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
 
         $validators = $this->getValidators($fieldsType);
         $this->addJsonParam('fieldValidators', $validators);
+        $this->addJsonParam('hasDraftSupport', $manager->hasDraftSupport());
         $this->getLogger()->info($fieldsType . ' load started ' . ($itemDto && $itemDto->getId() ? $itemDto->getId() : ""));
         $this->initializeAddEditFieldsMethods($manager->createDto(), $fieldsType);
         $visibleFields = $this->getAddEditFieldsMethods();

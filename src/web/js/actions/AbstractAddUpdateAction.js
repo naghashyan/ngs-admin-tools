@@ -33,7 +33,7 @@ export default class AbstractAddUpdateAction extends AbstractAction {
 
   initSuccessMessageShowing() {
     if(this.args().warningMessage) {
-      DialogUtility.showWarningDialog('Warning', this.args().warningMessage, {actionResultShow: true, 'timeout' : 1500});
+      DialogUtility.showWarningDialog('Warning', this.args().warningMessage, {actionResultShow: true, 'timeout' : 3000});
       return;
     }
     let successText = '';

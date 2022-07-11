@@ -27,6 +27,8 @@ class ExcelExportExecutor extends AbstractJobExecutor
     private $manager = null;
     private $memoryUsageStart = null;
     private $memoryUsageEnd = null;
+    private ?int $totalCount = null;
+    private ?array $possibleSelectionValues = null;
 
     /**
      * returns current job name
@@ -35,6 +37,16 @@ class ExcelExportExecutor extends AbstractJobExecutor
     public function getJobName() :string
     {
         return "Excel export job";
+    }
+
+
+    /**
+     * chunks length
+     *
+     * @return int
+     */
+    protected function getLimit() :int {
+        return 500;
     }
 
     /**
@@ -49,7 +61,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
         $managerClass = $this->params['manager'];
         $manager = $managerClass::getInstance();
         $this->manager = $manager;
-        return $this->getItemsAddToCsv($progressTracker, [], []);
+        return $this->getItemsAddToCsv($progressTracker, [], [], 0, $this->getLimit());
     }
 
 
@@ -65,27 +77,29 @@ class ExcelExportExecutor extends AbstractJobExecutor
         /** @var AbstractCmsManager $manager */
         $manager = $this->getManager();
         $dto = $manager->getMapper()->createDto();
-        $possibleValues = $manager->getSelectionPossibleValues($dto, true);
+        if($this->possibleSelectionValues === null) {
+            $this->possibleSelectionValues = $manager->getSelectionPossibleValues($dto, true);
+        }
         $paramsBin = $this->getNgsListBinParams($offset, $limit);
         $this->getLogger()->info("doing for offset " . $offset . ' started');
         $itemDtos = $manager->getList($paramsBin);
-        $totalCount = $manager->getItemsCount($paramsBin);
+        if($this->totalCount === null) {
+            $this->totalCount = $manager->getItemsCount($paramsBin);
+        }
         $itemsCount = count($itemDtos);
         foreach ($itemDtos as $itemDto) {
-            if($possibleValues) {
-                $manager->fillDtoWithRelationalData($itemDto, $possibleValues);
+            if($this->possibleSelectionValues) {
+                $manager->fillDtoWithRelationalData($itemDto, $this->possibleSelectionValues, $this->getUsedFields());
             }
         }
-
-
+        $this->onGotItems($itemDtos);
         $this->getLogger()->info("doing for offset " . $offset . ' get data');
         $csvFiles = $this->getCsvFiles($fileNames, $fileTitles, $itemDtos);
-        unset($possibleValues);
         unset($itemDtos);
         $fileNames = $csvFiles['files'];
         $fileTitles = $csvFiles['titles'];
         if($progressTracker) {
-            $progressTracker(floor($offset * 100 / $totalCount));
+            $progressTracker(floor($offset * 100 / $this->totalCount));
         }
         if($itemsCount < $limit) {
             return $this->convertCsvToExcel(NGS()->getDataDir('admin') . '/download_files', $fileNames, $fileTitles);
@@ -94,6 +108,25 @@ class ExcelExportExecutor extends AbstractJobExecutor
 
             return $this->getItemsAddToCsv($progressTracker, $fileNames, $fileTitles, $offset + $limit, $limit);
         }
+    }
+     
+
+    protected function onGotItems(array $items) {
+
+    }
+
+    /**
+     * @return array
+     */
+    private function getUsedFields() {
+        $fieldsToExport = $this->params['fields'];
+        $result = [];
+        foreach($fieldsToExport as $fieldToExport) {
+            if(!in_array($fieldToExport['fieldName'], $result)) {
+                $result[] = $fieldToExport['fieldName'];
+            }
+        }
+        return $result;
     }
 
 
@@ -257,7 +290,6 @@ class ExcelExportExecutor extends AbstractJobExecutor
                     $objPHPExcel->addExternalSheet($newObjPHPExcel->getActiveSheet());
                 }
             }
-
             $this->modifyColumns($objPHPExcel);
             $this->convertColumnTypes($objPHPExcel);
             $objWriter = IOFactory::createWriter($objPHPExcel, 'Xlsx');

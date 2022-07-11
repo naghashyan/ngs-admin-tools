@@ -16,6 +16,7 @@
 namespace ngs\AdminTools\actions;
 
 use Monolog\Logger;
+use ngs\AdminTools\exceptions\NoAccessException;
 use ngs\AdminTools\util\LoggerFactory;
 use ngs\request\AbstractAction;
 use ngs\exceptions\NgsErrorException;
@@ -29,6 +30,15 @@ abstract class AbsctractCmsAction extends AbstractAction
     {
         $this->logger = LoggerFactory::getLogger(get_class($this), get_class($this));
     }
+
+    /**
+     * @throws NoAccessException
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function onNoAccess():void {
+        throw new \Exception('no access');
+    }
+
 
     protected function addPagingParameters()
     {

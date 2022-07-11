@@ -101,8 +101,14 @@ class MediasManager extends AbstractCmsManager
         $newPath = $folderToSave . '/' . $mediaId . '.' . $extension;
 
         if(strpos($filePath, 'http') !== false) {
-            $imageToSet = file_get_contents($filePath);
-            $uploaded = file_put_contents($newPath, $imageToSet);
+            $imageToSet = @file_get_contents($filePath);
+            if($imageToSet) {
+                $uploaded = file_put_contents($newPath, $imageToSet);
+            }
+            else {
+                $this->removeMediaById($mediaId);
+                return false;
+            }
         }
         else {
             $uploaded = move_uploaded_file($filePath, $newPath);
