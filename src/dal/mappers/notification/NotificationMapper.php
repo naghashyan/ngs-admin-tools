@@ -4,6 +4,7 @@
 namespace ngs\AdminTools\dal\mappers\notification;
 
 use ngs\AdminTools\dal\dto\notification\NotificationDto;
+use ngs\AdminTools\dal\dto\notification\NotificationTemplateDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 
@@ -48,7 +49,10 @@ class NotificationMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_NOT_READ_NOTIFICATION = "SELECT * FROM %s WHERE `type`='system' AND `user_id` = :userId AND `read` = 0 ORDER BY `shown` ASC, `id` DESC LIMIT :offset, :limit";
+    private $GET_USER_NOT_READ_NOTIFICATION = "SELECT * 
+    FROM %s 
+    WHERE `type`='system' AND `user_id` = :userId AND `read` = 0 
+    ORDER BY `shown` ASC, `id` DESC LIMIT :offset, :limit";
 
     /**
      * @param int $userId
@@ -145,11 +149,25 @@ class NotificationMapper extends AbstractMysqlMapper
     }
 
 
-    private $UPDATE_JOB_NOTIDICATIONS = "UPDATE %s SET `title`=:title, `content`=:content, `progress_percent`=:progress WHERE job_id=:jobId";
+    private $UPDATE_JOB_NOTIDICATIONS = "UPDATE %s 
+                                         SET `title`=:title, `notification_tempalte_id` = :tempalteId, 
+                                             `level` = :notificationLevel, `content`=:content, `progress_percent`=:progress
+                                         WHERE job_id=:jobId";
 
-    public function updateJobNotifications(string $title, string $content, float $progress, int $jobId) {
+    public function updateJobNotifications(NotificationTemplateDto $template, string $content, float $progress, int $jobId) {
+        $tempalteId = $template->getId();
+        $title = $template->getName();
+        $level = $template->getLevel();
         $sqlQuery = sprintf($this->UPDATE_JOB_NOTIDICATIONS, $this->getTableName());
-        $result = $this->executeQuery($sqlQuery, ['content' => $content, 'progress'=>$progress, 'jobId' => $jobId, 'title' => $title]);
+        $result = $this->executeQuery($sqlQuery,
+            [
+                'content' => $content,
+                'progress'=>$progress,
+                'jobId' => $jobId,
+                'title' => $title,
+                'notificationLevel' => $level,
+                'tempalteId' => $tempalteId
+            ]);
         return $result;
     }
 

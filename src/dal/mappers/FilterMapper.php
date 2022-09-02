@@ -137,6 +137,22 @@ class FilterMapper extends AbstractMysqlMapper
         $sqlQuery = sprintf($this->GET_USER_SAVED_FILTER_BY_NAME, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['userId' => $userId, 'name' => $name, 'itemType' => $itemType]);
     }
+    
+    
+    private $GET_SAVED_FILTER_BY_NAME = 'SELECT * FROM `%s` WHERE `name` = :name';
 
+    /**
+     * get filter by name
+     * @param $nmae
+     *
+     * @return ExportTemplateDto[]
+     *
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function getSavedFilterByName(string $name)
+    {
+        $sqlQuery = sprintf($this->GET_SAVED_FILTER_BY_NAME, $this->getTableName());
+        return $this->fetchRow($sqlQuery, ['name' => $name]);
+    }
 
 }

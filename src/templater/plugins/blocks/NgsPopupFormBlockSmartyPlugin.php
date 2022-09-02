@@ -42,6 +42,7 @@ class NgsPopupFormBlockSmartyPlugin extends AbstractPopupFormBlockSmartyPlugin
                 'display_name' => $params['display_name'] ?? ' ',
                 'dtoId' => '',
                 'dtoUpdated' => '',
+                'className' => $params['className'] ?? ' ',
                 'header' => !(isset($params['no_header']) && $params['no_header']),
                 'footer' => !(isset($params['no_footer']) && $params['no_footer']),
                 'save_and_close_buttons' => !(isset($params['no_save_and_close_buttons']) && $params['no_save_and_close_buttons']),
@@ -83,7 +84,7 @@ class NgsPopupFormBlockSmartyPlugin extends AbstractPopupFormBlockSmartyPlugin
 
         return '<div class="g_scrolable-section">
                     
-                    <form onsubmit="return false;" class="g_scrolable-section f_addUpdateForm edit-form">'
+                    <form onsubmit="return false;" class="g_scrolable-section f_addUpdateForm edit-form '. $params['className'] . '">'
             . $header .
             $closeButtonIcon .
             $params['dtoId'] . $params['dtoUpdated'] .

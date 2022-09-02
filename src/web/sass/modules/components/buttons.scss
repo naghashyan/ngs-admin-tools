@@ -513,6 +513,169 @@
     }
   }
 
+  &.add-button {
+    background-color: transparent;
+    color: $buttonBasicTypeTextColor;
+
+    &.primary {
+      .btn-text-item {
+        color: $buttonPrimaryColor;
+      }
+      .circle {
+        background-color: $buttonPrimaryColor;
+        border-color: $buttonPrimaryColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonPrimaryHoverColor;
+          }
+          .circle {
+            background-color: $buttonPrimaryHoverColor;
+            border-color: $buttonPrimaryColor;
+          }
+        }
+      }
+    }
+    &.secondary {
+      .btn-text-item {
+        color: $buttonSecondaryColor;
+      }
+      .circle {
+        background-color: $buttonSecondaryColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonSecondaryHoverColor;
+          }
+          .circle {
+            background-color: $buttonSecondaryHoverColor;
+          }
+        }
+      }
+    }
+
+    &.success {
+      .btn-text-item {
+        color: $buttonSuccessColor;
+      }
+      .circle {
+        background-color: $buttonSuccessColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonSuccessHoverColor;
+          }
+          .circle {
+            background-color: $buttonSuccessHoverColor;
+          }
+        }
+      }
+    }
+    &.info {
+      .btn-text-item {
+        color: $buttonInfoColor;
+      }
+      .circle {
+        background-color: $buttonInfoColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonInfoHoverColor;
+          }
+          .circle {
+            background-color: $buttonInfoHoverColor;
+          }
+        }
+      }
+    }
+    &.warning {
+      .btn-text-item {
+        color: $buttonWarningColor;
+      }
+      .circle {
+        background-color: $buttonWarningColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonWarningHoverColor;
+          }
+          .circle {
+            background-color: $buttonWarningHoverColor;
+          }
+        }
+      }
+    }
+    &.danger {
+      .btn-text-item {
+        color: $buttonDangerColor;
+      }
+      .circle {
+        background-color: $buttonDangerColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonDangerHoverColor;
+          }
+          .circle {
+            background-color: $buttonDangerHoverColor;
+          }
+        }
+      }
+    }
+
+    &.dark {
+      .btn-text-item {
+        color: $buttonDarkColor;
+      }
+      .circle {
+        background-color: $buttonDarkColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonDarkHoverColor;
+          }
+          .circle {
+            background-color: $buttonDarkHoverColor;
+          }
+        }
+      }
+    }
+    &.light {
+      .btn-text-item {
+        color: $buttonLightColor;
+      }
+      .circle {
+        background-color: $buttonLightColor;
+        color: $buttonLightTextColor;
+      }
+
+      @include media-breakpoint-up(md) {
+        &:hover {
+          .btn-text-item {
+            color: $buttonLightHoverColor;
+          }
+          .circle {
+            background-color: $buttonLightHoverColor;
+          }
+        }
+      }
+    }
+  }
+
   &.rounded {
     border-radius: 50px;
   }
@@ -532,6 +695,11 @@
         margin-bottom: 0;
       }
     }
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
   }
   &.with-small-icon {
     padding: 2px 7px 5px;
@@ -541,6 +709,11 @@
 
     i {
       font-size: 16px;
+    }
+    svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
     }
   }
   &.nowrap-button {
@@ -599,6 +772,37 @@
     }
   }
 }
+.add-button {
+  cursor: pointer;
+  padding-left: 0;
+  padding-right: 0;
+
+  @include media-breakpoint-down(md) {
+    margin: 3px 0;
+  }
+
+  .circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 9px;
+
+    svg {
+      fill: currentColor;
+    }
+    i {
+      position: relative;
+      top: 2px;
+    }
+  }
+  .btn-text-item {
+    position: relative;
+    top: 1px;
+  }
+}
+
 input[type=file], /* FF, IE7+, chrome (except button) */
 input[type=file]::-webkit-file-upload-button { /* chromes and blink button */
   cursor: pointer;

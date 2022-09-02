@@ -1,7 +1,7 @@
 {block name="cms-main-header"}
     <div class="page-title inner border table-title">
         <div class="left-box">
-            <h2 class="title-box">{$ns.sectionName}</h2>
+            <h2 class="title-box">{$ns.sectionName}</h2> <span class="f_error-box error-box is_hidden"></span>
         </div>
         {block name="addButton"}
         {/block}

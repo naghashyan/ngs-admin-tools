@@ -368,16 +368,25 @@ class NgsCmsParamsBin
 
 
     /**
-     * @return string
+     * @return array
      */
-    public function getWhereCondition(): string
+    public function getWhereCondition(): array
     {
         if ($this->getVersion() == 2) {
-            return 'WHERE ' . $this->getWhereConditionFromFilter();
+            $params = [];
+            $condition = $this->getWhereConditionFromFilter(null, null, $params);
+            return [
+                'condition' => 'WHERE ' . $condition,
+                'params' => $params
+            ];
         }
         if (count($this->whereCondition) === 0) {
-            return '';
+            return [
+                'condition' => '',
+                'params' => []
+            ];
         }
+        $params = [];
         $whereConditionSql = 'WHERE ';
         $operator = ' ';
         foreach ($this->whereCondition as $group => $value) {
@@ -390,9 +399,28 @@ class NgsCmsParamsBin
                 }
                 $_value = $queryData['value'];
                 if (is_string($_value) && !in_array($queryData['comparison'], ['in', 'not_in', 'is null', 'is not null'])) {
-                    $_value = ' \'' . $_value . '\' ';
-                } else {
-                    $_value = ' ' . $_value;
+                    $params[] = $_value;
+                    $_value = ' ? ';
+                }
+                else if(is_string($_value) && in_array($queryData['comparison'], ['is null', 'is not null'])) {
+                    $_value = "";
+                    $queryData['comparison'] = strtoupper($queryData['comparison']);
+                }
+                else if(is_string($_value) && in_array($queryData['comparison'], ['in', 'not_in'])) {
+                    $listParams = $_value;
+                    $listParams = str_replace('(', '', $listParams);
+                    $listParams = str_replace(')', '', $listParams);
+                    $listParams = explode(",", $listParams);
+                    $listParamsToInsert = [];
+                    foreach($listParams as $listParam) {
+                        $params[] = $listParam;
+                        $listParamsToInsert[] = '?';
+                    }
+                    $_value = '(' . implode(",", $listParamsToInsert) . ')';
+                }
+                else {
+                    $params[] = $_value;
+                    $_value = ' ? ';
                 }
                 $compresion = $queryData['comparison'];
                 if($compresion === 'in') {
@@ -408,7 +436,10 @@ class NgsCmsParamsBin
             $whereConditionSql .= ')';
         }
 
-        return $whereConditionSql;
+        return [
+            'condition' => $whereConditionSql,
+            'params' => $params
+        ];
     }
 
     private $defaultOperators = ['and' => true, 'or' => true, 'not' => true];
@@ -486,7 +517,7 @@ class NgsCmsParamsBin
     }
 
 
-    public function getWhereConditionFromFilter($filter = null, $operator = null)
+    public function getWhereConditionFromFilter($filter, $operator, array &$params)
     {
         $search = null;
 
@@ -496,25 +527,25 @@ class NgsCmsParamsBin
         }
         $tableName = $this->filterData['table'];
         $result = '';
-        $searchResult = $this->getSearchCondition($search);
+        $searchResult = $this->getSearchCondition($search, $params);
 
         if (!$filter) {
             return $searchResult;
         }
 
         if (isset($filter['or'])) {
-            $result = ' ( ' . $this->getWhereConditionFromFilter($filter['or'], 'or') . ' ) ';
+            $result = ' ( ' . $this->getWhereConditionFromFilter($filter['or'], 'or', $params) . ' ) ';
         } else if (isset($filter['and'])) {
-            $result = ' ( ' . $this->getWhereConditionFromFilter($filter['and'], 'and') . ' ) ';
+            $result = ' ( ' . $this->getWhereConditionFromFilter($filter['and'], 'and', $params) . ' ) ';
         } else if ($filter) {
             $delim = '';
 
             foreach ($filter as $filterItem) {
                 if (isset($filterItem['or'])) {
-                    $result .= $delim . $this->getWhereConditionFromFilter($filterItem, 'or');
+                    $result .= $delim . $this->getWhereConditionFromFilter($filterItem, 'or', $params);
                     $delim = ' ' . $operator . ' ';
                 } else if (isset($filterItem['and'])) {
-                    $result .= $delim . $this->getWhereConditionFromFilter($filterItem, 'and');
+                    $result .= $delim . $this->getWhereConditionFromFilter($filterItem, 'and', $params);
                     $delim = ' ' . $operator . ' ';
                 } else {
                     if ($result) {
@@ -527,14 +558,14 @@ class NgsCmsParamsBin
 
 
                     if ($filterItem['conditionType'] == 'number') {
-                        $result .= $this->getConditionAndSearchValueForNumberField($result, $filterItem);
+                        $result .= $this->getConditionAndSearchValueForNumberField($this->getFieldName($filterItem), $filterItem, $params);
                     } else {
                         $condition = $this->getConditionByType($filterItem);
                         if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) &&
                             ($filterItem['searchValue'] === 'is_null' || $filterItem['searchValue'] === 'is_not_null')) {
                             $result .= $condition;
                         } else {
-                            $searchValue = $this->getSearchValueByType($filterItem);
+                            $searchValue = $this->getSearchValueByType($filterItem, $params);
                             $result .= $condition . $searchValue;
                         }
                     }
@@ -560,23 +591,34 @@ class NgsCmsParamsBin
 
     /**
      * number comparisons are not always correct because of float numbers
-     * @param $result
+     * @param string $fieldName
      * @param $filterItem
+     * @param array $params
      * @return string
      */
-    private function getConditionAndSearchValueForNumberField($result, $filterItem)
+    private function getConditionAndSearchValueForNumberField(string $fieldName, $filterItem, array &$params)
     {
         switch ($filterItem['conditionValue']) {
             case 'equal' :
-                return ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ';
+                $params[] = $filterItem['searchValue'] - self::$epsilion;
+                $params[] = $filterItem['searchValue'] + self::$epsilion;
+                return ' > ? AND ' . $fieldName . ' < ? ';
             case 'greater' :
-                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' ';
+                $params[] = $filterItem['searchValue'];
+                return ' - ' . self::$epsilion . ' > ? ';
             case 'less' :
-                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' ';
+                $params[] = $filterItem['searchValue'];
+                return ' + ' . self::$epsilion . ' < ? ';
             case 'greater_or_equal' :
-                return ' - ' . self::$epsilion . ' > ' . $filterItem['searchValue'] . ' OR (' . $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+                $params[] = $filterItem['searchValue'];
+                $params[] = $filterItem['searchValue'] - self::$epsilion;
+                $params[] = $filterItem['searchValue'] + self::$epsilion;
+                return ' - ' . self::$epsilion . ' > ? OR (' . $fieldName . ' > ? AND ' . $fieldName . ' < ? ) ';
             case 'less_or_equal' :
-                return ' + ' . self::$epsilion . ' < ' . $filterItem['searchValue'] . ' OR (' . $result . ' > ' . ($filterItem['searchValue'] - self::$epsilion) . ' AND ' . $result . ' < ' . ($filterItem['searchValue'] + self::$epsilion) . ' ) ';
+                $params[] = $filterItem['searchValue'];
+                $params[] = $filterItem['searchValue'] - self::$epsilion;
+                $params[] = $filterItem['searchValue'] + self::$epsilion;
+                return ' + ' . self::$epsilion . ' < ? OR (' . $fieldName . ' > ? AND ' . $fieldName . ' < ? ) ';
         }
     }
 
@@ -585,9 +627,10 @@ class NgsCmsParamsBin
      * creates search condition
      *
      * @param $search
+     * @param array $params
      * @return string
      */
-    private function getSearchCondition($search)
+    private function getSearchCondition($search, array &$params)
     {
         $searchResult = '';
         if ($search && $search['searchableFields'] && $search['searchKeys']) {
@@ -597,7 +640,8 @@ class NgsCmsParamsBin
                 foreach ($search['searchableFields'] as $searchableField) {
                     $searchResult .= $searchDelim;
                     //TODO: fix injection
-                    $searchResult .= $searchableField . ' LIKE "%' . $searchKey . '%"';
+                    $searchResult .= $searchableField . ' LIKE ? ';
+                    $params[] = "%". $searchKey . "%";
                     if (!$searchDelim) {
                         $searchDelim = ' OR ';
                     }
@@ -687,9 +731,11 @@ class NgsCmsParamsBin
 
     /**
      * @param $filterItem
+     * @param array $params
+     *
      * @return string
      */
-    private function getSearchValueByType($filterItem)
+    private function getSearchValueByType($filterItem, array &$params)
     {
         if ($filterItem['conditionType'] === 'checkbox') {
             return ' ' . $filterItem['searchValue'] . ' ';
@@ -697,17 +743,19 @@ class NgsCmsParamsBin
             if(is_array($filterItem['searchValue'])) {
                 $values = [];
                 foreach($filterItem['searchValue'] as $filerSearchValue) {
-                    if(is_string($filerSearchValue)) {
-                        $values[] = '"' . $filerSearchValue . '"';
+                    $params[] = $filerSearchValue;
+                    if(!is_numeric($filerSearchValue)) {
+                        $values[] = '"?"';
                     }
                     else {
-                        $values[] = $filerSearchValue;
+                        $values[] = '?';
                     }
                 }
                 return ' (' . implode(',', $values) . ') ';
             }
             else {
-                return ' ' . $filterItem['searchValue'] . ' ';
+                $params[] = $filterItem['searchValue'];
+                return ' ? ';
             }
 
         }
@@ -715,9 +763,12 @@ class NgsCmsParamsBin
         $searchValue = $filterItem['searchValue'];
 
         if (isset($filterItem['conditionValue']) && ($filterItem['conditionValue'] === 'like' || $filterItem['conditionValue'] === 'not_like')) {
-            $searchValue = "%" . $searchValue . "%";
+            $params[] = "%" . $searchValue . "%";
         }
-        return ' "' . $searchValue . '" ';
+        else {
+            $params[] = $searchValue;
+        }
+        return ' ? ';
     }
 
 

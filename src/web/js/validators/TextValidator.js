@@ -7,7 +7,11 @@ export default class TextValidator extends BaseValidator {
     }
 
     validate(value, validationInfo, fieldName) {
-
+        if(validationInfo.hasOwnProperty('allowed_lengths') && validationInfo['allowed_lengths'].length) {
+            if(validationInfo['allowed_lengths'].indexOf(value.length) === -1) {
+                return "field <b class='f_fieldName'>" + fieldName + " </b> symbols count should be " + validationInfo['allowed_lengths'].join(" or ");
+            }
+        }
         if(validationInfo.hasOwnProperty('string_min_length')) {
             if(validationInfo.string_min_length > value.length) {
                 return "field <b class='f_fieldName'>" + fieldName + " </b> should be greater than " + (validationInfo.string_min_length - 1) +  ' symbols';

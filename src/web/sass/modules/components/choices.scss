@@ -166,6 +166,7 @@
 .choices[data-type*='select-multiple'] .choices__inner,
 .choices[data-type*='text'] .choices__inner {
   cursor: pointer;
+
   input {
     cursor: pointer;
     border: none;
@@ -475,6 +476,11 @@
 /*--------------------------------*/
 
 .choices {
+  &.is-focused {
+    .choices__inner {
+      box-shadow: 0 2px 6px rgba($primaryColor,0.36);
+    }
+  }
   &.choices-view-mode {
     pointer-events: none;
 

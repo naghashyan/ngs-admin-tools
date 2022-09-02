@@ -44,6 +44,7 @@ class MathUtil
         $filteredParams = self::prepareFormulaAndParams($formula, $params);
         $precision = 2;
         $parser = new FormulaParser($filteredParams['formula'], $precision);
+        $parser->setValidVariables(array_keys($filteredParams['params']));
         $parser->setVariables($filteredParams['params']);
         $result = $parser->getResult();
         if($result[0] === 'done') {

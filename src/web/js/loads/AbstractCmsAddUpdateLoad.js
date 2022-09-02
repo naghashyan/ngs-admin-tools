@@ -335,7 +335,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             searchEnabled: searchEnabled,
             renderChoiceLimit: 150,
             searchResultLimit: 150,
-            shouldSort: true,
+            shouldSort: !select.getAttribute('data-do-not-sort'),
         });
 
         nameAttribute = this.modifyNameAttributeIfItsForMultiple(nameAttribute);
@@ -489,7 +489,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
                 renderChoiceLimit: 150,
                 searchResultLimit: 150,
-                shouldSort: true,
+                shouldSort: !choiceElem.getAttribute('data-do-not-sort'),
             });
         }
     }
@@ -791,7 +791,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                     return;
                 }
             }
-            //HERE
+
             return this.doSaveRequest(formElem);
 
         }.bind(this));
@@ -818,7 +818,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
         formData = this._mergeWithPageParams(formData);
         NGS.action(this.args().saveAction, formData, (data) => {
-            this.afterSaveItemDataAction(data);
+            this.afterSaveItemDataAction(data, formElem);
         }, (error) => {
             this.handleErrorCase(formData, error);
         });
@@ -848,11 +848,26 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
     //this function is to give possibility to override in other loads
-    afterSaveItemDataAction(data) {
+    afterSaveItemDataAction(data, formElem) {
         if (MaterialsUtils.getActiveModalInstance()) {
             MaterialsUtils.getActiveModalInstance().close();
         }
 
+        console.log(formElem, data);
+        if(formElem && data.repeatTitle) {
+            DialogUtility.showAlertDialog(data.repeatTitle, data.repeatMessage).then(() => {
+                this.onRepeat(data.itemId, data.repeatReason, formElem);
+            }).catch(() => {
+                this.reloadToEdit(data);
+            });
+
+            return;
+        }
+
+        this.reloadToEdit(data)
+    }
+
+    reloadToEdit(data) {
         let params = {
             itemId: data.itemId, fromViewPage: true
         };
@@ -863,7 +878,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         setTimeout(() => {
             NGS.load(this.args().editLoad, params);
         }, 1000);
+    }
 
+    onRepeat(itemId, repeatReason, formElem) {
+        this.doSaveRequest(formElem);
     }
 
     modifyParams(params) {
@@ -1199,6 +1217,16 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         return ValidationUtility;
     }
 
+    /**
+     * get additional param to validate field
+     * 
+     * @param fieldName
+     * @param itemId
+     * @returns {{}}
+     */
+    getAdditionalValidateParams(fieldName, itemId) {
+        return {};
+    }
 
     /**
      * check all validators for given field
@@ -1214,7 +1242,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         for (let i = 0; i < validators.length; i++) {
             let valueToValidate = this.getValidatorValue(fieldName, validators[i], allValidators, false);
             promisesOfAllValidations.push(new Promise(function (resolve, reject) {
-                this.getValidationUtil().validate(valueToValidate, validators[i], this.ngsAction, fieldName, itemId).then(function (validateResult) {
+                let additionalValidateParams = this.getAdditionalValidateParams(fieldName, itemId);
+                this.getValidationUtil().validate(valueToValidate, validators[i], this.ngsAction, fieldName, itemId, additionalValidateParams).then(function (validateResult) {
                     let elementsToShowError = this.getElementsWithMessages(fieldName, validators[i], allValidators, validateResult);
                     let elemIsValid = true;
                     for (let j = 0; j < elementsToShowError.length; j++) {

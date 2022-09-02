@@ -232,6 +232,9 @@
     &.small {
       height: 31px;
     }
+    &:focus {
+      box-shadow: 0 2px 6px rgba($primaryColor, 0.36);
+    }
   }
   textarea {
     height: 144px;
@@ -255,6 +258,10 @@
 
     input {
       height: 38px;
+
+      &:focus {
+        box-shadow: 0 2px 6px rgba($primaryColor,0.36);
+      }
 
       @include media-breakpoint-down(lg) {
         height: 33px;

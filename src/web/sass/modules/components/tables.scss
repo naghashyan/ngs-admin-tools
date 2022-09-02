@@ -118,7 +118,13 @@
   .table .table-head.table-row:hover .left-align,
   .table .table-head.table-row:hover .right-align         { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header", "hover") { #{$prop}: $value; } }
   .table .table-head:hover li,
+  .table .table-head:nth-child(2n+1):hover li,
+  .table .table-head:nth-child(2n+1):hover .left-align,
+  .table .table-head:nth-child(2n+1):hover .right-align,
   .table .table-head li                                   { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header-cell", "default") { #{$prop}: $value; } }
+  .table .table-head:nth-child(2n+1) li:hover,
+  .table .table-head:nth-child(2n+1) .left-align:hover,
+  .table .table-head:nth-child(2n+1) .right-align:hover,
   .table .table-head li:hover                             { @each $prop, $value in glob-map-deep-get($bgtype, "table", "header-cell", "hover") { #{$prop}: $value; } }
 
 }
@@ -354,16 +360,22 @@ table {
       &.image {
         padding: 2px 12px 2px 12px;
 
+        &:hover {
+          z-index: 10;
+
+          img {
+            &:hover {
+              transform: scale(3);
+            }
+          }
+        }
+
         img {
           object-fit: contain;
           width: 23px;
           height: 23px;
           display: block;
           transition: transform 0.2s ease;
-
-          &:hover {
-            transform: scale(2);
-          }
         }
       }
       &.clickable {

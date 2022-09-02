@@ -43,8 +43,9 @@ let ValidationUtility = {
      * @param loadName
      * @param fieldName
      * @param id
+     * @param additionalParams
      */
-    validate: function(value, validator, loadName, fieldName, id=null) {
+    validate: function(value, validator, loadName, fieldName, id=null, additionalParams = null) {
         let validatorObject = this.getValidatorByName(validator.class);
         if(validatorObject.isRequest()) {
             return new Promise(function(resolve, reject) {
@@ -63,6 +64,14 @@ let ValidationUtility = {
                 params.validator = validator;
 
                 params.itemId = id;
+                if(additionalParams) {
+                    for(let attribute in additionalParams) {
+                        if(!additionalParams.hasOwnProperty(attribute)) {
+                            continue;
+                        }
+                        params[attribute] = additionalParams[attribute];
+                    }
+                }
 
                 NGS.load(loadName, params, function(resp) {
                     if(!resp.valid) {

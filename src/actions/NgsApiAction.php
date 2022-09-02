@@ -16,6 +16,9 @@
 namespace ngs\AdminTools\actions;
 
 use Monolog\Logger;
+use ngs\AdminTools\exceptions\api\AuthorizationException;
+use ngs\AdminTools\exceptions\api\InvalidActionException;
+use ngs\AdminTools\exceptions\api\ValidationException;
 use ngs\AdminTools\exceptions\NgsValidationException;
 use ngs\AdminTools\util\LoggerFactory;
 use ngs\AdminTools\util\ValidateUtil;
@@ -72,11 +75,11 @@ abstract class NgsApiAction extends AbstractAction
             $this->getLogger()->info('Action ' . get_class($this) . ": " . $this->action . ' request data is', $args);
             $actionName = $this->action . 'Action';
             if(!method_exists($this, $actionName)) {
-                throw new \Exception('method ' . $actionName . ' not implemented in action class');
+                throw new InvalidActionException('method ' . $actionName . ' not implemented in action class');
             }
             $validateRequestResult = $this->validateRequest($args);
             if($validateRequestResult) {
-                throw new \Exception($validateRequestResult);
+                throw new AuthorizationException($validateRequestResult);
             }
             $result = $this->$actionName($args);
 
@@ -88,9 +91,9 @@ abstract class NgsApiAction extends AbstractAction
             }
             $this->getLogger()->info('Action ' . get_class($this) . ": " . $this->action . ' finished with response', $validatedResult['fields']);
             $this->addParams($validatedResult['fields']);
-        } catch (\Exception $exp) {
+        } catch (\Throwable $exp) {
             $this->getLogger()->info('Action ' . get_class($this) . ": " . $this->action . ' failed: ' . $exp->getMessage());
-            $this->handleError($exp->getMessage());
+            $this->handleError($exp);
         }
     }
 
@@ -98,13 +101,13 @@ abstract class NgsApiAction extends AbstractAction
     /**
      * handle error
      *
-     * @param string $message
+     * @param \Throwable $exception
      * @throws NgsErrorException
      */
-    protected function handleError(string $message) {
-        $message = str_replace('<b class="f_fieldName">', '', $message);
+    protected function handleError($exception) {
+        $message = str_replace('<b class="f_fieldName">', '', $exception->getMessage());
         $message = str_replace('</b>', '', $message);
-        throw new NgsErrorException($message, -1);
+        throw new NgsErrorException($message, $exception->getCode());
     }
 
 
@@ -185,7 +188,7 @@ abstract class NgsApiAction extends AbstractAction
      * returns validated params
      *
      * @return array
-     * @throws NgsValidationException
+     * @throws ValidationException
      */
     protected function getValidatedArgs(): array
     {
@@ -260,7 +263,7 @@ abstract class NgsApiAction extends AbstractAction
      * @param array $errors
      * @param string $type
      *
-     * @throws NgsValidationException
+     * @throws ValidationException
      */
     private function throwValidationError(array $errors, string $type = 'request') {
         $errorsToShow = [];
@@ -289,7 +292,7 @@ abstract class NgsApiAction extends AbstractAction
 
         }
         $errorText = trim($errorText);
-        throw new NgsValidationException($type . ' validation failed: ' . $errorText, 0, null, $errors);
+        throw new ValidationException($type . ' validation failed: ' . $errorText, $errors);
     }
 
     /**

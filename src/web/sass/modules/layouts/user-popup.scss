@@ -153,6 +153,14 @@
   height: 229px;
   z-index: 12000 !important;
 
+  &.custom-dialog-toast {
+    max-width: 680px;
+
+    .toast {
+      max-width: unset;
+    }
+  }
+
   &.fadeOut {
     pointer-events: none;
   }

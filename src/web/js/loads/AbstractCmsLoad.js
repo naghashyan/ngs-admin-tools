@@ -45,7 +45,7 @@ export default class AbstractCmsLoad extends AbstractLoad {
             searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
             renderChoiceLimit: 150,
             searchResultLimit: 150,
-            shouldSort: true,
+            shouldSort: !choiceElem.getAttribute('data-do-not-sort'),
           });
     }
   }
@@ -53,14 +53,27 @@ export default class AbstractCmsLoad extends AbstractLoad {
   afterCmsLoad() {
   }
 
-
-
   //todo: maybe need to init this button in AbstractCmsListLoad.js too, because now addButton is in list.tpl, not in main.tpl
   initAddButton() {
     let addBtns = document.querySelectorAll('#'+this.getContainer() + ' .f_addItemBtn');
     addBtns.unbindClick();
-    addBtns.click(()=>{
-      NGS.load(this.args().addLoad, {});
+    addBtns.click((evt)=> {
+      let btn = evt.target.closest(".f_addItemBtn");
+      if(btn.getAttribute('is-loading')) {
+        return;
+      }
+      btn.setAttribute('is-loading', '1');
+      this.getAddLoadParams().then((params) => {
+        NGS.load(this.args().addLoad, params, () => {
+          btn.removeAttribute('is-loading');
+        });
+      });
+    });
+  }
+
+  getAddLoadParams() {
+    return new Promise((resolve, reject) => {
+      resolve({});
     });
   }
 

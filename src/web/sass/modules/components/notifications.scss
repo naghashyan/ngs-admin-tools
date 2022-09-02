@@ -81,6 +81,8 @@
   border-left: 2px solid $primaryColor;
 
   z-index: $zindex-fixed;
+  max-height: 85%;
+  overflow-y: auto;
 }
 .notification-content {
   max-height: 70vh;

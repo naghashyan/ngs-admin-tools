@@ -16,7 +16,7 @@ let ChoiceManager = {
                 searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
                 renderChoiceLimit: 150,
                 searchResultLimit: 150,
-                shouldSort: true,
+                shouldSort: !choiceElem.getAttribute('data-do-not-sort'),
             });
     }
   }

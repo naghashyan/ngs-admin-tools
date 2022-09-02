@@ -221,11 +221,12 @@ class NgsRuleMapper extends AbstractMysqlMapper
      * returns associative array by sql request
      *
      * @param string $sql
+     * @param array $params
      * @return |null
      */
-    public function getData(string $sql) {
+    public function getData(string $sql, array $params = []) {
         try {
-            return $this->fetchRows($sql, [], ['cache' => false, 'ttl' => 3600, 'force' => false], true);
+            return $this->fetchRows($sql, $params, ['cache' => false, 'ttl' => 3600, 'force' => false], true);
         }
         catch(\Exception $exp) {
             return null;

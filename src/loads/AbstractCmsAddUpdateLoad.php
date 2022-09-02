@@ -115,9 +115,9 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
     abstract public function getManager();
 
     /**
-     * @return int
+     * @return  string|int
      */
-    abstract public function getItemId(): int;
+    abstract public function getItemId(): string|int;
 
 
     /**
@@ -176,10 +176,8 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $beforeLoadEvent = new BeforeLoadEventStructure(['id' => $this->getItemId()], get_class($this), $itemDto);
         $this->getEventManager()->dispatch($beforeLoadEvent);
 
-        if ($this->getItemId() && $this->getItemId() > 0 && $manager->hasImage()) {
-            $image = MediasManager::getInstance()->getItemImageUrl($this->getItemId(), $manager->getMapper()->getTableName());
-            $this->addParam('mainImage', $image);
-        }
+        $this->addMainImage($this->getItemId(), $manager);
+
         $ngsRuleManager = NgsRuleManager::getInstance();
         if ($itemDto && $itemDto->getId()) {
             $itemDto = $ngsRuleManager->modifyDtoByRules($itemDto);
@@ -244,7 +242,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
 
         $this->addParam('helpTexts', $manager->getHelpTexts());
         $this->addParam('defaultValues', $manager->getDefaultValuesOfFields());
-        $this->addParam('possibleValues', $manager->getSelectionPossibleValues($itemDto));
+        $this->addParam('possibleValues', $manager->getSelectionPossibleValues($itemDto, false, $this->getAdditionalDataToGetPossibleValues()));
         $this->addParam('relationValues', $manager->getRelativeSelectedValues($itemDto));
 
         $jsParams = ['itemId' => $this->args()->itemId, 'parentId' => $this->args()->parentId,
@@ -262,6 +260,25 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $this->getEventManager()->dispatch($afterLoadEvent);
         $this->getLogger()->info($fieldsType . ' load finished ' . ($itemDto && $itemDto->getId() ? $itemDto->getId() : ""));
 
+    }
+
+    /**
+     *
+     * @param $itemId
+     * @param $manager
+     * @return void
+     */
+    public function addMainImage($itemId, $manager):void
+    {
+        if ($itemId && $itemId > 0 && $manager->hasImage()) {
+            $image = MediasManager::getInstance()->getItemImageUrl($itemId, $manager->getMapper()->getTableName());
+            $this->addParam('mainImage', $image);
+        }
+    }
+
+    protected function getAdditionalDataToGetPossibleValues()
+    {
+        return [];
     }
 
 
@@ -289,10 +306,13 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
     public function validate(): void
     {
         $validators = $this->getValidators();
-        $validatorWeNeed = $this->args()->validator;
+        $neededValidator = $this->args()->validator;
         $this->addParam("ngsValidator", true);
-        if ($this->args()->itemId && isset($validatorWeNeed['data'])) {
-            $validatorWeNeed['data']['item_id'] = $this->args()->itemId;
+        if ($this->args()->itemId && isset($neededValidator['data'])) {
+            $neededValidator['data']['item_id'] = $this->args()->itemId;
+        }
+        if ($this->args()->companyId && isset($neededValidator['data'])) {
+            $neededValidator['data']['company_id'] = $this->args()->companyId;
         }
         $fieldsWithValidators = [];
         if ($this->args()->fieldName) {
@@ -303,7 +323,21 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
                 $this->addParam('valid', true);
                 return;
             }
-            $fieldsWithValidators = [$fieldName => [$validatorWeNeed]];
+
+            $foundValidator = $neededValidator;
+            foreach ($fieldValidators as $fieldValidator) {
+                if ($fieldValidator['class'] === $neededValidator['class']) {
+                    $foundValidator = $fieldValidator;
+                    if (isset($neededValidator['data']) && $neededValidator['data']) {
+                        foreach ($neededValidator['data'] as $key => $value) {
+                            $foundValidator['data'][$key] = $value;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            $fieldsWithValidators = [$fieldName => [$foundValidator]];
         } else {
             $fieldNames = $this->args()->fieldNames;
             foreach ($fieldNames as $fieldName) {
@@ -314,8 +348,8 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
                 }
                 $modifiedValidator = null;
                 foreach ($fieldValidators as $fieldValidator) {
-                    if ($fieldValidator['class'] === $validatorWeNeed['class']) {
-                        $modifiedValidator = $validatorWeNeed;
+                    if ($fieldValidator['class'] === $neededValidator['class']) {
+                        $modifiedValidator = $neededValidator;
                         $modifiedValidator['as'] = $fieldValidator['as'];
                         break;
                     }
@@ -326,13 +360,14 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             }
         }
 
+
         $validators = ValidateUtil::prepareValidators($fieldsWithValidators, $this->args(), null);
         $result = ValidateUtil::validateRequestData($validators);
 
         if ($result['errors']) {
             $this->addParam('valid', false);
             $errorInfo = [];
-            if (!isset($validatorWeNeed['as'])) {
+            if (!isset($neededValidator['as'])) {
                 foreach ($result['errors'] as $error) {
                     $errorInfo = $error['message'];
                 }
@@ -372,8 +407,12 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $loadObject = new $load();
         $action = StringUtil::getClassNameFromText($loadObject->getSaveAction(), "action");
         if (class_exists($action)) {
+            $dto = null;
+            if ($this->getItemId() && (int)$this->getItemId() > 0) {
+                $dto = $manager->getItemById($this->getItemId());
+            }
             $actionObject = new $action();
-            $actionObject->initializeAddEditFieldsMethods($type);
+            $actionObject->initializeAddEditFieldsMethods($type, $dto);
             $validators = $actionObject->getValidators($this->getItemId());
             return $validators;
         } else {
@@ -425,7 +464,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
     /**
      * before cms loaded
      */
-    public function beforeCmsLoad() :void
+    public function beforeCmsLoad(): void
     {
 
     }
@@ -467,7 +506,8 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
      * key - language id, value ['name' => 'languageName', 'code' => 'isoCode']
      * @return array
      */
-    private function getLanguages() {
+    private function getLanguages()
+    {
         $languageManager = LanguageManager::getInstance();
         return $languageManager->getLanguagesList();
     }
@@ -490,12 +530,12 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
     protected function addItemImagesProperties($itemDto): void
     {
         $mediasManager = MediasManager::getInstance();
-        if($itemDto->getId() && $this->getManager()->hasImage()){
+        if ($itemDto->getId() && $this->getManager()->hasImage()) {
 
             $itemImageProperties = $mediasManager->getItemImagesUrlsAndDescriptions($itemDto->getId(), $itemDto->getTableName());
-            if ($itemImageProperties){
+            if ($itemImageProperties) {
                 $this->addJsonParam('imagesUrls', $itemImageProperties);
-            }else{
+            } else {
                 $defaultUrl = [['url' => ['original' => $mediasManager->getDefaultImage($itemDto->getTableName())]]];
                 $this->addJsonParam('imagesUrls', $defaultUrl);
                 $this->addJsonParam('onlyDefaultImage', true);
@@ -512,9 +552,9 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
     protected function addItemAttachedFilesProperties($itemDto): void
     {
         $mediasManager = MediasManager::getInstance();
-        if($itemDto && $this->getManager()->hasAttachedFile()){
+        if ($itemDto && $this->getManager()->hasAttachedFile()) {
             $itemAttachedFilesProperties = $mediasManager->getItemAttachedFilesProperties($itemDto->getId(), $this->getManager()->getMapper()->getTableName());
-            if ($itemAttachedFilesProperties){
+            if ($itemAttachedFilesProperties) {
                 $this->addJsonParam('files', $itemAttachedFilesProperties);
             }
         }

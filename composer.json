@@ -1,6 +1,6 @@
 {
   "name": "naghashyan/ngs-admin-tools",
-  "version": "v1.0.9",
+  "version": "v1.0.10",
   "type": "library",
   "description": "NGS framework admin panel",
   "keywords": [
@@ -21,7 +21,8 @@
     "phpoffice/phpspreadsheet": "^1.14",
     "monolog/monolog": "^2.1.1",
     "denissimon/formula-parser": "^2.7",
-    "lcobucci/jwt": "*"
+    "lcobucci/jwt": "*",
+    "pubnub/pubnub": "~4.7.0"
   },
   "autoload": {
     "psr-4": {

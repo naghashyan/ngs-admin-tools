@@ -11,7 +11,7 @@ import ExcelExportUtil from "../util/ExcelExportUtil.js";
 import Choices from "../lib/choices.min.js";
 import RowsListManager from "../managers/RowsListManager.js";
 
-export default class AbstractListLoad extends AbstractLoad {
+export default class AbstractCmsListLoad extends AbstractLoad {
 
     constructor() {
         super();
@@ -57,10 +57,17 @@ export default class AbstractListLoad extends AbstractLoad {
 
     //todo: maybe need to init this button in AbstractCmsListLoad.js too, because now addButton is in list.tpl, not in main.tpl
     initAddButton() {
-        let addBtns = document.querySelectorAll('#'+this.getContainer() + ' .f_addItemBtn');
+        let addBtns = document.querySelectorAll('#' + this.getContainer() + ' .f_addItemBtn');
         addBtns.unbindClick();
-        addBtns.click(()=>{
-            NGS.load(this.args().addLoad, {});
+        addBtns.click(() => {
+            let btn = evt.target.closest(".f_addItemBtn");
+            if(btn.getAttribute('is-loading')) {
+                return;
+            }
+            btn.setAttribute('is-loading', '1');
+            NGS.load(this.args().addLoad, {}, () => {
+                btn.removeAttribute('is-loading');
+            });
         });
     }
 
@@ -77,7 +84,7 @@ export default class AbstractListLoad extends AbstractLoad {
             this.initBulkActions(data.exportableFields);
             this.initChoices();
 
-            if(this.getListLoadLevel() === 1) {
+            if (this.getListLoadLevel() === 1) {
                 this.setListDataInLocalStorage();
                 this.initFavoriteFilters();
             }
@@ -93,10 +100,10 @@ export default class AbstractListLoad extends AbstractLoad {
         let uuid = mainSectionUuid.getAttribute('data-ngs-uuid');
 
         let params = this._getNgsParams();
-        if(this.filterManager) {
+        if (this.filterManager) {
             let filter = null;
             filter = this.filterManager.getCurrentFilter();
-            if(filter) {
+            if (filter) {
                 params.filter = filter;
             }
         }
@@ -112,14 +119,13 @@ export default class AbstractListLoad extends AbstractLoad {
      */
     initPagination() {
         let container = document.getElementById(this.getContainer());
-        if(!container) {
+        if (!container) {
             return;
         }
         let ajaxPaginationContainer = container.querySelector('.f_ajax-pagination');
-        if(ajaxPaginationContainer) {
+        if (ajaxPaginationContainer) {
             this.initAjaxPaging();
-        }
-        else {
+        } else {
             this.initPaging();
         }
     }
@@ -146,18 +152,18 @@ export default class AbstractListLoad extends AbstractLoad {
                 continue;
             }
             this.choices[choiceElem.id] = new Choices(choiceElem,
-              {
-                  removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
-                  searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
-                  renderChoiceLimit: 150,
-                  searchResultLimit: 150,
-                  shouldSort: true,
-              });
+                {
+                    removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
+                    searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
+                    renderChoiceLimit: 150,
+                    searchResultLimit: 150,
+                    shouldSort: !choiceElem.getAttribute('data-do-not-sort'),
+                });
         }
     }
 
     getChoiceElemById(elemId) {
-        if(typeof this.choices[elemId] !== 'undefined'){
+        if (typeof this.choices[elemId] !== 'undefined') {
             return this.choices[elemId];
         }
         return null;
@@ -174,7 +180,7 @@ export default class AbstractListLoad extends AbstractLoad {
             let actionType = clickedBtn.getAttribute('data-type');
             let totalSelectionInfo = this.rowsListManager.getSelectionInfo();
 
-            if(this.filterManager) {
+            if (this.filterManager) {
                 let currentFilter = this.filterManager.getCurrentFilter();
                 if (Object.keys(totalSelectionInfo).length && ((currentFilter.and && currentFilter.and.length) || currentFilter.search)) {
                     totalSelectionInfo.filter = JSON.stringify(currentFilter);
@@ -188,9 +194,10 @@ export default class AbstractListLoad extends AbstractLoad {
                 });
                 return;
             }
+
             if (actionType === 'export_excel') {
                 if (this.args().bulkExcelExportAction) {
-                    new ExportTemplatesManager(filterValues, this.args().itemType, (fields) => {
+                    new ExportTemplatesManager(filterValues, this.args().itemType, this.args().bulkExportContentGetAction, (fields) => {
                         let exporter = new ExcelExportUtil(this.modifyFilterForLoad(totalSelectionInfo), this.args().bulkExcelExportAction, this.args().excelFileDownloadLoad);
                         exporter.exportFile(fields);
                     });
@@ -331,23 +338,24 @@ export default class AbstractListLoad extends AbstractLoad {
         if (totalSelectionInfo.totalSelection) {
             this.rowsListManager.changeAllCheckboxItems(true);
         }
-        if((totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.length) ||
-          (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.length)) {
-            for(let i=0; i<checkItemBtn.length; i++) {
+        if ((totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.length) ||
+            (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.length)) {
+            for (let i = 0; i < checkItemBtn.length; i++) {
                 let itemRow = checkItemBtn[i].closest(".f_table_row");
-                if(!itemRow) {
+                if (!itemRow) {
                     continue;
                 }
 
-                if(totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.indexOf(itemRow.getAttribute("data-im-id")) !== -1) {
+ 								let rowItemId = +itemRow.getAttribute("data-im-id")
+ 
+                if (totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.indexOf(rowItemId) !== -1) {
                     checkItemBtn[i].checked = true;
-                }
-                else if(totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.indexOf(itemRow.getAttribute("data-im-id")) !== -1) {
+                } else if (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.indexOf(itemRow.getAttribute("data-im-id")) !== -1) {
                     checkItemBtn[i].checked = false;
                 }
             }
         }
-        
+
         checkItemBtn.keyup((evt) => {
             evt.stopImmediatePropagation();
             if (evt.key === 'Shift' && this.rowsListManager.getIsShiftPressed()) {
@@ -419,8 +427,9 @@ export default class AbstractListLoad extends AbstractLoad {
             errorMessage.innerText = 'name can not be empty';
             return;
         }
-        if(this.filterManager) {
-            let currentFilter = this.filterManager.getCurrentFilter();
+        let currentFilter = {};
+        if (this.filterManager) {
+            currentFilter = this.filterManager.getCurrentFilter();
             if ((currentFilter.and && !currentFilter.and.length) && !currentFilter.search) {
                 errorMessage.innerText = 'you can not save empty filter';
                 return;
@@ -566,7 +575,9 @@ export default class AbstractListLoad extends AbstractLoad {
             params.updateIndex = itemIndex;
             let loadParams = this._getNgsParams();
             loadParams.itemDto = this.args().childLoads.itemDtos[itemIndex];
-            NGS.load(this.args().editLoad, loadParams, null, params);
+            this.addEditLoadAdditionalParams(params).then((params) => {
+                NGS.load(this.args().editLoad, loadParams, null, params);
+            });
         });
     }
 
@@ -609,8 +620,16 @@ export default class AbstractListLoad extends AbstractLoad {
             let params = {}; //this._getNgsParams();
             params.itemId = itemId;
             params.fromListingPage = true;
-            NGS.load(this.args().editLoad, params);
+            this.addEditLoadAdditionalParams(params).then((params) => {
+                NGS.load(this.args().editLoad, params);
+            });
             return false;
+        });
+    }
+
+    addEditLoadAdditionalParams(params) {
+        return new Promise((resolve, reject) => {
+            resolve(params);
         });
     }
 
@@ -853,7 +872,10 @@ export default class AbstractListLoad extends AbstractLoad {
             if (this.args().cmsUUID) {
                 params.cmsUUID = this.args().cmsUUID;
             }
-            NGS.load(this.args().listLoad, this.modifyFilterForLoad(params));
+            PagingManager.isLoading = true;
+            NGS.load(this.args().listLoad, this.modifyFilterForLoad(params), () => {
+                PagingManager.isLoading = false;
+            });
         }, document.getElementById(this.getContainer()));
     }
 
@@ -878,8 +900,8 @@ export default class AbstractListLoad extends AbstractLoad {
     initSorting() {
         document.querySelectorAll("#" + this.getContainer() + " .f_sorting").forEach((sortableElem) => {
             sortableElem.addEventListener('click', evt => {
-  							evt.preventDefault();
-                if(this.rowsListManager){
+                evt.preventDefault();
+                if (this.rowsListManager) {
                     this.rowsListManager.removeSelectedItems();
                 }
                 if (this.columnsResizingClicked) {

@@ -91,6 +91,9 @@ export default class MainCmsLoad extends AbstractLoad {
     initMainMenuDropdownsToggling() {
 
         document.body.addEventListener('click', (e) => {
+            if(e.target.closest('.f_profile-box-inner')) {
+                return;
+            }
             this.handleProfileBoxToggling(e);
             this.handleFavoriteFilterBoxToggling(e);
         })
@@ -159,6 +162,10 @@ export default class MainCmsLoad extends AbstractLoad {
                 document.querySelectorAll('#navBar .nav-item.active-closed').removeClass('active-closed');
                 $(menuElem).closest(".nav-item").addClass('active');
                 let ngsLoad = menuElem.getAttribute('data-im-load');
+                if(menuElem.getAttribute('is-loading')) {
+                    return false;
+                }
+                menuElem.setAttribute("is-loading", '1');
                 if (!ngsLoad) {
                     return false;
                 }
@@ -175,7 +182,9 @@ export default class MainCmsLoad extends AbstractLoad {
                     params.filter = filter;
                 }
 
-                NGS.load(ngsLoad, params);
+                NGS.load(ngsLoad, params, () => {
+                    menuElem.removeAttribute("is-loading");
+                });
 
                 if (this.isMobileDevice()) {
                     $("#main_container .f_minimize-button").click();

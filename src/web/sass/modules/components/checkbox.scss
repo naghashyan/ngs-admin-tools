@@ -96,6 +96,12 @@
     position: absolute;
     opacity: 0;
     pointer-events: none;
+
+    &:focus {
+      & + span {
+        box-shadow: 0 2px 6px rgba($primaryColor,0.46);
+      }
+    }
   }
 
   [type="checkbox"]:not(:checked) + span:not(.lever):before {

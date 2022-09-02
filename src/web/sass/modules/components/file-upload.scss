@@ -360,7 +360,7 @@
 }
 
 .dropzone.dz-started .dz-message {
-  display: none;
+  display: none !important;
 }
 
 .dropzone.dz-drag-hover {
@@ -375,7 +375,9 @@
   text-align: center;
   width: 100%;
 }
-
+.dropzone .dz-message {
+  height: auto;
+}
 .dropzone .dz-message .dz-button {
   background: none;
   color: inherit;
@@ -384,15 +386,15 @@
   font: inherit;
   cursor: pointer;
   outline: inherit;
-  width: 100%;
   width: 116px;
   height: 116px;
   text-align: center;
   padding-top: 35px;
   font-weight: 500;
+  position: relative;
 
   &:before {
-    content: "\e942";
+    content: "\ea2d";
     font-family: 'icomoon' !important;
     font-weight: 900;
     -webkit-font-smoothing: antialiased;
@@ -415,6 +417,7 @@
   display: inline-block;
   vertical-align: top;
   min-height: 100px;
+  margin: 0;
 }
 
 .dropzone .dz-preview:hover {
@@ -481,10 +484,12 @@
 .dropzone .dz-preview .dz-details .dz-size {
   margin-bottom: 1em;
   font-size: 16px;
+  display: none;
 }
 
 .dropzone .dz-preview .dz-details .dz-filename {
   white-space: nowrap;
+  display: none;
 }
 
 .dropzone .dz-preview .dz-details .dz-filename:hover span {
@@ -516,8 +521,13 @@
   z-index: 10;
 }
 
+.dropzone .dz-preview .dz-image span {
+  display: none;
+}
+
 .dropzone .dz-preview .dz-image img {
   display: block;
+  width: 100%;
 }
 
 .dropzone .dz-preview.dz-success .dz-success-mark {

@@ -45,6 +45,9 @@ let PagingManager = {
             goTo(1, parseInt(evt.currentTarget.value));
         });
         let goTo = function (page, limit) {
+            if(PagingManager.isLoading) {
+                return;
+            }
             if(limit && limit !== currentLimit){
                 callBack({
                     page: page,

@@ -53,7 +53,7 @@
                                     <div id="unread_notifications_content" class="notification-content"></div>
                                 </div>
 
-                                 <template id="notificationTemplate">
+                                <template id="notificationTemplate">
                                     <div class="notification-container border f_notification">
                                         <div class="title-container">
                                             <h3 class="t5 title f_title"></h3>
@@ -92,12 +92,13 @@
                                                 <i class="icon-svg241"></i>
                                                 Profile
                                             </a>
-                                            <a href="javascript:void(0);" class="f_menu f_doLogout" data-im-load="admin.loads.main.home">
+                                            <a href="javascript:void(0);" class="f_menu f_doLogout"
+                                               data-im-load="admin.loads.main.home">
                                                 <i class="icon-svg138"></i>
                                                 Logout
                                             </a>
-                                     {/block}
-                                    </div>
+                                        </div>
+                                    {/block}
                                 </div>
                             </div>
                         {/block}
@@ -123,5 +124,215 @@
                 </div>
             </div>
         </section>
+    {/block}
+    {block name='additional-container-main-load'}
+        <div id="exportExcelOverlay" class="modal-overlay"></div>
+        <div id="exportExcelContainer" class="modal ngs-modal">
+            <div class="g_scrolable-section">
+                <div class="g_scrolable-fixed-box edit-box form form-box box">
+                    <div class="g_scrolable-section f_existing-template-content">
+                        <div class="g_fixed-box modal-title-box border">
+                            <div class="t4">Export Excel</div>
+                        </div>
+                        <div class="g_scrolable-fixed-box modal-content-box">
+                            <div class="g_scrolable-fixed-inner-box g-content">
+                                <div class="g-content-item">
+                                    <div class="g-content-item-wrapper">
+                                        <div class="g-content-item-inner g_overflow-y-auto">
+
+                                   
+                                            <div>
+                                                <div class="row">
+                                                    <div class="text-center col is_hidden f_existing-templates-title mt-2">
+                                                        <span class="t5">  Select Template </span>
+                                                    </div>
+
+                                                    <div class="col add_new_template_container">
+                                                        <button type="button" class="button basic primary f_create-new-template">Create new
+                                                            Template
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <span class="text-danger t5 add-category-message f_export-message"></span>
+                                                <ul class="existing-templates large1 f_existing-templates"></ul>
+
+                                            </div>
+
+                                            <div class="space"></div>
+
+                                            <div class="checkbox-item export-checkbox-item">
+                                                <label for="perCompany" class="export-per-company f_export-per-company"
+                                                       style="display: none;">
+                                                    <input type="checkbox" name="per_company" id="perCompany"
+                                                           class="filled-in check-item f_check-item">
+                                                    <span></span>
+                                                    Export products per Catalog Supplier
+                                                </label>
+                                            </div>
+
+                                            <div class="space"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="g_fixed-box modal-action-box f_form-actions">
+                            <button type="button" class="button min-width basic light f_cancel-export-excel">
+                                Cancel
+                            </button>
+                            <button type="button" class="button  min-width basic primary is_disabled f_export-excel">
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="g_scrolable-section  is_hidden  f_add-template-content">
+                        <div class="g_fixed-box modal-title-box border">
+                            <div class="t4">Export Excel</div>
+                        </div>
+                        <div class="g_scrolable-fixed-box modal-content-box">
+                            <div class="g_scrolable-fixed-inner-box g-content">
+                                <div class="g-content-item">
+                                    <div class="g-content-item-wrapper">
+                                        <div class="g-content-item-inner g_overflow-y-auto">
+                                            <span class="text-primary medium1 f_create-tempate">Create new Template</span>
+                                            <div class="space"></div>
+                                            <span class="text-danger t5 add-category-message f_save-template-message"></span>
+                                            <div class="space"></div>
+                                            <div class="form-item">
+                                                <div class="input-field">
+                                                    <label for="templateName t1">Template Name</label>
+                                                    <input type="text" id="templateName" placeholder="Name">
+                                                </div>
+                                            </div>
+
+                                            <div class="space"></div>
+
+                                            {if $ns.customizableExportColumns}
+                                                <button class="f_add-custom-column button primary soft with-icon outline add-custom-column">
+                                                    <i class="left-icon icon-svg180"></i>Add
+                                                    Custom column
+                                                </button>
+                                                <div class="space"></div>
+                                            {/if}
+
+                                            <div class="table export-table bordered_t action_t f_select-fields-container">
+
+                                                <ul class="table-row table-head">
+                                                    <li>Sort</li>
+                                                    <li>System Column Name</li>
+                                                    <li>Export Column Name</li>
+                                                    <li>Exclude</li>
+                                                </ul>
+
+                                                <div class="table-row-group select-fields-info-container f_select-fields-info-container">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="g_fixed-box modal-action-box f_form-actions">
+                            <button type="button" class="button min-width basic light f_cancel-add-template">
+                                Cancel
+                            </button>
+                            <button data-id="" type="button" class="button  min-width basic primary  f_save-template">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="show_notifications" class="show-notifications bgweb3">
+        </div>
+        <template id="existingTemplateToCreate">
+            <div class="template-container f_template-container">
+                <span class="template f_template">{literal}${name}{/literal}</span>
+                <span class="button btn-link outline with-small-icon delete-template f_edit-template"
+                      data-im-id="{literal}${id}{/literal}">
+                    <i class="icon-edit"></i>
+                </span>
+                <span class="button btn-link outline with-small-icon delete-template f_delete-template"
+                      data-im-id="{literal}${id}{/literal}">
+                    <i class="icon-delete-trash"></i>
+                </span>
+            </div>
+        </template>
+    {literal}
+        <template id="selectFieldColumnToCreate">
+            <ul class="table-row  f_sortable-field" data-id="${id}">
+                <li>
+                    <button class="button small btn-link outline with-icon drag-indicator-btn f_drag-indicator_btn"
+                            data-id="${id}">
+                        <i class="icon-drag-handle"></i>
+                    </button>
+                </li>
+                <li class="f_column-system-name">
+                    <div class="input-field">${systemValue}</div>
+                </li>
+                <li class="column-custom-name">
+                    <div class="input-field"><input type="text" class="f_column-export-name" value="${value}"></div>
+                </li>
+
+
+                <li class="f_check-select-fields check-items left-align">
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" class="filled-in check-item  f_check-select-field"/>
+                            <span class="checkbox-span"></span>
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </template>
+        <template id="selectCustomFieldColumnToCreate">
+        <ul class="table-row  f_sortable-field" data-custom-column="1">
+        <li>
+            <button class="button small btn-link outline with-icon drag-indicator-btn f_drag-indicator_btn">
+                <i class="icon-drag-handle"></i>
+            </button>
+        </li>
+        <li class="column-system-name column-custom-name formula-custom-column f_column-system-name">
+        <div class="space"></div>
+        <div class="input-field">
+            <input type="text" class="f_column-export-formula" value="">
+        </div>
+        <div class="space"></div>
+        <div class="icons-box">
+        <span class="icon-tooltip f_help-text">
+        <i class="icon-svg31">
+        <span class="tooltip">Can be used in formula {/literal}
+        {foreach from=$ns.customizableExportColumns item=column}
+            <b>{$column}</b>
+            <br/>
+        {/foreach}
+    {literal}
+        </span>
+        </i>
+        </span>
+        </div>
+        </li>
+        <li class="column-export-name ">
+            <div class="input-field">
+                <div class="space"></div>
+                <input type="text" class="f_column-export-name" value="${value}">
+                <div class="space"></div>
+            </div>
+        </li>
+        <li class="f_check-select-fields check-item  left-align">
+            <div class="checkbox-item">
+                <label>
+                    <input disabled type="checkbox" class="filled-in check-item  f_check-select-field"/>
+                    <span class="checkbox-span"></span>
+                </label>
+            </div>
+        </li>
+        </ul>
+        </template>
+    {/literal}
     {/block}
 {/block}

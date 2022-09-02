@@ -17,6 +17,7 @@ namespace ngs\AdminTools\managers\executors;
 use Closure;
 use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
 use ngs\AdminTools\managers\AbstractCmsManager;
+use ngs\AdminTools\util\MathUtil;
 use ngs\AdminTools\util\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -122,7 +123,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
         $fieldsToExport = $this->params['fields'];
         $result = [];
         foreach($fieldsToExport as $fieldToExport) {
-            if(!in_array($fieldToExport['fieldName'], $result)) {
+            if(isset($fieldToExport['fieldName']) && !in_array($fieldToExport['fieldName'], $result)) {
                 $result[] = $fieldToExport['fieldName'];
             }
         }
@@ -202,6 +203,33 @@ class ExcelExportExecutor extends AbstractJobExecutor
 
 
     /**
+     * get value based on formula
+     *
+     * @param $item
+     * @param string $formula
+     * @return string
+     */
+    protected function getFormulaColumn($item, string $formula) {
+        /** @var AbstractCmsManager $manager */
+        $manager = $this->getManager();
+        $customFields = $manager->getCustomizableExportColumns();
+        $params = [];
+        foreach($customFields as $customField) {
+            if(strpos($formula, $customField) === false) {
+                continue;
+            }
+            $getter = StringUtil::getGetterByDbName($customField);
+            if($item->$getter() === null) {
+                return "";
+            }
+            $params[$customField] = $item->$getter();
+        }
+
+        return MathUtil::getValueByFormula($formula, $params);
+    }
+
+
+    /**
      * return custom value by item and field name
      *
      * @param $item
@@ -242,25 +270,31 @@ class ExcelExportExecutor extends AbstractJobExecutor
         $selectedFields = $this->params['fields'];
         $this->onAddRow($item);
         foreach($selectedFields as $selectedField) {
-            $fieldName = $selectedField['fieldName'];
-            $fieldNameParts = explode(".", $fieldName);
-            if(count($fieldNameParts) > 1) {
-                $fieldName = $fieldNameParts[1];
-            }
-            else {
-                $fieldName = $fieldNameParts[0];
-            }
-            $fieldName = trim($fieldName, "`");
-            $getter = StringUtil::getGetterByDbName($fieldName);
-            if(!method_exists($item, $getter)) {
-                $result[] = $this->getUnknownFieldValue($item, $fieldName);
+            if(isset($selectedField['type']) && $selectedField['type'] === 'custom_column') {
+                $result[] = $this->getFormulaColumn($item, $selectedField['formula']);
                 continue;
             }
-            $value = $item->$getter();
-            if(strpos($value, ',') !== false) {
-                $value = '"' . $value . '"';
+            else {
+                $fieldName = $selectedField['fieldName'];
+                $fieldNameParts = explode(".", $fieldName);
+                if(count($fieldNameParts) > 1) {
+                    $fieldName = $fieldNameParts[1];
+                }
+                else {
+                    $fieldName = $fieldNameParts[0];
+                }
+                $fieldName = trim($fieldName, "`");
+                $getter = StringUtil::getGetterByDbName($fieldName);
+                if(!method_exists($item, $getter)) {
+                    $result[] = $this->getUnknownFieldValue($item, $fieldName);
+                    continue;
+                }
+                $value = $item->$getter();
+                if(strpos($value, ',') !== false) {
+                    $value = '"' . $value . '"';
+                }
+                $result[] = $value;
             }
-            $result[] = $value;
         }
 
         return $result;

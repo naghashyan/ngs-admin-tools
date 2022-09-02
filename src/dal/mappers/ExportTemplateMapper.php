@@ -117,6 +117,21 @@ class ExportTemplateMapper extends AbstractMysqlMapper
         $sqlQuery = sprintf($this->GET_USER_SAVED_TEMPLATE_BY_NAME, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['userId' => $userId, 'name' => $name, 'itemType' => $itemType]);
     }
+    
+    private $GET_SAVED_TEMPLATE_BY_NAME = 'SELECT * FROM `%s` WHERE `name` = :name';
 
+    /**
+     * get template by name
+     * @param $id
+     *
+     * @return ExportTemplateDto[]
+     *
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function getSavedTemplateByName(string $name)
+    {
+        $sqlQuery = sprintf($this->GET_SAVED_TEMPLATE_BY_NAME, $this->getTableName());
+        return $this->fetchRow($sqlQuery, ['name' => $name]);
+    }
 
 }

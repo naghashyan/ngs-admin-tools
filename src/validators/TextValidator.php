@@ -6,7 +6,7 @@ namespace ngs\AdminTools\validators;
 class TextValidator extends BaseValidator
 {
 
-
+    private $allowedLengths = null;
     private $stringMinLength;
     private $stringMaxLength;
     private $allowedChars;
@@ -42,6 +42,22 @@ class TextValidator extends BaseValidator
     public function setStringMaxLength($stringMaxLength): void
     {
         $this->stringMaxLength = $stringMaxLength;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllowedLengths()
+    {
+        return $this->allowedLengths;
+    }
+
+    /**
+     * @param mixed $allowedLengths
+     */
+    public function setAllowedLengths($allowedLengths): void
+    {
+        $this->allowedLengths = $allowedLengths;
     }
 
     /**
@@ -86,8 +102,12 @@ class TextValidator extends BaseValidator
     {
         $value = $this->getValue();
 
+        if($this->getAllowedLengths() && !in_array(strlen($value), $this->getAllowedLengths())) {
+            $this->setErrorText('field <b class="f_fieldName">' . $fieldName . ' </b> symbols count should be ' . implode(" or ", $this->getAllowedLengths()));
+            return false;
+        }
         if ($this->getStringMinLength() !== null && $this->getStringMinLength() > strlen($value)) {
-            $this->setErrorText('field <b class="f_fieldName">' . $fieldName . ' </b>should be not less than ' . $this->getStringMinLength() . ' symbols');
+            $this->setErrorText('field <b class="f_fieldName">' . $fieldName . ' </b> should be not less than ' . $this->getStringMinLength() . ' symbols');
             return false;
         } else if ($this->getStringMaxLength() !== null && $this->getStringMaxLength() < strlen($value)) {
             $this->setErrorText('field <b class="f_fieldName">' . $fieldName . '</b> should be not more than ' . $this->getStringMaxLength() . ' symbols');

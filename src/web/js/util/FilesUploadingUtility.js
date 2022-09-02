@@ -17,6 +17,7 @@ import DialogUtility from "./DialogUtility.js";
 let FilesUploadingUtility = {
 
     allowedFileTypes: [],
+    allowedFileMaxSize: 3145728,
 
     // 1. the part below is for adding files on uploading
     initAdding: function (allowedTypes) {
@@ -151,6 +152,10 @@ let FilesUploadingUtility = {
             if(indexToNotAdd && +indexToNotAdd === i) {
                 continue;
             }
+            if(files[i].size > this.allowedFileMaxSize) {
+                invalidFileNames.push(files[i].name);
+                continue;
+            }
             if(!this.allowedFileTypes.includes(files[i].type)) {
                 invalidFileNames.push(files[i].name);
                 continue;
@@ -179,7 +184,9 @@ let FilesUploadingUtility = {
                 theWordIs = 'are';
                 theWordIt = 'They ';
             }
-            DialogUtility.showErrorDialog('Error',  theWordFile + ' "' + invalidFileNames.join(', <br/ >') + '" ' + theWordIs + ' not pdf. <br />' + theWordIt + theWordIs + ' skipped', {actionResultShow: true, noButton: true, 'timeout' : 3000});
+            DialogUtility.showErrorDialog('Error',  theWordFile + ' "' + invalidFileNames.join(', <br/ >') + '" ' + theWordIs + ' not pdf or size is greater then ( '
+              + (this.allowedFileMaxSize / 1024 / 1024).toFixed(2) +
+              ' MB). <br />' + theWordIt + theWordIs + ' skipped', {actionResultShow: true, noButton: true, 'timeout' : 3000});
 
         }
         return buffer.files
@@ -218,11 +225,14 @@ let FilesUploadingUtility = {
             let formItem = document.createElement('div');
             formItem.classList.add('f_attach-file', 'form-item', 'view-mode', 'attach-file');
             let span = document.createElement('span');
-            let a = document.createElement('a');
-            a.href = files[i].url;
-            a.classList.add('button', 'small-button', 'btn-link', 'outline', 'with-icon');
-            a.setAttribute('title', 'Download the file');
-            a.innerHTML = '<i class="icon-svg193"></i>';
+            let downloadButton = document.createElement('button');
+            // a.href="javascript:void(0);"
+            downloadButton.classList.add('button', 'small-button', 'btn-link', 'outline', 'with-icon', 'f_download-specific-pdf');
+            downloadButton.setAttribute('title', 'Download the file');
+            downloadButton.setAttribute('data-item-id', files[i].id);
+            downloadButton.setAttribute('data-item-name', files[i].name);
+
+            downloadButton.innerHTML = '<i class="icon-svg193"></i>';
             span.innerText = files[i].name;
 
             let deleteButton = document.createElement('button');
@@ -234,8 +244,18 @@ let FilesUploadingUtility = {
                 this._removeAttachedFile(e, filesToRemoveInputNameAttribute);
             });
 
+            downloadButton.addEventListener('click', (e) => {
+                NGS.load('admin.loads.download.download', {
+                    fileName: e.currentTarget.getAttribute('data-item-id') + '.pdf',
+                    fileFolder: 'files', 
+                    downloadName: e.currentTarget.getAttribute('data-item-name'),
+                    keepFile: true
+                })
+              
+            })
+
             let containerForButtons = document.createElement('div');
-            containerForButtons.appendChild(a);
+            containerForButtons.appendChild(downloadButton);
             containerForButtons.appendChild(deleteButton);
 
             formItem.appendChild(span);
@@ -250,10 +270,10 @@ let FilesUploadingUtility = {
     },
 
 
-    _removeAttachedFile: function(e, filesToRemoveInputNameAttribute) {
+    _removeAttachedFile: function (e, filesToRemoveInputNameAttribute) {
         DialogUtility.showAlertDialog("Delete file", "Do you want to remove this file?").then(function (confirmationMessage) {
             let id = e.target.closest('.f_file-delete-btn').getAttribute('file-id');
-            if(!document.getElementById('attachedFilesRemoveSelection')){
+            if (!document.getElementById('attachedFilesRemoveSelection')) {
                 let input = document.createElement('input');
                 input.id = 'attachedFilesRemoveSelection';
                 input.type = 'hidden';
@@ -264,10 +284,10 @@ let FilesUploadingUtility = {
             let inputField = document.getElementById('attachedFilesRemoveSelection');
 
             let sendData = [];
-            if(inputField.value){
+            if (inputField.value) {
                 sendData = inputField.value.split(',');
             }
-            if(!sendData.includes(id)){
+            if (!sendData.includes(id)) {
                 sendData.push(id);
             }
             inputField.value = sendData.join(',');
@@ -281,7 +301,7 @@ let FilesUploadingUtility = {
         this._removeFilesRemoveBtns();
         this._removeFileInputField();
 
-        if(!this.filesExist(tabId)) {
+        if (!this.filesExist(tabId)) {
             document.getElementById('page-for-show-no-files-title').classList.remove('is_hidden');
         }
     },
@@ -290,21 +310,21 @@ let FilesUploadingUtility = {
      *
      * @private
      */
-    _removeFilesRemoveBtns: function() {
+    _removeFilesRemoveBtns: function () {
         let allBtns = document.querySelectorAll('.f_file-delete-btn');
-        if(!allBtns){
+        if (!allBtns) {
             return;
         }
-        allBtns.forEach((btn)=> {
+        allBtns.forEach((btn) => {
             btn.remove();
         });
     },
 
-    _removeFileInputField: function() {
+    _removeFileInputField: function () {
         let input = document.getElementById('attachedFile_input');
-        if(input){
+        if (input) {
             let formItem = input.closest('.form-item');
-            if(formItem){
+            if (formItem) {
                 formItem.remove();
             }
         }
@@ -314,13 +334,10 @@ let FilesUploadingUtility = {
      *
      * @returns {boolean}
      */
-    filesExist: function(tabId) {
+    filesExist: function (tabId) {
         let filesTab = document.getElementById(tabId);
         return !!filesTab.querySelector('.f_attach-file')
     }
-
-
-
 
 
 };

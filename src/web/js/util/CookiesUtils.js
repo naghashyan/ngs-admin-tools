@@ -36,6 +36,20 @@ let CookiesUtils = {
       return userData;
     }
     return null;
+  },
+
+
+  /**
+   * set cookie
+   * @param name
+   * @param value
+   * @param exdays
+   */
+  setCookie: function(name, value, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
   }
 
 };

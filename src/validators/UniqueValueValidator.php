@@ -42,7 +42,6 @@ class UniqueValueValidator extends BaseValidator
         $managerName = $additionalData['manager'];
         /** @var AbstractCmsManager $manager */
         $manager = $managerName::getInstance();
-
         $itemId = isset($additionalData['item_id']) ? $additionalData['item_id'] : null;
         $companyId = isset($additionalData['company_id']) ? $additionalData['company_id'] : null;
         if(!$this->getValue()) {

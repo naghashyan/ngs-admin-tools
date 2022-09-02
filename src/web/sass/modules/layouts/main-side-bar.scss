@@ -286,6 +286,14 @@
             background-color: rgba(255,255,255,0.1);
           }
 
+          & > i {
+            color: $primaryColor;
+          }
+          & > svg {
+            path {
+              fill: $primaryColor;
+            }
+          }
           .arrow-item {
             transform: rotate(180deg);
             transform-origin: center;
@@ -349,6 +357,15 @@
           }
         }
 
+        svg {
+          width: 27px;
+          height: 23px;
+          margin-right: 13px;
+
+          path {
+            fill: currentColor;
+          }
+        }
         i {
           vertical-align: middle;
           width: 27px;
@@ -461,7 +478,7 @@
       border-radius: 0;
 
       & + .main-overlay-for-all-purposes {
-        display: block;
+        display: block !important;
       }
       & + .content-box {
         filter: blur(3px);

@@ -47,12 +47,20 @@
 
       @include glob-map-get-sectionColors(bgweb);
 
+      @include media-breakpoint-down(md) {
+        margin: 20px auto 60px;
+      }
 
       .modal-title-box {
         border-bottom-width: 1px;
         border-bottom-style: solid;
         margin-bottom: 20px;
         padding: 12px 19px 12px;
+
+        .t4 {
+          font-size: 16px;
+          line-height: 21px;
+        }
       }
       .modal-content-box {
         margin: 0 26px;

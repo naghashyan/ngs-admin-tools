@@ -32,6 +32,9 @@ export default class FilterManager {
 
             if (filterBoxId === 'mainFilter') {
                 let oldElement = document.getElementById(filterBoxId);
+                if (!oldElement) {
+                       return;
+                }
                 let newElement = oldElement.cloneNode(true);
                 oldElement.parentNode.replaceChild(newElement, oldElement);
             } else {
@@ -78,6 +81,7 @@ export default class FilterManager {
 
         this.initShowDetailedInfosOfCriterias(document.getElementById(this.filterBoxId));
     }
+
 
     onFilterChange(handler) {
         if (typeof handler === 'function' && !this.filterChangeHandler) {
@@ -563,7 +567,7 @@ export default class FilterManager {
         let activeFiltersContainer = filterBox.querySelector('.f_active-filters .f_criteria-box');
         activeFiltersContainer.classList.add('active');
 
-        let existingFilterItemsCount = activeFiltersContainer.querySelectorAll('.f_filter-item').length;
+        let existingFilterItemsCount = activeFiltersContainer.querySelectorAll('.f_filter-item:not(.is_hidden)').length;
         let newCriteriaItem = this._createCriteriaItem('criteria - ' + (existingFilterItemsCount + 1), filterItems);
 
         activeFiltersContainer.appendChild(newCriteriaItem);
@@ -625,6 +629,10 @@ export default class FilterManager {
 
         let newFilterItemNameContainer = document.createElement('button');
         newFilterItemNameContainer.classList.add('filter-name-container', 'f_filter-name-container');
+        if((!filterItems.or && !filterItems.and) && filterItems.conditionType === 'not_in') {
+            //the deleted items filter, should not be shown in UI
+            newFilterItem.classList.add('is_hidden');
+        }
         newFilterItemNameContainer.innerHTML = `<span class="f_criteria-name">${name}</span>`;
 
         let criteriaRemoveBtn = document.createElement('button');
@@ -1862,7 +1870,7 @@ export default class FilterManager {
             searchEnabled: searchable,
             renderChoiceLimit: 150,
             searchResultLimit: 150,
-            shouldSort: true
+            shouldSort: !selectItem.getAttribute('data-do-not-sort')
         });
     }
 

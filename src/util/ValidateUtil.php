@@ -86,7 +86,7 @@ class ValidateUtil
 
     /**
      * returns error text by errors
-     * 
+     *
      * @param array $errors
      * @param array $fieldsMapping
      * @return string
@@ -125,7 +125,6 @@ class ValidateUtil
 
         foreach($validators as $validatorClass => $values) {
             if(isset($values[0])) {
-            	
                 foreach($values as $value) {
                     /** @var BaseValidator $validator */
                     $validator = new $validatorClass($value['value']);
@@ -146,6 +145,9 @@ class ValidateUtil
                     }
                     if(isset($value['string_length'])) {
                         $validator->setStringLength($value['string_length']);
+                    }
+                    if(isset($value['allowed_lengths']) && method_exists($validator, 'setAllowedLengths')) {
+                        $validator->setAllowedLengths($value['allowed_lengths']);
                     }
                     if(isset($value['allowed_chars'])) {
                         $validator->setAllowedChars($value['allowed_chars']);
@@ -184,6 +186,7 @@ class ValidateUtil
                 }
             }
             else {
+
                 /** @var BaseValidator $validator */
                 $validator = new $validatorClass($values['params']);
                 if(isset($values['additional_params']['data'])) {

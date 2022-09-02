@@ -211,4 +211,39 @@ class MediasMapper extends AbstractCmsMapper
         $query = sprintf('UPDATE %s SET `is_main` = NULL WHERE `object_type` = :objectType AND `object_key` = :objectKey AND `is_main` = 1', $this->getTableName());
         $this->fetchRows($query, ['objectType' => $tableName, 'objectKey' => $itemId]);
     }
+
+
+    /**
+     * @param $objectId
+     * @param $objectType
+     * @return MediasDto|null
+     */
+    public function getMainImage($objectId, $objectType) {
+        try {
+            $query = sprintf($this->GET_ITEM_MAIN_IMAGE, $this->getTableName());
+            return $this->fetchRow($query, ['objectId' => $objectId, 'objectType' => $objectType]);
+        }
+        catch(\Exception $exp) {
+            $this->getLogger()->error('failed to get main media: ' . $exp->getMessage());
+            return null;
+        }
+
+    }
+
+
+    private $GET_ITEM_BY_OBJECT_TYPE_AND_OBJECT_KEY_AND_DESCRIPTION = "SELECT *  FROM %s  WHERE `object_key` = :itemId AND `object_type` = :itemType AND `description` = :description";
+
+
+    public function getItemByObjectTypeAndObjectKeyAndDescription($objectId, $objectType,$description) {
+        try {
+            $query = sprintf($this->GET_ITEM_BY_OBJECT_TYPE_AND_OBJECT_KEY_AND_DESCRIPTION, $this->getTableName());
+            return $this->fetchRow($query, ['itemId' => $objectId, 'itemType' => $objectType,'description'=>$description]);
+        }
+        catch(\Exception $exp) {
+            $this->getLogger()->error('failed to get media by object type ,object id and description: ' . $exp->getMessage());
+            return null;
+        }
+
+    }
+
 }

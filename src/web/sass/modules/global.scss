@@ -154,7 +154,10 @@ template {
     margin-left: 6px;
 
     @include media-breakpoint-down(md) {
-      padding: 0;
+      padding-left: 5px;
+      padding-right: 5px;
+      text-align: center;
+      margin-left: 0;
 
       .left-icon {
         & + span {

@@ -21,6 +21,7 @@ class NotificationTemplateDto extends AbstractCmsDto
     protected $inEmail;
     protected $inSystem;
     protected $eventName;
+    protected $level;
     protected $created;
     protected $updated;
     protected $createdBy;
@@ -37,6 +38,7 @@ class NotificationTemplateDto extends AbstractCmsDto
         'in_email' => ['type' => 'checkbox','filterable' => true, 'help_text' => 'Notify Method', 'validators' => [['class' => TextValidator::class]], 'actions' => ['add', 'edit'], 'required_in' => []],
         'in_system' => ['type' => 'checkbox','filterable' => true,'help_text' => 'Notify Method',  'validators' => [['class' => TextValidator::class]], 'actions' => ['add', 'edit'], 'required_in' => []],
         'event_name' => ['type' => 'select','help_text' => 'Subscribed Event name','display_name'=>'Event to subscribe', 'validators' => [['class' => TextValidator::class, 'is_required' => true]], 'actions' => ['add', 'edit'], 'required_in' => []],
+        'level' => ['type' => 'select','help_text' => 'Level of the notification','display_name'=>'Level', 'validators' => [['class' => TextValidator::class, 'is_required' => true]], 'actions' => ['add', 'edit'], 'required_in' => []],
         'groups' => ['type' => 'select','filterable' => true,'display_name'=>'User Group', 'help_text' => 'User Groups That Should Be Notified', 'validators' => [['class' => TextValidator::class, 'is_required' => true]], 'actions' => ['add', 'edit'], 'required_in' => []],
         'created' => ['type' => 'date', 'security_configurable' => false, 'filterable' => true, 'display_name' => 'Created', 'field_name' => 'created', 'sortable' => true, 'visible' => true, 'actions' => []],
         'updated' => ['type' => 'date', 'security_configurable' => false, 'filterable' => true,'display_name' => 'Updated', 'field_name' => 'updated', 'sortable' => true, 'visible' => false, 'actions' => []],
@@ -141,6 +143,24 @@ class NotificationTemplateDto extends AbstractCmsDto
     {
         $this->eventName = $eventName;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param mixed $level
+     */
+    public function setLevel($level): void
+    {
+        $this->level = $level;
+    }
+
+
 
     /**
      * @return mixed

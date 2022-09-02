@@ -109,13 +109,20 @@ class ExportTemplatesManager extends AbstractManager
      *
      * @throws \ngs\exceptions\DebugException
      */
-    public function saveUserTemplate($userId, $itemType, $name, $fields) {
+    public function saveUserTemplate($userId, $itemType, $name, $fields, $itemId = null)
+    {
         $mapper = ExportTemplateMapper::getInstance();
         $templateDto = $mapper->createDto();
         $templateDto->setItemType($itemType);
         $templateDto->setName($name);
         $templateDto->setUserId($userId);
         $templateDto->setFields($fields);
+
+        if ($itemId) {
+            $templateDto->setId($itemId);
+            $mapper->updateByPK($templateDto);
+            return $itemId;
+        }
 
         $id = $mapper->insertDto($templateDto);
 
@@ -159,6 +166,17 @@ class ExportTemplatesManager extends AbstractManager
         $result = $mapper->deleteByPK($templateId);
 
         return $result !== null;
+    }
+    
+     /**
+     * @param $name
+     * @return \ngs\AdminTools\dal\dto\ExportTemplateDto[]
+     * @throws \ngs\exceptions\DebugException
+     */
+    public function getSavedTemplateByName(string $name) {
+        $mapper = ExportTemplateMapper::getInstance();
+        $template = $mapper->getSavedTemplateByIName($name);
+        return $template;
     }
 
 

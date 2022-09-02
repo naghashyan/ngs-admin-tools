@@ -74,6 +74,16 @@ abstract class AbstractCmsManager extends AbstractManager
 
 
     /**
+     * returns columns for the item that can be used in formula for the export
+     * @return array
+     */
+    public function getCustomizableExportColumns() :array
+    {
+        return [];
+    }
+
+
+    /**
      * fill dto with possible values
      * @param $dto
      * @param array $possibleValues
@@ -84,13 +94,13 @@ abstract class AbstractCmsManager extends AbstractManager
         $dtoRelativeValues = $this->getRelativeSelectedValues($dto, $onlyFields);
         foreach($possibleValues as $fieldName => $possibleValues) {
             $relativeValues = [];
+
             if(isset($relationalFields[$fieldName]) && $relationalFields[$fieldName]['relation_type'] === 'many_to_many') {
                 if(isset($relationalFields[$fieldName]['only_for_rule']) && $relationalFields[$fieldName]['only_for_rule']) {
                     continue;
                 }
                 $relativeValues = isset($dtoRelativeValues[$fieldName]) ? $dtoRelativeValues[$fieldName] : [];
             }
-
 
             $setter = StringUtil::getSetterByDbName($fieldName);
             $getter = StringUtil::getGetterByDbName($fieldName);
@@ -124,14 +134,17 @@ abstract class AbstractCmsManager extends AbstractManager
 
     /**
      * @param $itemDto
+     * @param bool $forFilter
+     * @param array $additionalData
+     *
      * @return array
      */
-    public function getSelectionPossibleValues($itemDto, bool $forFilter = false)
+    public function getSelectionPossibleValues($itemDto, bool $forFilter = false, array $additionalData = [])
     {
         if (isset($this->possibleValues[get_class($itemDto)])) {
             return $this->modifySelectionValues($this->possibleValues[get_class($itemDto)]);
         }
-        $selectValues = $this->getPossibleValuesForSelects($itemDto, $forFilter);
+        $selectValues = $this->getPossibleValuesForSelects($itemDto, $forFilter, $additionalData);
         $relationEntities = $this->getRelationEntities();
         foreach ($relationEntities as $key => $relationEntity) {
             if (isset($relationEntity['relation_type']) && $relationEntity['relation_type'] === 'many_to_many') {
@@ -147,7 +160,6 @@ abstract class AbstractCmsManager extends AbstractManager
         return $this->modifySelectionValues($selectValues);
     }
 
-
     /**
      * when need to do getList, and need to set paramsBin some condition, override this function.
      * need this function because otherwise should override the "getSelectionPossibleValues" function, and there are some private fields.
@@ -160,7 +172,7 @@ abstract class AbstractCmsManager extends AbstractManager
 
 
     /**
-     * @param $itemDto
+     * @param AbstractCmsDto $itemDto
      * @param array|null $onlyFields
      *
      * @return array
@@ -170,32 +182,36 @@ abstract class AbstractCmsManager extends AbstractManager
         $relationEntities = $this->getRelationEntities();
         $result = [];
 
+
         $itemId = $itemDto ? $itemDto->getId() : -1;
 
         foreach ($relationEntities as $key => $relationEntity) {
-            if($onlyFields && !isset($onlyFields[$key])) {
+            if($onlyFields && !in_array($key, $onlyFields) && !in_array($itemDto->getTableName() . '.' . $key, $onlyFields)) {
                 continue;
             }
-            
+
             if (isset($relationEntity['relation_type']) && $relationEntity['relation_type'] === 'many_to_many') {
+
                 if (isset($relationEntity['only_for_rule']) && $relationEntity['only_for_rule']) {
                     continue;
                 }
                 /** @var AbstractCmsManager $manager */
                 $manager = $relationEntity['manager'];
                 $result[$key] = $manager->getRelativeValues($relationEntity['field'], $relationEntity['relation_field'], $itemId);
-
             }
         }
+
         return $result;
     }
 
 
     /**
      * @param $itemDto
+     * @param bool $forFilter
+     * @param array $additionalData
      * @return array
      */
-    public function getPossibleValuesForSelects($itemDto, bool $forFilter = false): array
+    public function getPossibleValuesForSelects($itemDto, bool $forFilter = false, array $additionalData = []): array
     {
         return [];
     }
@@ -734,6 +750,15 @@ abstract class AbstractCmsManager extends AbstractManager
     }
 
     /**
+     * action used to change content in export items as excel  templates
+     * @return string
+     */
+    public function getBulkExcelExportContentAction(): string
+    {
+        return "ngs.AdminTools.actions.exportTemplates.get";
+    }
+
+    /**
      * action used to bulk export items as excel
      * @return string
      */
@@ -847,6 +872,16 @@ abstract class AbstractCmsManager extends AbstractManager
      * @return AbstractCmsMapper
      */
     public abstract function getMapper();
+    
+    
+      /**
+     * @return null
+     */
+    public function getChildMapper()
+    {
+        return null;
+    }
+    
 
     /**
      * @return AbstractCmsDto

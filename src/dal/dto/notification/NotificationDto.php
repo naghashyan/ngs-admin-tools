@@ -17,6 +17,7 @@ class NotificationDto extends AbstractDto
     protected $content;
     protected $read;
     protected $shown;
+    protected $level;
     protected $withProgress;
     protected $progressPercent;
     protected $type;
@@ -32,6 +33,7 @@ class NotificationDto extends AbstractDto
         'title' => 'title',
         'content' => 'content',
         'read' => 'read',
+        'level' => 'level',
         'shown' => 'shown',
         'with_progress' => 'withProgress',
         'progress_percent' => 'progressPercent',
@@ -135,6 +137,22 @@ class NotificationDto extends AbstractDto
     public function setShown($shown): void
     {
         $this->shown = $shown;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param mixed $level
+     */
+    public function setLevel($level): void
+    {
+        $this->level = $level;
     }
 
     /**

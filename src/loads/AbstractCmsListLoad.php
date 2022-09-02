@@ -110,10 +110,13 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         $itemType = $this->getManager()->getMapper()->getTableName();
 
         if(!$this->args()->filter && !$this->args()->cmsUUID) {
-            /** @var FilterDto $preselectedFilter */
-            $preselectedFilter = $filterManager->getEntityPreselectedFilter($currentUserId, $itemType);
-            if($preselectedFilter) {
-                $this->args()->filter = json_decode($preselectedFilter->getFilter(), true);
+            $preselectedFilter = $this->getPreselectedFilter($currentUserId, $itemType);
+            if(!$preselectedFilter) {
+                /** @var FilterDto $preselectedFilter */
+                $preselectedFilter = $filterManager->getEntityPreselectedFilter($currentUserId, $itemType);
+                if($preselectedFilter) {
+                    $this->args()->filter = json_decode($preselectedFilter->getFilter(), true);
+                }
             }
         }
 
@@ -157,6 +160,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         $this->addJsonParam('addLoad', $manager->getAddLoad());
         $this->addJsonParam('bulkExcelExportAction', $manager->getBulkExcelExportAction());
         $this->addJsonParam('excelFileDownloadLoad', $manager->getExcelFileDownloadLoad());
+        $this->addJsonParam('bulkExportContentGetAction', $manager->getBulkExcelExportContentAction());
         $this->addJsonParam('bulkDeleteAction', $manager->getBulkDeleteAction());
         $this->addJsonParam('rowClickLoad', $manager->getRowClickLoad());
         $this->addJsonParam('mainLoad', $manager->getMainLoad());
@@ -194,6 +198,16 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
         }
 
         $this->getLogger()->info('load finished, loaded items count ' . count($itemDtos));
+    }
+
+
+    /**
+     * can return filter which will be applied if no filter selected
+     *
+     * @return null
+     */
+    protected function getPreselectedFilter() {
+        return null;
     }
 
     /**

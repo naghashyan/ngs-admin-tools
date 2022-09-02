@@ -105,7 +105,7 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     /**
      * @var string
      */
-    private $GET_LIST = 'SELECT %s %s FROM %s %s %s %s LIMIT :offset, :limit';
+    private $GET_LIST = 'SELECT %s %s FROM %s %s %s %s LIMIT ?, ?';
     private $GET_UNLIMITED_LIST = 'SELECT %s %s FROM %s %s %s %s';
 
     /**
@@ -126,11 +126,6 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             $joinCondition .= ' LEFT JOIN `users` as creatorUser ON `' . $this->getTableName() . '`.`created_by` = `creatorUser`.`id`
                 LEFT JOIN `users` as updateUser ON `' . $this->getTableName() . '`.`updated_by` = `updateUser`.`id`';
 
-        }
-        $bindArray = array();
-        if($paramsBin->getLimit()) {
-            $bindArray['offset'] = (int)$paramsBin->getOffset();
-            $bindArray['limit'] = (int)$paramsBin->getLimit();
         }
 
 
@@ -182,10 +177,18 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
 
             $selectCondition = $this->getTableName() . ".id, " . $this->getTableName() . ".name as value" . $additionalSelect;
         }
+
+        $whereConditionResult = $this->getWhereCondition($paramsBin);
         $sqlQuery = sprintf($sql, $selectCondition, $creatorAndUpdaterSelects, $this->getTableName(),
-            $joinCondition, $this->getWhereCondition($paramsBin), $sortBySql);
+            $joinCondition, $whereConditionResult['condition'], $sortBySql);
+        $bindArray = $whereConditionResult['params'];
+        if($paramsBin->getLimit()) {
+            $bindArray[] = (int)$paramsBin->getOffset();
+            $bindArray[] = (int)$paramsBin->getLimit();
+        }
 
         if(!$forSelect) {
+
             $res = $this->fetchRows($sqlQuery, $bindArray);
             return $res;
         }
@@ -238,8 +241,9 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     public function deleteByParams(NgsCmsParamsBin $paramsBin)
     {
         try {
-            $sqlQuery = sprintf($this->DELETE_BY_PARAMS, $this->getTableName(), $this->getWhereCondition($paramsBin));
-            $res = $this->executeUpdate($sqlQuery, []);
+            $whereConditionResult = $this->getWhereCondition($paramsBin);
+            $sqlQuery = sprintf($this->DELETE_BY_PARAMS, $this->getTableName(), $whereConditionResult['condition']);
+            $res = $this->executeUpdate($sqlQuery, $whereConditionResult['params']);
             if (is_numeric($res)) {
                 return true;
             }
@@ -345,9 +349,10 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
      */
     public function getItemsCount(NgsCmsParamsBin $paramsBin): int
     {
+        $whereConditionResult = $this->getWhereCondition($paramsBin);
         $sqlQuery = sprintf($this->GET_COUNT, $this->getTableName(),
-            $paramsBin->getJoinCondition(), $this->getWhereCondition($paramsBin));
-        return $this->fetchField($sqlQuery, 'count', []);
+            $paramsBin->getJoinCondition(), $whereConditionResult['condition']);
+        return $this->fetchField($sqlQuery, 'count', $whereConditionResult['params']);
     }
 
 
@@ -381,7 +386,9 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
         try {
 
             $ngsRuleManager = NgsRuleManager::getInstance();
-            $sql = $ngsRuleManager->getSqlConditionFromRule($rule, false);
+            $ruleConditionResult = $ngsRuleManager->getSqlConditionFromRule($rule, false);
+            $sql = $ruleConditionResult['condition'];
+            $params = $ruleConditionResult['params'];
 
             $orderBySql = $paramsBin->getOrderBy();
             $sortBySql = strpos($paramsBin->getSortBy(), '.') !== false ? $paramsBin->getSortBy() : $ngsRuleManager->getMainTableName($rule) . '.' . $paramsBin->getSortBy();
@@ -395,10 +402,11 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
                 if ($paramsBin->getOffset() || $paramsBin->getOffset() === 0) {
                     $offset = $paramsBin->getOffset();
                 }
-
-                $sql .= ' LIMIT ' . $offset . ', ' . $limit;
+                $params[] = $offset;
+                $params[] = $limit;
+                $sql .= ' LIMIT ?, ?';
             }
-            $items = $this->fetchRows($sql, []);
+            $items = $this->fetchRows($sql, $params);
             if(!$items) {
                 return [];
             }
@@ -422,8 +430,8 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     {
         try {
             $ngsRuleManager = NgsRuleManager::getInstance();
-            $sql = $ngsRuleManager->getSqlCountConditionFromRule($rule, false);
-            $res = $this->fetchField($sql, 'count', []);
+            $conditionResult = $ngsRuleManager->getSqlCountConditionFromRule($rule, false);
+            $res = $this->fetchField($conditionResult['condition'], 'count', $conditionResult['params']);
             return (int)$res;
 
         } catch (\Exception $exp) {
@@ -463,9 +471,9 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
      * 
      * @param NgsCmsParamsBin $paramsBin
      * 
-     * @return string
+     * @return array
      */
-    protected function getWhereCondition(NgsCmsParamsBin $paramsBin) :string {
+    protected function getWhereCondition(NgsCmsParamsBin $paramsBin) :array {
         return $paramsBin->getWhereCondition();
     }
 }

@@ -29,6 +29,7 @@ abstract class CmsLoad extends AbstractCmsLoad
         $this->addJsonParam('cmsModal', $this->args()->cmsModal);
         $this->addParam('cmsUUID', $this->args()->cmsUUID);
         $this->addJsonParam('cmsUUID', $this->args()->cmsUUID);
+        $this->addParam('customizableExportColumns', $this->getManager()->getCustomizableExportColumns());
     }
 
     public function getTemplate(): string
@@ -104,12 +105,9 @@ abstract class CmsLoad extends AbstractCmsLoad
             $this->onNoAccess();
         }
 
-        $profileImage = MediasManager::getInstance()->getItemImageUrl($id, 'users', MediasManager::SMALL_THUMB);
+        $this->addUserData($userDto);
 
-        $this->addParam('firstName', $userDto->getFirstName());
-        $this->addParam('lastName', $userDto->getLastName());
-        $this->addParam('userName', $userDto->getUserName());
-        $this->addParam('profileImage', $profileImage);
+      
 
         $manager = $this->getManager();
         $this->addParam('hasAddButton', $manager->loadShouldHaveAddButton());
@@ -122,6 +120,19 @@ abstract class CmsLoad extends AbstractCmsLoad
         }
 
         $this->afterCmsLoad();
+    }
+    
+    
+      public function addUserData(UserDto $userDto)
+    {
+    
+        $profileImage = MediasManager::getInstance()->getItemImageUrl($userDto->getId(), 'users', MediasManager::SMALL_THUMB);
+
+        $this->addParam('firstName', $userDto->getFirstName());
+        $this->addParam('lastName', $userDto->getLastName());
+        $this->addParam('userName', $userDto->getUserName());
+        $this->addParam('profileImage', $profileImage);
+
     }
 
     public function afterCmsLoad()

@@ -247,7 +247,11 @@ export default class RowsListManager {
     nothingIsSelected() {
         let totalSelectionInfo = this.getSelectionInfo();
         let rowsCountAtTheMoment = this.getExistingRowsCountAtTheMoment();
-        if (!totalSelectionInfo.checkedElements && !totalSelectionInfo.newAddedCheckedElements && !(totalSelectionInfo.totalSelection && (rowsCountAtTheMoment > 0))) {
+
+        let hasCheckedElements = totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.length;
+        let hasNewCheckedElements = totalSelectionInfo.newAddedCheckedElements && totalSelectionInfo.newAddedCheckedElements.length;
+
+        if (!hasCheckedElements && !hasNewCheckedElements && !(totalSelectionInfo.totalSelection && (rowsCountAtTheMoment > 0))) {
             return true;
         }
         return false;

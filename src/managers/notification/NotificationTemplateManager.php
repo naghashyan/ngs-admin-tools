@@ -83,8 +83,10 @@ class NotificationTemplateManager extends AbstractManager {
 
         $userManager = UserManager::getInstance();
         $users = [];
+        $groupUserIds = [];
         if($userGroups) {
             $users = $userManager->getUsersByGroups($userGroups);
+            $groupUserIds = $userManager->getUniqueValuesFromList($users, 'id');
         }
 
         $jobId = null;
@@ -110,23 +112,30 @@ class NotificationTemplateManager extends AbstractManager {
             $result = $this->sendEmailNotifications($emails, $tempalte->getName(), $content, $event->getAttachemts());
             if($result['success']) {
                 foreach($userIds as $userId) {
-                    $notificationManager->createNotification($userId, $tempalte->getName(), $content, false, $jobId, 'email');
+                    $notificationManager->createNotification($userId, $tempalte, $content, false, $jobId, 'email');
                 }
             }
 
         }
 
         if($tempalte->getInSystem()) {
+            if($notificationManager->hasPushNotificationSupport()) {
+                $sender = $notificationManager->getPushNotificationSender();
+                $groups = $userGroups ?: [];
+                $users = $groupUserIds ? array_diff($userIds, $groupUserIds) : $userIds;
+                $sender->sendNotificationsToUsersAndGroups($groups, $users, ['event' => $event->getEventClass(), 'level' => $tempalte->getLevel()]);
+            }
+            
             if($job) {
                 if($notificationManager->getJobNotificationsCount($jobId)) {
                     $progress = $job->getProgress();
-                    $notificationManager->updateJobNotifications($tempalte->getName(), $content, $progress, $jobId);
+                    $notificationManager->updateJobNotifications($tempalte, $content, $progress, $jobId);
                     return;
                 }
             }
             foreach($userIds as $userId) {
                 $notificationManager = NotificationsManager::getInstance();
-                $notificationManager->createNotification($userId, $tempalte->getName(), $content, false, $jobId, 'system');
+                $notificationManager->createNotification($userId, $tempalte, $content, false, $jobId, 'system');
             }
         }
     }
