@@ -22,7 +22,7 @@ use ngs\AdminTools\managers\MediasManager;
 abstract class CmsLoad extends AbstractCmsLoad
 {
 
-    public function initialize()
+    public function initialize():void
     {
         parent::initialize();
         $this->addParentParam('activeMenu', $this->getActiveMenu());
