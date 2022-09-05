@@ -60,16 +60,17 @@ class UserManager extends \ngs\AbstractManager
 
     /**
      * returns list of unique values by field
-     * 
+     *
      * @param array $users
      * @param string $field
      * @return array
      */
-    public function getUniqueValuesFromList(array $users, string $field) {
+    public function getUniqueValuesFromList(array $users, string $field)
+    {
         $result = [];
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $getter = StringUtil::getGetterByDbName($field);
-            if($user->$getter() && !in_array($user->$getter(), $result)) {
+            if ($user->$getter() && !in_array($user->$getter(), $result)) {
                 $result[] = $user->$getter();
             }
         }
@@ -84,7 +85,7 @@ class UserManager extends \ngs\AbstractManager
      * @param int $groupId
      * @return UserDto[]
      */
-    public function getUsersByGroup(int $groupId) :array
+    public function getUsersByGroup(int $groupId): array
     {
         return UserMapper::getInstance()->getUsersByGroup($groupId);
     }
@@ -95,7 +96,7 @@ class UserManager extends \ngs\AbstractManager
      * @param array $groupIds
      * @return UserDto[]
      */
-    public function getUsersByGroups(array $groupIds) :array
+    public function getUsersByGroups(array $groupIds): array
     {
         return UserMapper::getInstance()->getUsersByGroups($groupIds);
     }
@@ -115,8 +116,10 @@ class UserManager extends \ngs\AbstractManager
 
 
     private ?UserDto $systemUser = null;
-    public function getSystemUser() {
-        if($this->systemUser) {
+
+    public function getSystemUser()
+    {
+        if ($this->systemUser) {
             return $this->systemUser;
         }
 
@@ -644,7 +647,11 @@ class UserManager extends \ngs\AbstractManager
 
     public function createToken($params)
     {
-        $key = Key\InMemory::plainText('ngs-admin-tools');
+        $key = 'ngs-admin-tools-key-ngs-admin-tools-key--ngs-admin-tools-key-key-key';
+        if (NGS()->get('jwt-token-key')) {
+            $key = NGS()->get('jwt-token-key');
+        }
+        $key = Key\InMemory::plainText($key);
         $config = Configuration::forSymmetricSigner(new Sha256(), $key);
 
         $now = new \DateTimeImmutable();
