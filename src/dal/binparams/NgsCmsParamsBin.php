@@ -468,7 +468,7 @@ class NgsCmsParamsBin
         if (!isset($fieldArr['dto']) || !isset($fieldArr['field'])) {
             throw new DebugException('please correct fieldArr');
         }
-        if (!$fieldArr['dto']->isExsistField($fieldArr['field'])) {
+        if (!$fieldArr['dto']->isExistField($fieldArr['field'])) {
             throw new DebugException($fieldArr['field'] . ' fieald not exist in dto');
         }
         $field = '`' . $fieldArr['dto']->getTableName() . '`.' . '`' . $fieldArr['field'] . '`';
