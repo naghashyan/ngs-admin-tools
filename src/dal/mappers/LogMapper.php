@@ -19,21 +19,23 @@ use ngs\AdminTools\dal\dto\LogDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 
-class LogMapper extends AbstractCmsMapper {
+class LogMapper extends AbstractCmsMapper
+{
 
     //! Private members.
 
-    private static $instance;
-    public $tableName = "ngs_logs";
+    private static ?self $instance = null;
+    public string $tableName = "ngs_logs";
 
     /**
      * Returns an singleton instance of this class
      *
      * @return LogMapper
      */
-    public static function getInstance(): LogMapper {
-        if (self::$instance == null){
-            self::$instance = new LogMapper();
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -43,21 +45,24 @@ class LogMapper extends AbstractCmsMapper {
      *
      * return LogDto
      */
-    public function createDto() :AbstractDto {
+    public function createDto(): LogDto
+    {
         return new LogDto();
     }
 
     /**
      * @see AbstractMysqlMapper::getPKFieldName()
      */
-    public function getPKFieldName() :string {
-        return "id";
+    public function getPKFieldName(): string
+    {
+        return 'id';
     }
 
     /**
      * @see AbstractMysqlMapper::getTableName()
      */
-    public function getTableName() :string {
+    public function getTableName(): string
+    {
         return $this->tableName;
     }
 }

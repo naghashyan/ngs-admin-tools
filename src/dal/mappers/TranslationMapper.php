@@ -19,26 +19,28 @@ use ngs\AdminTools\dal\dto\TranslationDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 
-class TranslationMapper extends AbstractCmsMapper {
+class TranslationMapper extends AbstractCmsMapper
+{
 
     //! Private members.
 
-    private static $instance;
-    public $tableName = "translations";
+    private static ?self $instance = null;
+    public string $tableName = "translations";
 
     /**
      * Returns an singleton instance of this class
      *
      * @return TranslationMapper
      */
-    public static function getInstance(): TranslationMapper {
-        if (self::$instance == null){
-            self::$instance = new TranslationMapper();
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public function createDto(): AbstractDto
+    public function createDto(): TranslationDto
     {
         return new TranslationDto();
     }
@@ -46,19 +48,21 @@ class TranslationMapper extends AbstractCmsMapper {
     /**
      * @see AbstractMysqlMapper::getPKFieldName()
      */
-    public function getPKFieldName() :string {
+    public function getPKFieldName(): string
+    {
         return "id";
     }
 
     /**
      * @see AbstractMysqlMapper::getTableName()
      */
-    public function getTableName() :string {
+    public function getTableName(): string
+    {
         return $this->tableName;
     }
 
 
-    private $GET_TRANSLATION = 'SELECT * FROM `%s` WHERE `data_type` = :dataType AND `data_key` = :dataKey AND `language_id` = :languageId';
+    private string $GET_TRANSLATION = 'SELECT * FROM `%s` WHERE `data_type` = :dataType AND `data_key` = :dataKey AND `language_id` = :languageId';
 
     /**
      * @param string $dataType
@@ -67,15 +71,17 @@ class TranslationMapper extends AbstractCmsMapper {
      * @return TranslationDto|null
      * @throws \ngs\exceptions\DebugException
      */
-    public function getTranslation(string $dataType, int $dataKey, int $languageId) {
+    public function getTranslation(string $dataType, int $dataKey, int $languageId)
+    {
         $sqlQuery = sprintf($this->GET_TRANSLATION, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['dataType' => $dataType, 'dataKey' => $dataKey, 'languageId' => $languageId]);
     }
 
 
-    private $GET_ITEMS_ALL_TRANSLATIONS = 'SELECT `t`.`language_id`, `languages`.`name`, `t`.`translation` FROM `translations` t INNER JOIN `languages` ON `t`.`language_id` = `languages`.id WHERE `data_type` = :dataType AND `data_key` = :dataKey;';
+    private string $GET_ITEMS_ALL_TRANSLATIONS = 'SELECT `t`.`language_id`, `languages`.`name`, `t`.`translation` FROM `translations` t INNER JOIN `languages` ON `t`.`language_id` = `languages`.id WHERE `data_type` = :dataType AND `data_key` = :dataKey;';
 
-    public function getItemsAllTranslations(int $dataKey, string $dataType) {
+    public function getItemsAllTranslations(int $dataKey, string $dataType)
+    {
         $sqlQuery = sprintf($this->GET_ITEMS_ALL_TRANSLATIONS, $this->getTableName());
         return $this->fetchRows($sqlQuery, ['dataType' => $dataType, 'dataKey' => $dataKey]);
     }
@@ -88,7 +94,8 @@ class TranslationMapper extends AbstractCmsMapper {
      * @param array $translation
      * @return bool
      */
-    public function createTranslation(string $dataType, int $dataKey, int $languageId, array $translation) {
+    public function createTranslation(string $dataType, int $dataKey, int $languageId, array $translation)
+    {
         /** @var TranslationDto $dto */
         $dto = $this->createDto();
 
@@ -101,8 +108,7 @@ class TranslationMapper extends AbstractCmsMapper {
             $id = $this->insertDto($dto);
 
             return !!$id;
-        }
-        catch (\Exception $exp) {
+        } catch (\Exception $exp) {
 
             return false;
         }
@@ -117,13 +123,13 @@ class TranslationMapper extends AbstractCmsMapper {
      * @param array $translation
      * @return bool|int|null
      */
-    public function updateTranslation(TranslationDto $dto, array $translation) {
+    public function updateTranslation(TranslationDto $dto, array $translation)
+    {
 
         try {
             $dto->setTranslation(json_encode($translation, JSON_UNESCAPED_UNICODE));
             return $this->updateByPK($dto);
-        }
-        catch(\Exception $exp) {
+        } catch (\Exception $exp) {
             return false;
         }
 
@@ -132,7 +138,8 @@ class TranslationMapper extends AbstractCmsMapper {
 
     private $DELETE_TRANSLATIONS = 'DELETE FROM `%s` WHERE `data_type` = :dataType AND `data_key` = :dataKey';
 
-    public function deleteItemsTranslations($id, $tableName) {
+    public function deleteItemsTranslations($id, $tableName)
+    {
         $sqlQuery = sprintf($this->DELETE_TRANSLATIONS, $this->getTableName());
         return $this->fetchRows($sqlQuery, ['dataType' => $tableName, 'dataKey' => $id]);
     }
