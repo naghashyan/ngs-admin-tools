@@ -12,7 +12,7 @@ import ImageDropzoneUtil from "../util/ImageDropzoneUtil.js"
 
 export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
-    
+
     constructor() {
         super();
         this.childLoadParams = null;
@@ -184,9 +184,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             let actionPath = this.args().saveAction.split(".");
             let actionName = actionPath[actionPath.length - 1].split("_").join(" ");
             title = actionName.replace(/\b[a-z]/g,
-                function (firstLatter) {
-                    return firstLatter.toUpperCase();
-                })
+              function (firstLatter) {
+                  return firstLatter.toUpperCase();
+              })
         }
         return title;
     }
@@ -494,6 +494,16 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         }
     }
 
+
+    getChoiceElemById(elemId) {
+        const element = document.querySelector('#'+this.getContainer() + ' ' + '#' + elemId);
+
+        if (!element) {
+            return null;
+        }
+
+        return element.choices;
+    }
 
     initBackBtn() {
         if (this.getChildLoadParams()) {
@@ -1219,7 +1229,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
     /**
      * get additional param to validate field
-     * 
+     *
      * @param fieldName
      * @param itemId
      * @returns {{}}

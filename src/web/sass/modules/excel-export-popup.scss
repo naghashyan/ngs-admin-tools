@@ -1,0 +1,174 @@
+.add_new_template_container {
+  text-align: end;
+}
+
+.existing-templates {
+  padding: 10px 0 0;
+
+  .template-container {
+    position: relative;
+    display: flex;
+    background: #F8F9FB;
+    margin-bottom: 4px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 16px;
+    border-radius: 4px;
+
+    &.active {
+      background-color: $primaryColor;
+      color: #ffffff;
+
+      .delete-template {
+        color: #ffffff;
+      }
+    }
+
+    .template {
+      cursor: pointer;
+      width: 100%;
+    }
+  }
+}
+
+.add-template-box {
+  margin-top: 20px;
+}
+
+.export-checkbox-item {
+  line-height: 20px;
+}
+.export-table {
+  .formula-custom-column {
+    .icons-box {
+      top: 19px;
+
+      .icon-tooltip {
+        .tooltip {
+          transform: translate(0, -20px);
+
+          &:after {
+            top: 20px;
+            left: -6px;
+            right: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+.add-custom-column {
+  margin-bottom: 5px;
+}
+
+.formula-custom-column {
+  position: relative;
+
+  input {
+    width: 85%;
+  }
+
+  .icons-box {
+    top: 15px;
+
+    i {
+      .tooltip {
+        height: 0px;
+        transition: height 0.3s ease-in-out, left 0.2s;
+      }
+
+      &:hover {
+        .tooltip {
+          height: auto;
+          opacity: 1;
+          pointer-events: auto;
+          left: 25px;
+        }
+      }
+    }
+  }
+}
+
+
+.select-fields-container {
+  display: flex;
+  justify-content: space-between;
+  max-height: 80%;
+  overflow: scroll;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border-left: solid 1px #DEDEDE;
+
+  li {
+    border-right: solid 1px #DEDEDE;
+    border-bottom: solid 1px #DEDEDE;
+    padding: 8px 10px 7px 10px;
+
+    .checkbox-item {
+      label {
+        display: flex;
+        justify-content: center;
+      }
+    }
+
+    input[type='text'] {
+      border: none;
+      width: 100%;
+    }
+
+    .checkbox-item {
+      margin: 0;
+    }
+  }
+
+  .select-fields-row {
+
+
+  }
+
+  .select-fields-header {
+    flex: 0 0 100%;
+    display: flex;
+    border-top: solid 1px #DEDEDE;
+
+    li {
+      font-weight: 700;
+      user-select: none;
+      flex: 1;
+
+      &:last-child {
+        max-width: 150px;
+      }
+
+      &:first-child {
+        max-width: 70px;
+      }
+    }
+  }
+
+  .select-fields-info-container {
+    flex: 0 0 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    ul {
+      flex: 0 0 100%;
+      display: flex;
+
+      li {
+        flex: 1;
+
+        &:last-child, {
+          max-width: 150px;
+        }
+
+        &:first-child {
+          max-width: 70px;
+        }
+      }
+    }
+
+  }
+}
+
