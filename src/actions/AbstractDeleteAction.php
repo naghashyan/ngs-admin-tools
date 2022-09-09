@@ -14,6 +14,7 @@
 
 namespace ngs\AdminTools\actions;
 
+use ngs\AdminTools\managers\AbstractCmsManager;
 use ngs\AdminTools\managers\TranslationManager;
 use ngs\request\AbstractAction;
 use ngs\exceptions\NgsErrorException;
@@ -39,6 +40,7 @@ abstract class AbstractDeleteAction extends AbsctractCmsAction
         try {
             $this->getLogger()->info('delete action started ' . $this->args()->itemId);
             $this->beforeService();
+            /** @var AbstractCmsManager $manager */
             $manager = $this->getManager();
 
             if ($this->args()->itemId) {
