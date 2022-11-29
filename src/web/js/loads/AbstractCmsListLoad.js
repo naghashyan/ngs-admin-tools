@@ -59,7 +59,7 @@ export default class AbstractCmsListLoad extends AbstractLoad {
     initAddButton() {
         let addBtns = document.querySelectorAll('#' + this.getContainer() + ' .f_addItemBtn');
         addBtns.unbindClick();
-        addBtns.click(() => {
+        addBtns.click((evt) => {
             let btn = evt.target.closest(".f_addItemBtn");
             if(btn.getAttribute('is-loading')) {
                 return;
@@ -151,14 +151,16 @@ export default class AbstractCmsListLoad extends AbstractLoad {
                 this.choices[choiceElem.id] = choiceElem.choices;
                 continue;
             }
-            this.choices[choiceElem.id] = new Choices(choiceElem,
-                {
-                    removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
-                    searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
-                    renderChoiceLimit: 150,
-                    searchResultLimit: 150,
-                    shouldSort: !choiceElem.getAttribute('data-do-not-sort'),
-                });
+            choiceElem.choices = new Choices(choiceElem,
+              {
+                  removeItemButton: choiceElem.getAttribute('data-ngs-remove') === 'true',
+                  searchEnabled: choiceElem.getAttribute('data-ngs-searchable') === 'true',
+                  renderChoiceLimit: 150,
+                  searchResultLimit: 150,
+                  shouldSort: !choiceElem.getAttribute('data-do-not-sort'),
+              });
+
+            this.choices[choiceElem.id] = choiceElem.choices;
         }
     }
 
@@ -339,15 +341,15 @@ export default class AbstractCmsListLoad extends AbstractLoad {
             this.rowsListManager.changeAllCheckboxItems(true);
         }
         if ((totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.length) ||
-            (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.length)) {
+          (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.length)) {
             for (let i = 0; i < checkItemBtn.length; i++) {
                 let itemRow = checkItemBtn[i].closest(".f_table_row");
                 if (!itemRow) {
                     continue;
                 }
 
- 								let rowItemId = +itemRow.getAttribute("data-im-id")
- 
+                let rowItemId = +itemRow.getAttribute("data-im-id")
+
                 if (totalSelectionInfo.checkedElements && totalSelectionInfo.checkedElements.indexOf(rowItemId) !== -1) {
                     checkItemBtn[i].checked = true;
                 } else if (totalSelectionInfo.unCheckedElements && totalSelectionInfo.unCheckedElements.indexOf(itemRow.getAttribute("data-im-id")) !== -1) {

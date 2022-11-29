@@ -36,8 +36,8 @@ abstract class AbstractMainLoad extends AbstractCmsLoad
         $adminGroup = $sessionManager->getUserGroupByName('admin');
 
         $this->addParam('isSuperAdmin', $currentUser->getLevel() == $adminGroup->getId());
-
-        if(NotificationsManager::hasPushNotificationSupport()) {
+        $this->addParam('hasPushNotificationSupport', false);
+        if (NotificationsManager::hasPushNotificationSupport()) {
             $pushNotificationSender = NotificationsManager::getPushNotificationSender();
             $this->addParam('hasPushNotificationSupport', true);
             $this->addParam('pushNotificationSdk', $pushNotificationSender->getSdk());
@@ -49,17 +49,12 @@ abstract class AbstractMainLoad extends AbstractCmsLoad
             $currentUserChannels[] = 'user-' . $currentUser->getId();
             $this->addParam('currentUserChannels', implode(",", $currentUserChannels));
         }
-        else {
-            $this->addParam('hasPushNotificationSupport', false);
-        }
 
 
         $this->initAllowedDtosForCurrentUser($currentUser->getLevel());
 
         $this->afterMainLoad();
     }
-
-
 
 
     /**
@@ -72,7 +67,8 @@ abstract class AbstractMainLoad extends AbstractCmsLoad
         return ["allowed" => [$adminGroup->getId()]];
     }
 
-    protected function afterMainLoad() {
+    protected function afterMainLoad()
+    {
 
     }
 
