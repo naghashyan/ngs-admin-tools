@@ -23,29 +23,18 @@ class ExportTemplateMapper extends AbstractMysqlMapper
 
     //! Private members.
 
-    private static $instance;
-    private $tableName = 'ngs_saved_export_templates';
-
-    //! A constructor.
-    /*!	\brief	Brief description.
-     *			Initializes DBMC pointers and table name private
-     *			class member.
-     */
-    function __construct()
-    {
-        // Initialize the dbmc pointer.
-        AbstractMysqlMapper::__construct();
-    }
+    private static ?self $instance=null;
+    private string $tableName = 'ngs_saved_export_templates';
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return ExportTemplateMapper
+     * @return self
      */
-    public static function getInstance(): ExportTemplateMapper
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new ExportTemplateMapper();
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -74,7 +63,7 @@ class ExportTemplateMapper extends AbstractMysqlMapper
         return $this->tableName;
     }
 
-    private $GET_USER_SAVED_TEMPLATE_BY_ID = 'SELECT * FROM `%s` WHERE `id` = :id';
+    private string $GET_USER_SAVED_TEMPLATE_BY_ID = 'SELECT * FROM `%s` WHERE `id` = :id';
 
     /**
      * get template by id
@@ -91,7 +80,7 @@ class ExportTemplateMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_SAVED_TEMPLATES_BY_TYPE = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type`=:itemType ORDER BY `id` DESC';
+    private string $GET_USER_SAVED_TEMPLATES_BY_TYPE = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type`=:itemType ORDER BY `id` DESC';
 
     /**
      * get user saved templates by type
@@ -110,7 +99,7 @@ class ExportTemplateMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_SAVED_TEMPLATE_BY_NAME = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type` = :itemType AND `name`=:name';
+    private string $GET_USER_SAVED_TEMPLATE_BY_NAME = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type` = :itemType AND `name`=:name';
 
     public function getUserSavedTemplateByItemTypeAndName(int $userId, string $itemType, string $name)
     {
@@ -118,7 +107,7 @@ class ExportTemplateMapper extends AbstractMysqlMapper
         return $this->fetchRow($sqlQuery, ['userId' => $userId, 'name' => $name, 'itemType' => $itemType]);
     }
     
-    private $GET_SAVED_TEMPLATE_BY_NAME = 'SELECT * FROM `%s` WHERE `name` = :name';
+    private string $GET_SAVED_TEMPLATE_BY_NAME = 'SELECT * FROM `%s` WHERE `name` = :name';
 
     /**
      * get template by name

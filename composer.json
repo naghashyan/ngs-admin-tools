@@ -1,6 +1,6 @@
 {
   "name": "naghashyan/ngs-admin-tools",
-  "version": "v1.0.15",
+  "version": "v1.0.17",
   "type": "library",
   "description": "NGS framework admin panel",
   "keywords": [
@@ -16,13 +16,13 @@
     }
   ],
   "require": {
-    "php": ">=7.4.0",
-    "naghashyan/ngs-php-framework": "^4.2.0",
-    "phpoffice/phpspreadsheet": "^1.14",
-    "monolog/monolog": "^2.1.1",
+    "php": ">=8.0",
+    "naghashyan/ngs-php-framework": "^4",
+    "phpoffice/phpspreadsheet": "^1.2",
+    "monolog/monolog": "^3",
     "denissimon/formula-parser": "^2.7",
     "lcobucci/jwt": "*",
-    "pubnub/pubnub": "~4.7.0"
+    "pubnub/pubnub": "^5"
   },
   "autoload": {
     "psr-4": {

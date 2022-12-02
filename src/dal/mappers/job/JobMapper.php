@@ -13,7 +13,7 @@ class JobMapper extends AbstractMysqlMapper
     //! Private members.
 
     private static ?JobMapper $instance = null;
-    public $tableName = 'ngs_jobs';
+    public string $tableName = 'ngs_jobs';
 
     public function getTableName(): string
     {

@@ -24,18 +24,18 @@ class UserGroupMapper extends AbstractMysqlMapper
 
     //! Private members.
 
-    private static $instance;
-    private $tableName = 'ngs_user_groups';
+    private static ?self $instance = null;
+    private string $tableName = 'ngs_user_groups';
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return UserGroupMapper
+     * @return self
      */
-    public static function getInstance(): UserGroupMapper
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new UserGroupMapper();
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -78,7 +78,6 @@ class UserGroupMapper extends AbstractMysqlMapper
     {
         return $this->fetchRow(sprintf($this->GET_USER_GROUP_BY_ID, $this->getTableName()), ['id' => $id]);
     }
-
 
 
     /**

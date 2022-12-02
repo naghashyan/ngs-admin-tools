@@ -35,7 +35,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * returns current job name
      * @return string
      */
-    public function getJobName() :string
+    public function getJobName(): string
     {
         return "Excel export job";
     }
@@ -46,7 +46,8 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return int
      */
-    protected function getLimit() :int {
+    protected function getLimit(): int
+    {
         return 500;
     }
 
@@ -57,7 +58,8 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return array
      */
-    protected function execute(Closure $progressTracker = null) :array {
+    protected function execute(Closure $progressTracker = null): array
+    {
         $this->memoryUsageStart = memory_get_peak_usage(true);
         $managerClass = $this->params['manager'];
         $manager = $managerClass::getInstance();
@@ -73,23 +75,24 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * @param int $limit
      * @return array
      */
-    private function getItemsAddToCsv(?Closure $progressTracker, array $fileNames, array $fileTitles, $offset = 0, $limit = 500) {
+    private function getItemsAddToCsv(?Closure $progressTracker, array $fileNames, array $fileTitles, $offset = 0, $limit = 500)
+    {
 
         /** @var AbstractCmsManager $manager */
         $manager = $this->getManager();
         $dto = $manager->getMapper()->createDto();
-        if($this->possibleSelectionValues === null) {
+        if ($this->possibleSelectionValues === null) {
             $this->possibleSelectionValues = $manager->getSelectionPossibleValues($dto, true);
         }
         $paramsBin = $this->getNgsListBinParams($offset, $limit);
         $this->getLogger()->info("doing for offset " . $offset . ' started');
         $itemDtos = $manager->getList($paramsBin);
-        if($this->totalCount === null) {
+        if ($this->totalCount === null) {
             $this->totalCount = $manager->getItemsCount($paramsBin);
         }
         $itemsCount = count($itemDtos);
         foreach ($itemDtos as $itemDto) {
-            if($this->possibleSelectionValues) {
+            if ($this->possibleSelectionValues) {
                 $manager->fillDtoWithRelationalData($itemDto, $this->possibleSelectionValues, $this->getUsedFields());
             }
         }
@@ -99,31 +102,32 @@ class ExcelExportExecutor extends AbstractJobExecutor
         unset($itemDtos);
         $fileNames = $csvFiles['files'];
         $fileTitles = $csvFiles['titles'];
-        if($progressTracker) {
+        if ($progressTracker) {
             $progressTracker(floor($offset * 100 / $this->totalCount));
         }
-        if($itemsCount < $limit) {
+        if ($itemsCount < $limit) {
             return $this->convertCsvToExcel(NGS()->getDataDir('admin') . '/download_files', $fileNames, $fileTitles);
-        }
-        else {
+        } else {
 
             return $this->getItemsAddToCsv($progressTracker, $fileNames, $fileTitles, $offset + $limit, $limit);
         }
     }
-     
 
-    protected function onGotItems(array $items) {
+
+    protected function onGotItems(array $items)
+    {
 
     }
 
     /**
      * @return array
      */
-    private function getUsedFields() {
+    private function getUsedFields()
+    {
         $fieldsToExport = $this->params['fields'];
         $result = [];
-        foreach($fieldsToExport as $fieldToExport) {
-            if(isset($fieldToExport['fieldName']) && !in_array($fieldToExport['fieldName'], $result)) {
+        foreach ($fieldsToExport as $fieldToExport) {
+            if (isset($fieldToExport['fieldName']) && !in_array($fieldToExport['fieldName'], $result)) {
                 $result[] = $fieldToExport['fieldName'];
             }
         }
@@ -141,10 +145,11 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return array
      */
-    protected function getCsvFiles(array $fileNames, array $fileTitles, $itemDtos) {
+    protected function getCsvFiles(array $fileNames, array $fileTitles, $itemDtos)
+    {
         $manager = $this->getManager();
 
-        if(!$fileNames) {
+        if (!$fileNames) {
             $fileName = $manager->getMapper()->getTableName() . '_' . $this->params['user_id'] . '_' . time() . '.csv';
             $fileNames[] = $fileName;
             $fileTitles[] = $fileName;
@@ -153,8 +158,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
             $file = fopen($filePath, "w");
             $file = $this->addDataToCsv($file, $itemDtos, true);
             fclose($file);
-        }
-        else {
+        } else {
             $filePath = NGS()->getDataDir('admin') . '/download_files/' . $fileNames[0];
             $file = fopen($filePath, "a+");
             $file = $this->addDataToCsv($file, $itemDtos, false);
@@ -174,11 +178,12 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return mixed
      */
-    protected function addDataToCsv($file, $itemDtos, bool $withHeader) {
-        if($withHeader) {
+    protected function addDataToCsv($file, $itemDtos, bool $withHeader)
+    {
+        if ($withHeader) {
             fputcsv($file, $this->getCsvHeaders());
         }
-        foreach($itemDtos as $itemDto) {
+        foreach ($itemDtos as $itemDto) {
             fputcsv($file, $this->getCsvRowData($itemDto));
         }
         return $file;
@@ -190,10 +195,11 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return array
      */
-    protected function getCsvHeaders() {
+    protected function getCsvHeaders()
+    {
         $result = [];
         $selectedFields = $this->params['fields'];
-        foreach($selectedFields as $selectedField) {
+        foreach ($selectedFields as $selectedField) {
             $result[] = $selectedField['displayName'];
         }
 
@@ -209,17 +215,18 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * @param string $formula
      * @return string
      */
-    protected function getFormulaColumn($item, string $formula) {
+    protected function getFormulaColumn($item, string $formula)
+    {
         /** @var AbstractCmsManager $manager */
         $manager = $this->getManager();
         $customFields = $manager->getCustomizableExportColumns();
         $params = [];
-        foreach($customFields as $customField) {
-            if(strpos($formula, $customField) === false) {
+        foreach ($customFields as $customField) {
+            if (strpos($formula, $customField) === false) {
                 continue;
             }
             $getter = StringUtil::getGetterByDbName($customField);
-            if($item->$getter() === null) {
+            if ($item->$getter() === null) {
                 return "";
             }
             $params[$customField] = $item->$getter();
@@ -236,7 +243,8 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * @param string $fieldName
      * @return string
      */
-    protected function getUnknownFieldValue($item, string $fieldName) {
+    protected function getUnknownFieldValue($item, string $fieldName)
+    {
         return "";
     }
 
@@ -244,7 +252,8 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * modify columns data in excel
      * @param Spreadsheet $sheet
      */
-    protected function modifyColumns(Spreadsheet $sheet) {
+    protected function modifyColumns(Spreadsheet $sheet)
+    {
 
     }
 
@@ -252,11 +261,13 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * change column styles
      * @param Spreadsheet $sheet
      */
-    protected function convertColumnTypes(Spreadsheet $sheet) {
+    protected function convertColumnTypes(Spreadsheet $sheet)
+    {
     }
 
 
-    protected function onAddRow($item) {
+    protected function onAddRow($item)
+    {
     }
 
 
@@ -265,32 +276,31 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return array
      */
-    private function getCsvRowData($item) {
+    private function getCsvRowData($item)
+    {
         $result = [];
         $selectedFields = $this->params['fields'];
         $this->onAddRow($item);
-        foreach($selectedFields as $selectedField) {
-            if(isset($selectedField['type']) && $selectedField['type'] === 'custom_column') {
+        foreach ($selectedFields as $selectedField) {
+            if (isset($selectedField['type']) && $selectedField['type'] === 'custom_column') {
                 $result[] = $this->getFormulaColumn($item, $selectedField['formula']);
                 continue;
-            }
-            else {
+            } else {
                 $fieldName = $selectedField['fieldName'];
                 $fieldNameParts = explode(".", $fieldName);
-                if(count($fieldNameParts) > 1) {
+                if (count($fieldNameParts) > 1) {
                     $fieldName = $fieldNameParts[1];
-                }
-                else {
+                } else {
                     $fieldName = $fieldNameParts[0];
                 }
                 $fieldName = trim($fieldName, "`");
                 $getter = StringUtil::getGetterByDbName($fieldName);
-                if(!method_exists($item, $getter)) {
+                if (!method_exists($item, $getter)) {
                     $result[] = $this->getUnknownFieldValue($item, $fieldName);
                     continue;
                 }
                 $value = $item->$getter();
-                if(strpos($value, ',') !== false) {
+                if ($value && str_contains($value, ',')) {
                     $value = '"' . $value . '"';
                 }
                 $result[] = $value;
@@ -301,8 +311,6 @@ class ExcelExportExecutor extends AbstractJobExecutor
     }
 
 
-
-
     /**
      * @param $csvFilePath
      * @param array $csvFileNames
@@ -310,14 +318,15 @@ class ExcelExportExecutor extends AbstractJobExecutor
      *
      * @return array
      */
-    private function convertCsvToExcel($csvFilePath, $csvFileNames, $fileTitles = []) {
+    private function convertCsvToExcel($csvFilePath, $csvFileNames, $fileTitles = [])
+    {
         try {
             $reader = IOFactory::createReader('Csv');
             $objPHPExcel = $reader->load($csvFilePath . '/' . $csvFileNames[0]);
 
-            if(count($csvFileNames) > 1) {
+            if (count($csvFileNames) > 1) {
                 $objPHPExcel->getActiveSheet()->setTitle($fileTitles[0]);
-                for($i=1; $i<count($csvFileNames); $i++) {
+                for ($i = 1; $i < count($csvFileNames); $i++) {
                     $newReader = IOFactory::createReader('Csv');
                     $newObjPHPExcel = $newReader->load($csvFilePath . '/' . $csvFileNames[$i]);
                     $newObjPHPExcel->getActiveSheet()->setTitle($fileTitles[$i]);
@@ -329,7 +338,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
             $objWriter = IOFactory::createWriter($objPHPExcel, 'Xlsx');
             $fileRealName = str_replace('.csv', '', $csvFileNames[0]);
             $objWriter->save($csvFilePath . '/' . $fileRealName . '.xlsx');
-            for($i=0; $i<count($csvFileNames); $i++) {
+            for ($i = 0; $i < count($csvFileNames); $i++) {
                 unlink($csvFilePath . '/' . $csvFileNames[$i]);
             }
             $this->memoryUsageEnd = memory_get_peak_usage(true);
@@ -340,8 +349,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
                 'memory_usage_end' => $this->getUsageInMb($this->memoryUsageEnd)
             ];
 
-        }
-        catch(\Exception $exp) {
+        } catch (\Exception $exp) {
             $this->memoryUsageEnd = memory_get_peak_usage(true);
             return [
                 'success' => false,
@@ -353,7 +361,8 @@ class ExcelExportExecutor extends AbstractJobExecutor
     }
 
 
-    private function getUsageInMb($memoryUsage) {
+    private function getUsageInMb($memoryUsage)
+    {
         return $memoryUsage / 1024 / 1024;
     }
 
@@ -375,16 +384,15 @@ class ExcelExportExecutor extends AbstractJobExecutor
         $paramsBin->setSortBy($sorting);
         $paramsBin->setOrderBy($ordering);
 
-        if(isset($this->params['filter']) && is_array($this->params['filter'])) {
+        if (isset($this->params['filter']) && is_array($this->params['filter'])) {
             $paramFilter = $this->params['filter'];
-        }
-        else {
+        } else {
             $paramFilter = isset($this->params['filter']) ? json_decode($this->params['filter'], true) : [];
         }
 
         $searchData = null;
         $searchableFields = $this->getManager()->getSearchableFields();
-        if(isset($paramFilter['search'])) {
+        if (isset($paramFilter['search'])) {
             $searchData = [
                 'searchKeys' => $paramFilter['search'],
                 'searchableFields' => $searchableFields
@@ -393,51 +401,44 @@ class ExcelExportExecutor extends AbstractJobExecutor
 
         $filter = [];
 
-        foreach($paramFilter as $key => $value) {
-            if($key == 'search') {
+        foreach ($paramFilter as $key => $value) {
+            if ($key == 'search') {
                 continue;
             }
             $filter[$key] = $value;
         }
 
-        if(!isset($filter['and'])) {
+        if (!isset($filter['and'])) {
             $filter['and'] = [];
         }
 
-        if(($this->params['totalSelection'] === true || $this->params['totalSelection'] === 'true') && $this->params['unCheckedElements']) {
-            if(is_array($this->params['unCheckedElements'])) {
+        if (($this->params['totalSelection'] === true || $this->params['totalSelection'] === 'true') && $this->params['unCheckedElements']) {
+            if (is_array($this->params['unCheckedElements'])) {
                 $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => $this->params['unCheckedElements']];
-            }
-            else {
+            } else {
                 $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => explode(',', $this->params['unCheckedElements'])];
             }
-        }
-        else if(($this->params['totalSelection']) && !$this->params['unCheckedElements']) {
+        } else if (($this->params['totalSelection']) && !$this->params['unCheckedElements']) {
             $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'not_in', 'searchValue' => [-1]];
-        }
-        else if($this->params['totalSelection'] === 'false' || !$this->params['totalSelection']){
-            if($this->params['checkedElements']) {
-                if(is_array($this->params['checkedElements'])) {
+        } else if ($this->params['totalSelection'] === 'false' || !$this->params['totalSelection']) {
+            if ($this->params['checkedElements']) {
+                if (is_array($this->params['checkedElements'])) {
                     $inCondition = $this->params['checkedElements'];
-                }
-                else {
+                } else {
                     $inCondition = explode(',', $this->params['checkedElements']);
                 }
-            }
-            else {
+            } else {
                 $inCondition = [-1];
             }
             $filter['and'][] = ['fieldName' => 'id', 'conditionType' => 'in', 'searchValue' => $inCondition];
         }
 
-        if(!$filter['and']) {
+        if (!$filter['and']) {
             return null;
         }
 
 
-
-
-        if($searchableFields || $filter) {
+        if ($searchableFields || $filter) {
             $paramsBin->setVersion(2);
             $paramsBin->setFilter(['filter' => $filter, 'search' => $searchData, 'table' => $this->getManager()->getMapper()->getTableName()]);
         }
@@ -451,12 +452,14 @@ class ExcelExportExecutor extends AbstractJobExecutor
     /**
      * @return string
      */
-    protected function getJoinCondition() {
+    protected function getJoinCondition()
+    {
         return "";
     }
 
 
-    protected function getManager() {
+    protected function getManager()
+    {
         return $this->manager;
     }
 

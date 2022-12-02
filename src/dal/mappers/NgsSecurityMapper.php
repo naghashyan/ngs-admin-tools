@@ -25,15 +25,15 @@ class NgsSecurityMapper extends AbstractMysqlMapper
 {
     //! Private members.
 
-    private static ?NgsSecurityMapper $instance = null;
-    public $tableName = 'ngs_security';
+    private static ?self $instance = null;
+    public string $tableName = 'ngs_security';
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return NgsSecurityMapper Object
+     * @return self Object
      */
-    public static function getInstance(): NgsSecurityMapper
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();

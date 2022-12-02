@@ -128,7 +128,7 @@ let ValidationUtility = {
      */
     addValidator(key, validatorObject) {
         if(this.supportedValidators[key]) {
-            throw new Error("validator already exists");
+            return;
         }
 
         this.supportedValidators[key] = validatorObject;

@@ -23,29 +23,19 @@ class UserMapper extends AbstractMysqlMapper
 
     //! Private members.
 
-    private static $instance;
-    private $tableName = 'users';
+    private static ?self $instance = null;
+    private string $tableName = 'users';
 
-    //! A constructor.
-    /*!	\brief	Brief description.
-     *			Initializes DBMC pointers and table name private
-     *			class member.
-     */
-    function __construct()
-    {
-        // Initialize the dbmc pointer.
-        AbstractMysqlMapper::__construct();
-    }
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return UserMapper
+     * @return self
      */
-    public static function getInstance(): UserMapper
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new UserMapper();
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -152,7 +142,7 @@ class UserMapper extends AbstractMysqlMapper
      */
     public function getUsersByGroups(array $groupIds): array
     {
-        if(!$groupIds) {
+        if (!$groupIds) {
             return [];
         }
 

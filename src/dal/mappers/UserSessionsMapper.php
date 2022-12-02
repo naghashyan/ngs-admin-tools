@@ -23,29 +23,19 @@ class UserSessionsMapper extends AbstractMysqlMapper
 
     //! Private members.
 
-    private static $instance;
-    private $tableName = "user_sessions";
+    private static ?self $instance = null;
+    private string $tableName = 'user_sessions';
 
-    //! A constructor.
-    /*!	\brief	Brief description.
-     *			Initializes DBMC pointers and table name private
-     *			class member.
-     */
-    function __construct()
-    {
-        // Initialize the dbmc pointer.
-        AbstractMysqlMapper::__construct();
-    }
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return UserSessionsMapper
+     * @return self
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
-        if (self::$instance == null) {
-            self::$instance = new UserSessionsMapper();
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
         return self::$instance;
     }

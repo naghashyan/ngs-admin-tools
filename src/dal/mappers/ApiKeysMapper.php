@@ -15,33 +15,28 @@
 
 namespace ngs\AdminTools\dal\mappers;
 
-use ngs\dal\mappers\AbstractMysqlMapper;
 use ngs\AdminTools\dal\dto\ApiKeysDto;
+use ngs\dal\mappers\AbstractMysqlMapper;
 
 class ApiKeysMapper extends AbstractMysqlMapper
 {
 
     //! Private members.
 
-    private static $instance;
-    private $tableName = 'api_keys';
+    private static ?self $instance = null;
+    private string $tableName = 'api_keys';
 
-    function __construct()
-    {
-        // Initialize the dbmc pointer.
-        AbstractMysqlMapper::__construct();
-    }
 
     /**
      *
      * Returns an singleton instance of this class
      *
-     * @return ApiKeysMapper
+     * @return self
      */
-    public static function getInstance(): ApiKeysMapper
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new ApiKeysMapper();
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -71,7 +66,7 @@ class ApiKeysMapper extends AbstractMysqlMapper
     }
 
 
-    private $GET_USER_BY_KEY_SQL = 'SELECT * FROM `%s` WHERE `key` = :apiKey';
+    private string $GET_USER_BY_KEY_SQL = 'SELECT * FROM `%s` WHERE `key` = :apiKey';
 
     /**
      * Returns api user dto by api key

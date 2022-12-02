@@ -19,21 +19,23 @@ use ngs\AdminTools\dal\dto\LanguageDto;
 use ngs\dal\dto\AbstractDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
 
-class LanguageMapper extends AbstractCmsMapper {
+class LanguageMapper extends AbstractCmsMapper
+{
 
     //! Private members.
 
-    private static $instance;
-    public $tableName = "languages";
+    private static ?self $instance = null;
+    public string $tableName = "languages";
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return LanguageMapper
+     * @return self
      */
-    public static function getInstance(): LanguageMapper {
-        if (self::$instance == null){
-            self::$instance = new LanguageMapper();
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -46,31 +48,34 @@ class LanguageMapper extends AbstractCmsMapper {
     /**
      * @see AbstractMysqlMapper::getPKFieldName()
      */
-    public function getPKFieldName() :string {
+    public function getPKFieldName(): string
+    {
         return "id";
     }
 
     /**
      * @see AbstractMysqlMapper::getTableName()
      */
-    public function getTableName() :string {
+    public function getTableName(): string
+    {
         return $this->tableName;
     }
 
 
-    private $GET_LANGUAGES = 'SELECT * FROM `%s`';
+    private string $GET_LANGUAGES = 'SELECT * FROM `%s`';
 
     /**
      * @return LanguageDto[]
      * @throws \ngs\exceptions\DebugException
      */
-    public function getLanguages() :array {
+    public function getLanguages(): array
+    {
         $sqlQuery = sprintf($this->GET_LANGUAGES, $this->getTableName());
         return $this->fetchRows($sqlQuery, []);
     }
 
 
-    private $GET_LANGUAGE_BY_ID = 'SELECT * FROM `%s` WHERE `id` =:id';
+    private string $GET_LANGUAGE_BY_ID = 'SELECT * FROM `%s` WHERE `id` =:id';
 
     /**
      * returns language found by id
@@ -80,13 +85,14 @@ class LanguageMapper extends AbstractCmsMapper {
      *
      * @throws \ngs\exceptions\DebugException
      */
-    public function getLanguageById(int $id) :?LanguageDto {
+    public function getLanguageById(int $id): ?LanguageDto
+    {
         $sqlQuery = sprintf($this->GET_LANGUAGE_BY_ID, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['id' => $id]);
     }
 
 
-    private $GET_LANGUAGE_BY_CODE = 'SELECT * FROM `%s` WHERE `code` =:langaugeCode';
+    private string $GET_LANGUAGE_BY_CODE = 'SELECT * FROM `%s` WHERE `code` =:langaugeCode';
 
     /**
      * returns language by iso 2 code
@@ -95,7 +101,8 @@ class LanguageMapper extends AbstractCmsMapper {
      *
      * @return LanguageDto|null
      */
-    public function getLanguageByCode(string $code) {
+    public function getLanguageByCode(string $code)
+    {
         $sqlQuery = sprintf($this->GET_LANGUAGE_BY_CODE, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['langaugeCode' => $code]);
     }
