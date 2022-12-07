@@ -47,8 +47,17 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             let params = {};
             params.itemDto = itemDto;
             params.tempId = object.tempId;
-            NGS.load(this.args().editLoad, params);
+            this.addEditLoadAdditionalParams(params).then((params) => {
+                NGS.load(this.args().editLoad, params);
+            });
             return false;
+        });
+    }
+
+
+    addEditLoadAdditionalParams(params) {
+        return new Promise((resolve, reject) => {
+            resolve(params);
         });
     }
 
@@ -184,9 +193,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             let actionPath = this.args().saveAction.split(".");
             let actionName = actionPath[actionPath.length - 1].split("_").join(" ");
             title = actionName.replace(/\b[a-z]/g,
-              function (firstLatter) {
-                  return firstLatter.toUpperCase();
-              })
+                function (firstLatter) {
+                    return firstLatter.toUpperCase();
+                })
         }
         return title;
     }
@@ -220,6 +229,9 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         this.ngsImageUpload();
         if (this.args().editActionType !== "popup") {
             this.initBackBtn();
+        }
+        if (this.args().editActionType === "popup") {
+            this.initPopupClosing();
         }
 
         this.initChoices();
@@ -384,41 +396,87 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
         });
     }
 
+    initPopupClosing() {
+        if (!this.args().editActionType === "popup") {
+            return;
+        }
+
+        let popupFormContainer = document.getElementById('modal_' + this.getModalLevel());
+        let popupForm = popupFormContainer.querySelectorAll('form')[0];
+        
+        if(!popupForm){
+        	return;
+        }
+        
+        let button = popupForm.querySelector('.f_close-popup-button');
+        
+        if(!button){
+            return;
+        }
+        
+        button.classList.remove('is_hidden');
+
+
+        const popupOpen = function (e) {
+
+            if (!e.target.closest('form')) {
+                if (MaterialsUtils.getActiveModalInstance()) {
+                    MaterialsUtils.getActiveModalInstance().close();
+                    popupFormContainer.removeEventListener('click', popupOpen);
+                }
+            }
+        };
+
+        popupFormContainer.addEventListener('click', popupOpen);
+
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (MaterialsUtils.getActiveModalInstance()) {
+                MaterialsUtils.getActiveModalInstance().close();
+                popupFormContainer.removeEventListener('click', popupOpen);
+            }
+        });
+
+    }
 
     initPopupClosingInViewModeOnly() {
-        if (this.args().editActionType === "popup") {
+        if (!this.args().editActionType === "popup") {
+            return;
+        }
 
-            let popupFormContainer = document.getElementById('modal_' + this.getModalLevel());
-            let popupForm = popupFormContainer.querySelectorAll('form')[0];
-            let button = popupForm.querySelector('.f_close-popup-button');
-            button.classList.remove('is_hidden');
+        let popupFormContainer = document.getElementById('modal_' + this.getModalLevel());
+        let popupForm = popupFormContainer.querySelectorAll('form')[0];
+        let button = popupForm.querySelector('.f_close-popup-button');
+        button.classList.remove('is_hidden');
 
-            if (!popupForm.querySelector('.f_saveItem') && !popupForm.querySelector('.f_cancel')) {
+        if (!popupForm.querySelector('.f_saveItem') && !popupForm.querySelector('.f_cancel')) {
 
-                const popupOpen = function (e) {
-                    e.preventDefault();
+            const popupOpen = function (e) {
+                e.preventDefault();
 
-                    if (!e.target.closest('form')) {
-                        if (MaterialsUtils.getActiveModalInstance()) {
-                            MaterialsUtils.getActiveModalInstance().close();
-                            popupFormContainer.removeEventListener('click', popupOpen);
-                        }
-                    }
-                };
-
-                popupFormContainer.addEventListener('click', popupOpen);
-
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-
+                if (!e.target.closest('form')) {
                     if (MaterialsUtils.getActiveModalInstance()) {
                         MaterialsUtils.getActiveModalInstance().close();
                         popupFormContainer.removeEventListener('click', popupOpen);
                     }
-                });
-            }
+                }
+            };
+
+            popupFormContainer.addEventListener('click', popupOpen);
+
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                if (MaterialsUtils.getActiveModalInstance()) {
+                    MaterialsUtils.getActiveModalInstance().close();
+                    popupFormContainer.removeEventListener('click', popupOpen);
+                }
+            });
         }
+
 
     }
 
@@ -454,7 +512,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | numlist bullist | outdent indent ',
             selector: '#' + this.getContainer() + ' .f_tinymce',
             resize: false,
-            height:300,
+            height: 300,
             mobile: {
                 menubar: true
             },
@@ -477,8 +535,13 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
     }
 
 
-    initChoices() {
-        let choicesElems = document.querySelectorAll('#' + this.getContainer() + ' .ngs-choice');
+    initChoices(container) {
+        let choicesElems = [];
+        if (container) {
+            choicesElems = container.querySelectorAll('.ngs-choice');
+        } else {
+            choicesElems = document.querySelectorAll('#' + this.getContainer() + ' .ngs-choice');
+        }
         for (let i = 0; i < choicesElems.length; i++) {
             let choiceElem = choicesElems[i];
             if (choiceElem.choices) {
@@ -496,7 +559,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
 
 
     getChoiceElemById(elemId) {
-        const element = document.querySelector('#'+this.getContainer() + ' ' + '#' + elemId);
+        const element = document.querySelector('#' + this.getContainer() + ' ' + '#' + elemId);
 
         if (!element) {
             return null;
@@ -578,6 +641,12 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             }
         }
     }
+
+
+    initPopupCloseButton() {
+
+    }
+
 
     doCancelAction() {
         document.querySelectorAll("#" + this.getContainer() + " .f_cancel").click(event => {
@@ -778,22 +847,21 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                         document.getElementById(element.id + '_title').addClass('error');
                     }
                 });
-                if(!validateResult.onlyEmptyError) {
+                if (!validateResult.onlyEmptyError) {
                     return;
                 }
 
-                if(!this.args().hasDraftSupport) {
+                if (!this.hasDraftSupport()) {
                     return;
-                }
-                else {
+                } else {
                     DialogUtility.showAlertDialog("Incomplete Issue", "This item has required fields that are not filled up, do you want to save it in DRAFT state?").then(function () {
                         formElem.querySelectorAll('.f_tabTitle').removeClass('error');
                         let invalidItems = document.querySelectorAll('.ngs.invalid');
-                        for(let i=0; i<invalidItems.length; i++) {
+                        for (let i = 0; i < invalidItems.length; i++) {
                             invalidItems[i].classList.remove("invalid");
                         }
                         let errorMessages = document.querySelectorAll('.ngs_validate');
-                        for(let i=0; i<errorMessages.length; i++) {
+                        for (let i = 0; i < errorMessages.length; i++) {
                             errorMessages[i].remove();
                         }
                         this.doSaveRequest(formElem);
@@ -805,6 +873,10 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             return this.doSaveRequest(formElem);
 
         }.bind(this));
+    }
+
+    hasDraftSupport() {
+        return this.args().hasDraftSupport;
     }
 
 
@@ -863,8 +935,8 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             MaterialsUtils.getActiveModalInstance().close();
         }
 
-        console.log(formElem, data);
-        if(formElem && data.repeatTitle) {
+
+        if (formElem && data.repeatTitle) {
             DialogUtility.showAlertDialog(data.repeatTitle, data.repeatMessage).then(() => {
                 this.onRepeat(data.itemId, data.repeatReason, formElem);
             }).catch(() => {
@@ -921,7 +993,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 for (let i = 0; i < resolvedPromises.length; i++) {
                     if (!resolvedPromises[i].valid) {
                         isValid = false;
-                        if(!resolvedPromises[i].isEmpty) {
+                        if (!resolvedPromises[i].isEmpty) {
                             hasErrorExpectEmpty = true;
                         }
                     }
@@ -1282,7 +1354,7 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
                 for (let i = 0; i < fieldAllValidationResults.length; i++) {
                     if (!fieldAllValidationResults[i].valid) {
                         isValid = false;
-                        if(fieldAllValidationResults[i].isEmpty) {
+                        if (fieldAllValidationResults[i].isEmpty) {
                             isEmpty = true;
                         }
                     }
@@ -1406,7 +1478,14 @@ export default class AbstractCmsAddUpdateLoad extends AbstractLoad {
             if (elementIsSelectbox) {
                 element.closest('.choices__inner').classList.remove("ngs", "invalid");
             } else {
-                (!elementIsTinymce) ? element.classList.remove("ngs", "invalid") : element.closest('.input-field').querySelector('.tox-tinymce').classList.remove("ngs", "invalid");
+                if (!elementIsTinymce) {
+                    element.classList.remove("ngs", "invalid");
+                } else {
+                    let tinymce = element.closest('.input-field').querySelector('.tox-tinymce');
+                    if (tinymce) {
+                        tinymce.classList.remove("ngs", "invalid");
+                    }
+                }
             }
         }
 

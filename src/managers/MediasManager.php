@@ -69,6 +69,14 @@ class MediasManager extends AbstractCmsManager
     {
         return $this->getMapper()->createDto();
     }
+    
+        /**
+     * @return array
+     */
+    public function getMediasAvailableThumbs(): array
+    {
+        return array_keys($this->thumbOptions);
+    }
 
     /**
      * create media, if image will create also thumbnails
@@ -99,7 +107,6 @@ class MediasManager extends AbstractCmsManager
         $subFolder = $type === "image" ? "images" : "files";
         $folderToSave = $this->defineFolder($mediaId, $subFolder);
         $newPath = $folderToSave . '/' . $mediaId . '.' . $extension;
-
         if(strpos($filePath, 'http') !== false) {
             $imageToSet = @file_get_contents($filePath);
             if($imageToSet) {
@@ -172,9 +179,9 @@ class MediasManager extends AbstractCmsManager
      *
      * @param $objectId
      * @param $objectType
-     * @return mixed
+     * @return MediasDto|null
      */
-    public function getMainImage($objectId, $objectType) {
+    public function getMainImage($objectId, $objectType) :?MediasDto {
         $mapper = $this->getMapper();
         $item = $mapper->getItemImage($objectId, $objectType);
         return $item;
@@ -188,7 +195,8 @@ class MediasManager extends AbstractCmsManager
      * @param string $mediaName
      * @return bool
      */
-    public function itemHasMedia(int $objectKey, string $objectType, string $mediaName) {
+    public function itemHasMedia(int $objectKey, string $objectType, string $mediaName) :bool
+    {
         $mapper = $this->getMapper();
         $media = $mapper->getItemMediaByName($objectKey, $objectType, $mediaName);
         return !!$media;
@@ -597,7 +605,10 @@ class MediasManager extends AbstractCmsManager
             $height = $width;
             $width = floor($width * ($originalWidth / $originalHeight));
         }
-
+	
+	$width=(int) $width;
+	$height =(int) $height;
+	 
         $thumbnail = imagecreatetruecolor($width, $height);
         if ($type == IMAGETYPE_GIF || $type == IMAGETYPE_PNG) {
             imagecolortransparent($thumbnail, imagecolorallocate($thumbnail, 0, 0, 0));

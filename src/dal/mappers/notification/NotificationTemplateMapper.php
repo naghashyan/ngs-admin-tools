@@ -12,7 +12,7 @@ class NotificationTemplateMapper extends AbstractMysqlMapper
 
     //! Private members.
 
-    private static ?self $instance = null;
+    private static ?NotificationTemplateMapper $instance = null;
     public string $tableName = 'ngs_notification_templates';
 
     public function getTableName(): string

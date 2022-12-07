@@ -30,12 +30,11 @@ class LanguageMapper extends AbstractCmsMapper
     /**
      * Returns an singleton instance of this class
      *
-     * @return self
+     * @return LanguageMapper
      */
-    public static function getInstance(): self
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
+    public static function getInstance(): LanguageMapper {
+        if (self::$instance == null){
+            self::$instance = new LanguageMapper();
         }
         return self::$instance;
     }

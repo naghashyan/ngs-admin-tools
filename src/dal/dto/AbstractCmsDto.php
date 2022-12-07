@@ -69,6 +69,27 @@ abstract class AbstractCmsDto extends AbstractSecureDto
         return $result;
     }
 
+
+    /**
+     * returns item data as array from DTO
+     *
+     * @return array
+     */
+    public function getItemData() {
+        $mapArray = $this->getMapArray(true);
+
+        $result = [];
+
+        foreach($mapArray as $dbField => $fieldName) {
+            $getter = 'get' . ucfirst($fieldName);
+            if(method_exists($this, $getter)) {
+                $result[$dbField] = $this->$getter();
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * @param bool $withoutCreators
      * @return array
@@ -195,6 +216,7 @@ abstract class AbstractCmsDto extends AbstractSecureDto
     }
 
     /**
+     * TODO: need to remove all company_id appearances in admin-tools
      * @param string $actionType
      * @return array
      */
@@ -204,7 +226,6 @@ abstract class AbstractCmsDto extends AbstractSecureDto
         $result = [];
         foreach ($this->getCmsMapArray() as $key => $value) {
             if (isset($value['actions']) && in_array($actionType, $value['actions'], true)) {
-
                 $validators = isset($value['validators']) ? $value['validators'] : [];
                 if($validators && method_exists($this, 'getId') && $this->getId() > 0) {
                     foreach($validators as $validatorKey => $validator) {

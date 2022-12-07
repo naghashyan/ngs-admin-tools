@@ -17,21 +17,22 @@ namespace ngs\AdminTools\dal\mappers;
 
 use ngs\AdminTools\dal\dto\MediasDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
+use ngs\AdminTools\dal\mappers\AbstractCmsMapper;
 
 class MediasMapper extends AbstractCmsMapper
 {
 
     //! Private members.
 
-    private static ?self $instance = null;
+    private static ?MediasMapper $instance = null;
     public string $tableName = 'medias';
 
     /**
      * Returns an singleton instance of this class
      *
-     * @return self Object
+     * @return MediasMapper Object
      */
-    public static function getInstance(): self
+    public static function getInstance(): MediasMapper
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -46,7 +47,7 @@ class MediasMapper extends AbstractCmsMapper
      */
     public function hasCreator(): bool
     {
-        return true;
+        return false;
     }
 
 

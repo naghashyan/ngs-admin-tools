@@ -31,22 +31,22 @@ class NgsTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
      */
     public function index($params, $template): string
     {
-        $viewMode =  false;
+        $viewMode = false;
         $dto = $this->getDtoFromVariables();
         $names = explode(",", $params['name']);
         $name = $names[0];
 
-        if((($dto->getId() || $dto->getTempId()) && !$dto->hasWriteAccess($name)) || isset($params['view_mode']) && $params['view_mode']){
+        if ((($dto->getId() || $dto->getTempId()) && !$dto->hasWriteAccess($name)) || isset($params['view_mode']) && $params['view_mode']) {
             $viewMode = true;
         }
 
-        if(($dto->getId() || $dto->getTempId()) && !$dto->hasReadAccess($name)){
+        if (($dto->getId() || $dto->getTempId()) && !$dto->hasReadAccess($name)) {
             return "";
         }
 
         $isTranslatable = ($this->isFieldTranslatable($name));
         $translateInputs = "";
-        if($isTranslatable){
+        if ($isTranslatable) {
             $paramsForTranslations = [
                 'field_name' => $name,
                 'display_name' => $params['display_name'],
@@ -56,32 +56,31 @@ class NgsTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         }
 
 
-        $classToFormItem = isset($params['class_form_item']) ? " " .$params['class_form_item'] : " ";
-        $classToInputField = isset($params['class_input_field']) ? " " .$params['class_input_field'] : " ";
-        $containerId = isset($params['id']) ? 'id="' . $params['id'] .'" ' : " ";
+        $classToFormItem = isset($params['class_form_item']) ? " " . $params['class_form_item'] : " ";
+        $classToInputField = isset($params['class_input_field']) ? " " . $params['class_input_field'] : " ";
+        $containerId = isset($params['id']) ? 'id="' . $params['id'] . '" ' : " ";
         $customText = isset($params['help_text']) ? $params['help_text'] : '';
         $helpText = $this->getHelpText($params, $customText);
         $rule = $this->getRule($params);
 
         $fieldGetter = 'get' . $this->underlinesToCamelCase($name);
-        if($dto->getId() || $dto->getTempId()) {
-            if($viewMode) {
+        if ($dto->getId() || $dto->getTempId()) {
+            if ($viewMode) {
                 $innerTexts = [];
-                foreach($names as $singleName) {
+                foreach ($names as $singleName) {
                     $fieldGetter = 'get' . $this->underlinesToCamelCase($singleName);
                     $innerTexts[] = $dto->$fieldGetter();
                 }
                 $innerText = implode(" - ", $innerTexts);
-            }
-            else {
+            } else {
                 $innerText = $dto->$fieldGetter();
             }
-        }else {
+        } else {
             $innerText = $this->getDefaultValueForTextType($name);
         }
 
         $attributesForInputTag = '';
-        if(isset($params['attributes_for_input_tag']) && !empty($params['attributes_for_input_tag'])) {
+        if (isset($params['attributes_for_input_tag']) && !empty($params['attributes_for_input_tag'])) {
             foreach ($params['attributes_for_input_tag'] as $attributeName => $attributeValue) {
                 $attributesForInputTag .= $attributeName . '="' . $attributeValue . '" ';
             }
@@ -90,6 +89,7 @@ class NgsTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $templateParams = [
             'name' => $name,
             'sage_sync' => isset($params['sync_with_sage']) && $params['sync_with_sage'],
+            'h2_sync' => isset($params['sync_with_h2']) && $params['sync_with_h2'],
             'has_error_field' => isset($params['has_error_field']) && $params['has_error_field'],
             'displayName' => isset($params['display_name']) ? $params['display_name'] : $this->getDisplayName($name),
             'innerText' => $innerText,
@@ -98,7 +98,7 @@ class NgsTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             'class_to_form_item' => $classToFormItem,
             'class_to_input_field' => $classToInputField,
             'container_id' => $containerId,
-            'viewModeClass' => $viewMode? " view-mode" : " ",
+            'viewModeClass' => $viewMode ? " view-mode" : " ",
             'attributes_for_input_tag' => $attributesForInputTag,
             'isTranslatable' => $isTranslatable,
             'translations' => $translateInputs,
@@ -121,39 +121,36 @@ class NgsTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
     protected function getFunctionTemplate(array $params): string
     {
 
-        return '<div '.$params['container_id'].' class="form-item'.$params['viewModeClass'] .$params['class_to_form_item'] .'">
-                    <div class="input-field'. $params['class_to_input_field'] .'">' .
+        return '<div ' . $params['container_id'] . ' class="form-item' . $params['viewModeClass'] . $params['class_to_form_item'] . '">
+                    <div class="input-field' . $params['class_to_input_field'] . '">' .
             $params['innerHTML']
-            .'</div>
+            . '</div>
                     <div class="icons-box">
-                        ' .$params['rule'] . $params['helpText'] . '
+                        ' . $params['rule'] . $params['helpText'] . '
                    </div>
                 </div>';
     }
 
 
-
-
-    private function addInputFieldInnerHTML($viewMode, $params){
+    private function addInputFieldInnerHTML($viewMode, $params)
+    {
         $syncSage = $params['sage_sync'] ? '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>' : '';
+        $syncSage .= $params['h2_sync'] ? '<i class="icon-master-icon master-field-icon"><div class="tooltip">Catalog master field</div></i>' : '';
 
-        $originalLanguage = $params['isTranslatable']? ' language-id="original" ' : ' ';
-        if(!$viewMode){
-            $errorField = $params['has_error_field'] ?  '<span class="f_field-error is_hidden field-error"></span>' : '';
+        $originalLanguage = $params['isTranslatable'] ? ' language-id="original" ' : ' ';
+        if (!$viewMode) {
+            $errorField = $params['has_error_field'] ? '<span class="f_field-error is_hidden field-error"></span>' : '';
 
-            return '<label for="'. $params['element_id'] .'">'. $params['displayName'] . '</label>' . $syncSage . '
-                    <input '. $params['attributes_for_input_tag'] . $originalLanguage . 'id="' . $params['element_id'] . '"
+            return '<label for="' . $params['element_id'] . '">' . $params['displayName'] . '</label>' . $syncSage . '
+                    <input ' . $params['attributes_for_input_tag'] . $originalLanguage . 'id="' . $params['element_id'] . '"
                        name="' . $params['name'] . '" type="text"
                        placeholder="' . $params['displayName'] . '"
                        value="' . $params['innerText'] . '"' . '>' . $errorField . $params['translations'];
-        }else{
-            return '<label>' .$params['displayName']. '</label>' . $syncSage . '
-                    <span is_not_required="true"' . $originalLanguage . 'class="view-text f_form-item-view-mode" id="' . $params['element_id'] . '"> ' .$params['innerText']. '</span>' . $params['translations'];
+        } else {
+            return '<label>' . $params['displayName'] . '</label>' . $syncSage . '
+                    <span is_not_required="true"' . $originalLanguage . 'class="view-text f_form-item-view-mode" id="' . $params['element_id'] . '"> ' . $params['innerText'] . '</span>' . $params['translations'];
         }
     }
-
-
-
 
 
 }

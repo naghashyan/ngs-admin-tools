@@ -10,7 +10,7 @@
 // for changes use subject.json
 
 $iconmoon-font-path: $NGS_MODULE_PATH+"/fonts/iconmoon/fonts/" !default;
-$iconmoon-font-prop: "sb82a5";
+$iconmoon-font-prop: "sp1xn6";
 
 @font-face {
   font-family: 'icomoon';
@@ -39,6 +39,9 @@ $iconmoon-font-prop: "sb82a5";
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-master-icon:before {
+  content: "\ea2e";
+}
 .icon-upload-cloud:before {
   content: "\ea2d";
 }

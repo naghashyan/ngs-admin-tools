@@ -12,7 +12,7 @@ class NotificationTemplateGroupMapper extends AbstractMysqlMapper
 
     //! Private members.
 
-    private static ?self $instance = null;
+    private static ?NotificationTemplateGroupMapper $instance = null;
     public string $tableName = 'ngs_notification_template_groups';
 
     public function getTableName(): string
@@ -28,9 +28,9 @@ class NotificationTemplateGroupMapper extends AbstractMysqlMapper
     /**
      * Returns an singleton instance of this class
      *
-     * @return self Object
+     * @return NotificationTemplateGroupMapper Object
      */
-    public static function getInstance(): self
+    public static function getInstance(): NotificationTemplateGroupMapper
     {
         if (self::$instance === null) {
             self::$instance = new self();

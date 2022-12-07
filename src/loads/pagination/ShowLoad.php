@@ -119,7 +119,6 @@ class ShowLoad extends AbstractCmsLoad
             return $rule;
         }
         catch(\Exception $exp) {
-            $this->getLogger()->info('no rule found for filter ' . $tableName . ': ' . $exp->getMessage());
             return null;
         }
     }

@@ -91,6 +91,7 @@
   label {
     display: flex;
     align-items: center;
+    cursor: pointer;
   }
 
   .text-item-box {
@@ -105,7 +106,9 @@
 
     &:focus {
       & + span {
-        box-shadow: 0 2px 6px rgba($primaryColor,0.46);
+        &:after {
+          border-color: $primaryColor;
+        }
       }
     }
   }

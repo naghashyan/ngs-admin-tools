@@ -19,9 +19,13 @@ use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
 use ngs\AdminTools\dal\dto\AbstractCmsDto;
 use ngs\AdminTools\dal\dto\NgsRuleDto;
 use ngs\AdminTools\dal\mappers\AbstractCmsMapper;
+use ngs\AdminTools\exceptions\NgsValidationException;
 use ngs\AdminTools\util\ArrayUtil;
 use ngs\AdminTools\util\LoggerFactory;
 use ngs\AdminTools\util\StringUtil;
+use ngs\AdminTools\util\ValidateUtil;
+use ngs\exceptions\DebugException;
+use ngs\exceptions\NgsErrorException;
 
 abstract class AbstractCmsManager extends AbstractManager
 {
@@ -84,6 +88,118 @@ abstract class AbstractCmsManager extends AbstractManager
 
 
     /**
+     * returns request parameters array formater as ['db_field_name' => value]
+     *
+     * @param string $type
+     * @param array $additionalValidators
+     * @param AbstractCmsDto|null $dto
+     * @param object|null $request
+     * @param array|null $requestData
+     *
+     * @return array
+     *
+     * @throws NgsErrorException
+     * @throws NgsValidationException
+     * @throws DebugException
+     */
+    public function getRequestParameters(string $type, array $additionalValidators = [], $dto = null, $request = null, ?array $requestData = null): array
+    {
+        $updateArr = [];
+        $editFields = $this->getAddEditFieldsMethods($type === 'add' ? $type : 'edit', $dto);
+        $dtoToCheck = $this->createDto();
+
+
+        $hasNotFilledRequiredFields = false;
+
+        $validationResult = $this->validateRequest($type, $editFields, $additionalValidators, $request, $requestData, $dto);
+        if($validationResult['errors']) {
+            $mapArray = $dtoToCheck->getCmsMapArray();
+
+            $errorText = ValidateUtil::getErrorTextByErrors($validationResult['errors'], $mapArray);
+
+            if(!$this->hasDraftSupport($dto)) {
+                throw new NgsValidationException($errorText, 0, null, $validationResult['errors']);
+            }
+            else {
+                $notEmptyErrors = ValidateUtil::getNotEmptyErrors($validationResult['errors']);
+                if(!$notEmptyErrors) {
+                    $hasNotFilledRequiredFields = true;
+                    $validationResult['fields']['status'] = AbstractCmsDto::DRAFT_STATUS;
+                }
+                else {
+                    $errorText = ValidateUtil::getErrorTextByErrors($notEmptyErrors, $mapArray);
+                    throw new NgsValidationException($errorText, 0, null, $notEmptyErrors);
+                }
+            }
+        }
+
+        $requestData = $validationResult['fields'];
+
+        foreach ($editFields as $methodKey => $methodValue) {
+            if($methodValue['relative']) {
+                continue;
+            }
+            $key = $methodValue['data_field_name'];
+            $fieldName = $methodValue['data_field_name'];
+            if(!$dtoToCheck->hasWriteAccess($fieldName)) {
+                continue;
+            }
+            if(!isset($requestData[$fieldName]) && $methodValue['action_type'] !== 'checkbox') {
+                continue;
+            }
+
+            $value = isset($requestData[$fieldName]) ? $requestData[$fieldName] : "";
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+            if ($methodValue['required'] && $value === null) {
+                $fieldDisplayName = $methodValue['display_name'];
+                throw new NgsErrorException($fieldDisplayName . ' field is required!');
+            }
+            if ($methodValue['type'] === 'number' && $value && !is_numeric($value)) {
+                throw new NgsErrorException($key . ' field should be number!');
+            }
+            if ($methodValue['action_type'] === 'checkbox') {
+
+                $value = $value === 'on' ? 1 : 0;
+            }
+
+            if (is_null($value)) {
+                continue;
+            }
+
+            if($value === '') {
+                if (in_array($methodValue['action_type'], ['number', 'select']) ) {
+                    $value = null;
+                }
+            }
+
+            if ($methodValue['action_type'] === 'date') {
+                $format = 'Y-m-j';
+                if ($fieldName === 'date_start') {
+                    $format = 'd F Y, H:i';
+                    $value .= ', 00:00';
+                } else if ($fieldName === 'date_end') {
+                    $format = 'd F Y, H:i';
+                    $value .= ', 23:59';
+                }
+                $date = \DateTime::createFromFormat($format, $value);
+
+                if (!$date) {
+                    continue;
+                }
+                $value = $date->format('Y-m-j H:i:s');
+            }
+            if (!($methodValue['action_type'] === 'password' && !$value)) {
+                $updateArr[$key] = $value;
+            }
+        }
+
+        return ['data' => $updateArr, 'hasNotFilledRequiredFields' => $hasNotFilledRequiredFields];
+    }
+
+
+    /**
      * fill dto with possible values
      * @param $dto
      * @param array $possibleValues
@@ -133,6 +249,16 @@ abstract class AbstractCmsManager extends AbstractManager
 
 
     /**
+     * @param NgsCmsParamsBin $paramsBin
+     * @return NgsCmsParamsBin
+     */
+    public function modifyNgsListBinParams(NgsCmsParamsBin $paramsBin) : NgsCmsParamsBin
+    {
+        return $paramsBin;
+    }
+
+
+    /**
      * @param $itemDto
      * @param bool $forFilter
      * @param array $additionalData
@@ -148,12 +274,17 @@ abstract class AbstractCmsManager extends AbstractManager
         $relationEntities = $this->getRelationEntities();
         foreach ($relationEntities as $key => $relationEntity) {
             if (isset($relationEntity['relation_type']) && $relationEntity['relation_type'] === 'many_to_many') {
+                /** @var AbstractCmsManager $manager */
                 $manager = $relationEntity['relative_manager'];
             } else {
+                /** @var AbstractCmsManager $manager */
                 $manager = $relationEntity['manager'];
             }
             $paramsBin = $this->getParamsBinForSelectingRelativeFields($key, $itemDto);
             $selectValues[$key] = $manager->getSelectionList($paramsBin);
+            if($forFilter) {
+                $selectValues[$key] = $manager->modifyFilterValues($selectValues[$key]);
+            }
         }
 
         $this->possibleValues[get_class($itemDto)] = $selectValues;
@@ -393,8 +524,17 @@ abstract class AbstractCmsManager extends AbstractManager
             if (!isset($mapArrayItem['filterable']) || $mapArrayItem['filterable'] === false) {
                 continue;
             }
+            $fieldKey = $tableName. '.' . $key;
+            if(isset($mapArrayItem['from_other_table']) && $mapArrayItem['from_other_table']) {
+                if(is_string($mapArrayItem['from_other_table'])) {
+                    $fieldKey = $mapArrayItem['from_other_table'];
+                }
+                else {
+                    $fieldKey = $key;
+                }
+            }
             $filterItem = [
-                'id' => $tableName. '.' . $key,
+                'id' => $fieldKey,
                 'value' => $mapArrayItem['display_name'],
                 'type' => $mapArrayItem['type']
             ];
@@ -417,7 +557,6 @@ abstract class AbstractCmsManager extends AbstractManager
         /** @var AbstractCmsDto $itemDto */
         $itemDto = $this->getMapper()->createDto();
         $tableName = $itemDto->getTableName();
-        //todo: getting fields from getCmsMapArray is not good; need to be changed; Need to take from getVisibleFields and in each dto should dzel mapArray@, visible fieldery chisht dnel;
         $fields = $itemDto->getCmsMapArray();
         $fields = array_merge($fields, $this->getAdditionalFieldsToExport());
         $fieldsToSkip = $this->getFieldsToSkipForExport();
@@ -466,7 +605,7 @@ abstract class AbstractCmsManager extends AbstractManager
 
         if($searchableFields || $filter) {
             $paramsBin->setVersion(2);
-            $paramsBin->setFilter(['filter' => $filter, 'search' => $searchData, 'table' => $this->getMapper()->getTableName()]);
+            $paramsBin->setFilter(['filter' => $filter, 'search' => $searchData, 'table' => $this->getMapper()->getTableName(), 'dto' => $this->getMapper()->createDto()]);
         }
 
         return $paramsBin;
@@ -521,7 +660,6 @@ abstract class AbstractCmsManager extends AbstractManager
         $itemDto->fillDtoFromArray($params, $onlyNotSetFields);
 
         $itemDto->setId($itemId);
-
         $result = $mapper->updateByPk($itemDto);
         if ($updateRelations) {
             $this->updateItemRelations($params, $itemDto->getId());
@@ -705,12 +843,37 @@ abstract class AbstractCmsManager extends AbstractManager
 
 
     /**
-     * NgsCmsParamsBin $paramsBin
+     * returns item ids found by given params
+     *
+     * @param NgsCmsParamsBin $paramsBin
+     * @return array
+     */
+    public function getIdsByParams(NgsCmsParamsBin $paramsBin) {
+        $itemsIds = $this->getMapper()->getIdsByParams($paramsBin);
+        return $itemsIds;
+    }
+
+
+    /**
+     * delete items by params
+     *
+     * @param NgsCmsParamsBin|null $paramsBin
+     * @param bool $forceDelete (if no will use listing bin params override, as displayed for user in listing)
      *
      * @return bool
      */
-    public function deleteByParams(NgsCmsParamsBin $paramsBin = null)
+    public function deleteByParams(NgsCmsParamsBin $paramsBin = null, bool $forceDelete = true)
     {
+        if(!$forceDelete && $paramsBin) {
+            $paramsBin = $this->modifyNgsListBinParams($paramsBin);
+            $itemsIds = $this->getIdsByParams($paramsBin);
+            if(!$itemsIds) {
+                return true;
+            }
+            $paramsBin = new NgsCmsParamsBin();
+            $paramsBin->setWhereAndCondition(['dto' => $this->createDto(), 'field' => 'id'], '(' . implode(',', $itemsIds) . ')', 'in');
+        }
+
         if ($paramsBin === null) {
             $paramsBin = new NgsCmsParamsBin();
         }
@@ -832,9 +995,9 @@ abstract class AbstractCmsManager extends AbstractManager
     }
 
 
-    public function deleteItemById($itemId)
+    public function deleteItemById($itemId, bool $forceDelete = false)
     {
-        return $this->getMapper()->deleteItemById($itemId);
+        return $this->getMapper()->deleteItemById($itemId, $forceDelete);
     }
 
 
@@ -913,7 +1076,11 @@ abstract class AbstractCmsManager extends AbstractManager
      */
     public function getSelectionList(NgsCmsParamsBin $paramsBin = null)
     {
-        if(!$this->selectionList) {
+        $key = 'default';
+        if($paramsBin) {
+            $key = md5(json_encode($paramsBin->getWhereCondition()));
+        }
+        if(!isset($this->selectionList[$key]) || !$this->selectionList[$key]) {
             if(!$paramsBin) {
                 $paramsBin = new NgsCmsParamsBin();
                 $paramsBin->setOffset(0);
@@ -926,11 +1093,10 @@ abstract class AbstractCmsManager extends AbstractManager
             foreach ($items as $item) {
                 $result[] = $item;
             }
-            $this->selectionList = $result;
+            $this->selectionList[$key] = $result;
         }
-
-
-        return $this->selectionList;
+        
+        return $this->selectionList[$key];
     }
 
 
@@ -1012,10 +1178,23 @@ abstract class AbstractCmsManager extends AbstractManager
     /**
      * indicates if object can be saved without validation as draft item
      *
+     * @param AbstractCmsDto|null $item
      * @return bool
      */
-    public function hasDraftSupport() :bool {
+    public function hasDraftSupport($item) :bool {
         return false;
+    }
+
+
+    /**
+     * modify values for filter
+     *
+     * @param array $valuesForFilter
+     * @return array
+     */
+    protected function modifyFilterValues(array $valuesForFilter) :array
+    {
+        return $valuesForFilter;
     }
 
 
@@ -1048,5 +1227,128 @@ abstract class AbstractCmsManager extends AbstractManager
             }
         }
         return $selectValues;
+    }
+
+
+    /**
+     * can modify validators
+     *
+     * @param array $validators
+     * @param object|null $request
+     * @param array|null $requestData
+     * @param null|AbstractCmsDto $dto
+     * @return array
+     */
+    protected function modifyPreparedValidators(array $validators, $request, ?array $requestData = [], ?AbstractCmsDto $dto = null) {
+        if($requestData) {
+            $itemId = $requestData['id'] ?? null;
+            $companyId = $requestData['company_id'] ?? null;
+        }
+        else {
+            $itemId = $request->id ? $request->id : null;
+            $companyId = $request->company_id ? $request->company_id : null;
+        }
+
+        foreach($validators as $validatorClass => $valuesToValidate) {
+            if(isset($valuesToValidate[0])) {
+                foreach($valuesToValidate as $key => $valueToValidate) {
+                    if(isset($valueToValidate['data']) && $valueToValidate['data']) {
+                        if ($itemId) {
+                            $valuesToValidate[$key]['data']['item_id'] = $itemId;
+                        }
+                        if ($companyId) {
+                            $valuesToValidate[$key]['data']['company_id'] = $companyId;
+                        }
+                    }
+                }
+                $validators[$validatorClass] = $valuesToValidate;
+            }
+            else {
+                if(isset($valuesToValidate['additional_params']) && $valuesToValidate['additional_params']) {
+                    if ($itemId) {
+                        $validators[$validatorClass]['additional_params']['item_id'] = $itemId;
+                    }
+                    if ($companyId) {
+                        $validators[$validatorClass]['additional_params']['company_id'] = $companyId;
+                    }
+                }
+            }
+        }
+
+        return $validators;
+    }
+
+
+    /**
+     * by using mapArray sets addEditFieldMethods which are used to fill request data
+     *
+     *
+     * @param string $type
+     * @param AbstractCmsDto $cmsDto
+     *
+     * @return array
+     */
+    private function getAddEditFieldsMethods(string $type, $cmsDto = null): array
+    {
+        if(!$cmsDto) {
+            $cmsDto = $this->createDto();
+        }
+        $visibleFieldsMethods = $cmsDto->getAddEditFieldsMethods($type);
+        if (count($visibleFieldsMethods)) {
+            return $visibleFieldsMethods;
+        }
+
+        return [];
+    }
+
+
+    /**
+     * validate request parameters
+     *
+     * @param string|null $type
+     * @param array|null $editFields
+     * @param array $additionalValidators
+     * @param object|null $request
+     * @param array $requestData
+     * @param null|AbstractCmsDto $dto
+     *
+     * @return array
+     */
+    private function validateRequest(?string $type, ?array $editFields, array $additionalValidators, $request, array $requestData = null, ?AbstractCmsDto $dto = null) {
+        $fieldsWithValidators = $this->getValidators($type, $editFields, $additionalValidators);
+        $validators = ValidateUtil::prepareValidators($fieldsWithValidators, $request, $requestData);
+        $validators = $this->modifyPreparedValidators($validators, $request, $requestData, $dto);
+        $result = ValidateUtil::validateRequestData($validators);
+        return $result;
+    }
+
+
+    /**
+     * returns additional validators for fields
+     *
+     * @param string|null $type
+     * @param array|null $editFields
+     * @param array $additionalValidators
+     *
+     * @return array
+     */
+    public function getValidators(?string $type, ?array $editFields = [], array $additionalValidators = []) :array {
+        if(!$editFields) {
+            $editFields = $this->getAddEditFieldsMethods($type === 'add' ? $type : 'edit', null);
+        }
+
+        $validatorsByFields = ValidateUtil::getFieldsValidators($editFields);
+
+        if($additionalValidators) {
+            foreach($additionalValidators as $field => $validators) {
+
+                if(!isset($validatorsByFields[$field])) {
+                    $validatorsByFields[$field] = [];
+                }
+                $validatorsByFields[$field] = array_merge($validatorsByFields[$field], $validators);
+            }
+        }
+
+        return $validatorsByFields;
     }
 }

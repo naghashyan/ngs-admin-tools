@@ -31,8 +31,6 @@ class DefaultEventSubscriber extends AbstractEventSubscriber
      */
     public function getSubscriptions() :array {
         return [
-            //BeforeLoadEventStructure::class => "beforeLoadHandler",
-            //AfterLoadEventStructure::class => "afterLoadHandler",
             EventDispatchedStructure::class => "eventDispatchedHandler"
         ];
     }

@@ -18,7 +18,7 @@ let SearchOnTypingUtility = {
     filterInput.addEventListener('keyup', (e) => {
       let timer = setTimeout(() => {
         if(filterInput.value.trim()) {
-          let currentProductId = document.getElementById('currentItemId').value || -1;
+          let currentProductId = document.getElementById(searchInputSelector).value || -1;
           NGS.action(action, {searchKey: filterInput.value, productId: currentProductId, whereConditions: JSON.stringify(whereConditions), limit: 20},  (response) => {
             callBack(response);
           })

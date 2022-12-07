@@ -15,10 +15,11 @@ namespace ngs\AdminTools\actions;
 
 
 use ngs\AdminTools\dal\binparams\NgsCmsParamsBin;
+use ngs\AdminTools\util\BulkActionTrait;
 
 abstract class AbstractCmsBulkDeleteAction extends CmsBulkAction
 {
-
+   use BulkActionTrait;
 
     /**
      * @throws \ngs\exceptions\DebugException
@@ -38,7 +39,7 @@ abstract class AbstractCmsBulkDeleteAction extends CmsBulkAction
         $this->getLogger()->info('bulk delete action started', (array)$paramsBin);
         $deleteResult = false;
         if ($paramsBin !== null) {
-            $deleteResult = $manager->deleteByParams($paramsBin);
+            $deleteResult = $manager->deleteByParams($paramsBin, false);
         }
         $this->addParam('success', $deleteResult);
         $this->addParam('afterActionLoad', $manager->getListLoad());

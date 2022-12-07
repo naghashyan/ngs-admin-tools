@@ -57,6 +57,10 @@
         margin-bottom: 20px;
         padding: 12px 19px 12px;
 
+        & + .popup-close-btn {
+          top: 7px;
+        }
+
         .t4 {
           font-size: 16px;
           line-height: 21px;
@@ -178,10 +182,10 @@
 /*----------flexible height popup----------*/
 
 .flexible-height-popup {
-  min-height: 400px;
+  min-height: 430px;
   position: fixed;
   z-index: $zindex-modal;
-  max-width: 630px;
+  max-width: 870px;
   width: 90%;
   top: 50% !important;
   left: 50%;
@@ -195,13 +199,15 @@
   flex-flow: column;
 
   .toast-header-box {
-    padding: 0 20px 20px;
     margin: 0 -20px;
     border-bottom: 1px solid #e2e8f0;
     position: relative;
+    padding: 0 19px 12px;
 
     h4 {
       margin-bottom: 0;
+      font-size: 16px;
+      line-height: 21px;
     }
   }
   .toast-content-box {

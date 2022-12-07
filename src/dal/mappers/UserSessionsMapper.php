@@ -30,12 +30,12 @@ class UserSessionsMapper extends AbstractMysqlMapper
     /**
      * Returns an singleton instance of this class
      *
-     * @return self
+     * @return UserSessionsMapper
      */
-    public static function getInstance(): self
+    public static function getInstance()
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+        if (self::$instance == null) {
+            self::$instance = new UserSessionsMapper();
         }
         return self::$instance;
     }

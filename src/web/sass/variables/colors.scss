@@ -191,9 +191,10 @@ $bgweb: (
                 )
         ),
         "scrollbar": (
-                "scrollbar-color": #dddddd,
-                "scrollbar-inner-color": #c8c8c8,
-                "scrollbar-width": 5px
+                "scrollbar-color": #dbdbdb,
+                "scrollbar-inner-color": rgba($primaryColor, 0.4),
+                "scrollbar-width": 12px,
+                "scrollbar-border-radius": 7px
         ),
         "checkbox": (
                 "outbox": (

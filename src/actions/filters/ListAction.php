@@ -65,7 +65,6 @@ class ListAction extends AbsctractCmsAction
             return $rule;
         }
         catch(\Exception $exp) {
-            $this->getLogger()->error('no rule found for filter ' . $tableName);
             return null;
         }
     }

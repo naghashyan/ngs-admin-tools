@@ -8,6 +8,49 @@ use ngs\AdminTools\validators\BaseValidator;
 class ValidateUtil
 {
 
+
+    /**
+     * returns additional validators for fields
+     *
+     * @param string $fieldVirtualName
+     * @param string $validatorClass
+     *
+     * @return null|array
+     */
+    public static function getVirtualFieldValidator(array $allValidators, string $fieldVirtualName, string $validatorClass) :?array {
+        foreach($allValidators as $field => $validators) {
+            foreach($validators as $validator) {
+                if($validator['class'] === $validatorClass && isset($validator['as']) && $validator['as'] === $fieldVirtualName) {
+                    return [$validator];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * returns validators by fields
+     * 
+     * @param array $fields
+     * @return array
+     */
+    public static function getFieldsValidators(array $fields) {
+        $result = [];
+        foreach ($fields as $methodKey => $methodValue) {
+            $key = $methodValue['data_field_name'];
+            if(!isset($result[$key])) {
+                $result[$key] = [];
+            }
+
+            if(isset($methodValue['validators']) && $methodValue['validators']) {
+                $result[$key] = $methodValue['validators'];
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * group validators fiwth vields info
      * 
@@ -186,7 +229,6 @@ class ValidateUtil
                 }
             }
             else {
-
                 /** @var BaseValidator $validator */
                 $validator = new $validatorClass($values['params']);
                 if(isset($values['additional_params']['data'])) {
@@ -195,7 +237,6 @@ class ValidateUtil
                 try {
                     $isValid = $validator->isValid(null);
                     if(!$isValid) {
-
                         if($validator->getErrorFields()) {
                             $errors = $validator->getErrorFields();
                             foreach($errors as $field => $error) {
@@ -212,7 +253,7 @@ class ValidateUtil
                         }
                     }
                 }
-                catch(\Exception $exp) {
+                catch(\Throwable $exp) {
                     $result['errors'][] = ['field' => implode(",", $values), 'message' => $exp->getMessage()];
                 }
             }
@@ -222,6 +263,10 @@ class ValidateUtil
     }
 
 
+    /**
+     * @param $validator
+     * @return array
+     */
     private static function setValidatorOptionalParams($validator) {
         
         $validatorInfo = [];
@@ -257,6 +302,24 @@ class ValidateUtil
             $validatorInfo['data'] = $validator['data'];
         }
         return $validatorInfo;
+    }
+
+
+    /**
+     * returns full error
+     * 
+     * @param array $errors
+     * @return string
+     */
+    public static function getErrorsMessage(array $errors) :string
+    {
+        $message = '';
+        foreach($errors as $error) {
+            $message .= "\r\n";
+            $message .= $error['message'];
+        }
+
+        return $message;
     }
 
 

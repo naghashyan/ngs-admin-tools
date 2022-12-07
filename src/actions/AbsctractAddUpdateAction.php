@@ -40,6 +40,7 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
      * @var array
      */
     private $addEditFieldsMethods = [];
+    private $hasNotFilledRequiredFields = false;
 
     /**
      * sets addEditFieldMethods which are used to fill request data
@@ -249,100 +250,10 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
      */
     public function getRequestParameters(string $type, $dto = null, array $requestData = null): array
     {
-        $type = $type === 'add' ? $type : 'edit';
-        $updateArr = [];
-        $manager = $this->getManager();
-        $this->initializeAddEditFieldsMethods($type, $dto);
-        $dtoToCheck = $manager->createDto();
-        $editFields = $this->getAddEditFieldsMethods();
+        $requestData = $this->getManager()->getRequestParameters($type, $this->getAdditionalValidators(), $dto, $this->args(), $requestData);
+        $this->hasNotFilledRequiredFields = $requestData['hasNotFilledRequiredFields'];
 
-
-        $validationResult = $this->validateRequest($requestData);
-        if($validationResult['errors']) {
-            $emptyDto = $manager->getMapper()->createDto();
-            $mapArray = $emptyDto->getCmsMapArray();
-
-            $errorText = ValidateUtil::getErrorTextByErrors($validationResult['errors'], $mapArray);
-
-            if(!$manager->hasDraftSupport()) {
-                throw new NgsValidationException($errorText, 0, null, $validationResult['errors']);
-            }
-            else {
-                $notEmptyErrors = ValidateUtil::getNotEmptyErrors($validationResult['errors']);
-                if(!$notEmptyErrors) {
-                    $validationResult['fields']['status'] = AbstractCmsDto::DRAFT_STATUS;
-                }
-                else {
-                    $errorText = ValidateUtil::getErrorTextByErrors($notEmptyErrors, $mapArray);
-                    throw new NgsValidationException($errorText, 0, null, $notEmptyErrors);
-                }
-            }
-        }
-
-        $requestData = $validationResult['fields'];
-
-        foreach ($editFields as $methodKey => $methodValue) {
-            if($methodValue['relative']) {
-                continue;
-            }
-            $key = $methodValue['data_field_name'];
-            $fieldName = $methodValue['data_field_name'];
-            if(!$dtoToCheck->hasWriteAccess($fieldName)) {
-                continue;
-            }
-            if(!isset($requestData[$fieldName]) && $methodValue['action_type'] !== 'checkbox') {
-                continue;
-            }
-
-            $value = isset($requestData[$fieldName]) ? $requestData[$fieldName] : "";
-            if (is_string($value)) {
-                $value = trim($value);
-            }
-            if ($methodValue['required'] && $value === null) {
-                $fieldDisplayName = $methodValue['display_name'];
-                throw new NgsErrorException($fieldDisplayName . ' field is required!');
-            }
-            if ($methodValue['type'] === 'number' && $value && !is_numeric($value)) {
-                throw new NgsErrorException($key . ' field should be number!');
-            }
-            if ($methodValue['action_type'] === 'checkbox') {
-
-                $value = $value === 'on' ? 1 : 0;
-            }
-
-            if (is_null($value)) {
-                continue;
-            }
-
-            if($value === '') {
-                if (in_array($methodValue['action_type'], ['number', 'select']) ) {
-                    $value = null;
-                }
-            }
-
-            if ($methodValue['action_type'] === 'date') {
-                $format = 'Y-m-j';
-                if ($fieldName === 'date_start') {
-                    $format = 'd F Y, H:i';
-                    $value .= ', 00:00';
-                } else if ($fieldName === 'date_end') {
-                    $format = 'd F Y, H:i';
-                    $value .= ', 23:59';
-                }
-                $date = \DateTime::createFromFormat($format, $value);
-
-                if (!$date) {
-                    continue;
-                }
-                $value = $date->format('Y-m-j H:i:s');
-            }
-            if (!($methodValue['action_type'] === 'password' && !$value)) {
-                $updateArr[$key] = $value;
-            }
-        }
-
-        $updateArr = array_merge($updateArr, $this->getAdditionalParams());
-        return $updateArr;
+        return $requestData['data'];
     }
 
     /**
@@ -363,52 +274,12 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
         return [];
     }
 
-
     /**
-     * returns additional validators for fields
-     *
-     * @param int $itemId
-     * @return array
+     * @return mixed
      */
-    public function getValidators(int $itemId = null) :array {
-        $editFields = $this->getAddEditFieldsMethods();
-
-        $result = [];
-        foreach ($editFields as $methodKey => $methodValue) {
-            $key = $methodValue['data_field_name'];
-            if(!isset($result[$key])) {
-                $result[$key] = [];
-            }
-
-            if(isset($methodValue['validators']) && $methodValue['validators']) {
-                $result[$key] = $methodValue['validators'];
-            }
-        }
-
-
-        $additionalValidators = $this->getAdditionalValidators();
-        if($additionalValidators) {
-            foreach($additionalValidators as $field => $validators) {
-
-                if(!isset($result[$field])) {
-                    $result[$field] = [];
-                }
-                $result[$field] = array_merge($result[$field], $validators);
-            }
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * can modify validators
-     *
-     * @param array $validators
-     * @return array
-     */
-    protected function modifyPreparedValidators(array $validators) {
-        return $validators;
+    protected function getHasNotFilledRequiredFields()
+    {
+        return $this->hasNotFilledRequiredFields;
     }
 
 
@@ -426,21 +297,6 @@ abstract class AbsctractAddUpdateAction extends AbsctractCmsAction
 
         $translationManager = TranslationManager::getInstance();
         return $translationManager->saveDtoTranslations($dto, $translations);
-    }
-
-
-    /**
-     * validate request parameters
-     *
-     * @param array $requestData
-     * @return array
-     */
-    private function validateRequest(array $requestData = null) {
-        $fieldsWithValidators = $this->getValidators();
-        $validators = ValidateUtil::prepareValidators($fieldsWithValidators, $this->args(), $requestData);
-        $validators = $this->modifyPreparedValidators($validators);
-        $result = ValidateUtil::validateRequestData($validators);
-        return $result;
     }
 
     /**

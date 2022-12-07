@@ -18,7 +18,7 @@ class ExportTemplateDto extends AbstractDto
     protected $updated;
 
     /** @var string */
-    public $tableName = 'ngs_saved_export_templates';
+    public string $tableName = 'ngs_saved_export_templates';
 
     // Map of DB value to Field value
     protected $mapArray = [

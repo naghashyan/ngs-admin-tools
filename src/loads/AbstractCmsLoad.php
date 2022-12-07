@@ -234,7 +234,6 @@ abstract class AbstractCmsLoad extends AbstractLoad
             return ["allowed" => [$adminGroup->getId()]];
         }
         return [];
-
     }
 
     /**

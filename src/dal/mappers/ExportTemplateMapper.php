@@ -26,15 +26,16 @@ class ExportTemplateMapper extends AbstractMysqlMapper
     private static ?self $instance=null;
     private string $tableName = 'ngs_saved_export_templates';
 
+
     /**
      * Returns an singleton instance of this class
      *
-     * @return self
+     * @return ExportTemplateMapper
      */
-    public static function getInstance(): self
+    public static function getInstance(): ExportTemplateMapper
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new ExportTemplateMapper();
         }
         return self::$instance;
     }

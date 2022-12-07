@@ -16,9 +16,9 @@ export default class ImageDropzoneUtil {
 
 
     initDefaultListeners() {
-        let mageUploadContainer= document.querySelector('.f_upload-image-from-pc');
+        let mageUploadContainer = document.querySelector('.f_upload-image-from-pc');
 
-        if(!mageUploadContainer){
+        if (!mageUploadContainer) {
             return;
         }
 
@@ -261,12 +261,11 @@ export default class ImageDropzoneUtil {
                 fetch(url, {credentials: 'same-origin', mode: 'cors'})
                     .then((response) => response.blob())
                     .then((blob) => {
-                        console.log(blob);
                         let fileExtension = dropzoneUtilContext.getFileNameFromBlobType(blob.type);
                         let file = new File([blob], `newImage.${fileExtension}`, {type: blob.type});
 
-                        if (!dropzoneUtilContext.isUploadFileValid(file, fileExtension)) {
-                            DialogUtility.showErrorDialog('Error', 'Was an error uploading "<b>' + url + '"</b> link file. This is not valid file for upload <br />', {
+                        if (!dropzoneUtilContext.isUploadFileSizeValid(file)) {
+                            DialogUtility.showErrorDialog('Error', 'Was an error uploading <b>' + url + '</b> link file. The image size is too big. <br />', {
                                 actionResultShow: true, 'timeout': 4000
                             });
                             return;
@@ -310,12 +309,8 @@ export default class ImageDropzoneUtil {
         firstDropzone.appendChild(containerForImageAndUrlBoxAndButtons);
     };
 
-    isUploadFileValid(file, fileExtension) {
-        if (file.size > this.MAX_UPLOAD_IMAGE_SIZE_IN_BYTES) {
-            return false;
-        }
-
-        return fileExtension;
+    isUploadFileSizeValid(file) {
+        return file.size <= this.MAX_UPLOAD_IMAGE_SIZE_IN_BYTES;
     }
 
 

@@ -9,6 +9,7 @@
     right: 6px;
     top: 13px;
   }
+
   .back-button-popup {
     display: none;
   }
@@ -26,10 +27,12 @@
     }
   }
 }
+
 .notifications-action-container {
   right: 5px;
   left: auto;
 }
+
 .unread-notifications {
   position: absolute;
   top: 35px;
@@ -73,6 +76,7 @@
     }
   }
 }
+
 .show-notifications {
   position: fixed;
   top: 42px;
@@ -83,7 +87,12 @@
   z-index: $zindex-fixed;
   max-height: 85%;
   overflow-y: auto;
+
+  .notification-container {
+    cursor: pointer;
+  }
 }
+
 .notification-content {
   max-height: 70vh;
   overflow: auto;
@@ -92,10 +101,13 @@
     max-height: unset;
   }
 }
+
+
 .notification-container {
   padding: 15px 16px 17px 24px;
   position: relative;
   border-bottom: 1px solid;
+
 
   &:last-child {
     border: 0;
@@ -107,12 +119,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   .content {
     margin: 0;
     padding-right: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   .remove-notification {
     position: absolute;
     top: 12px;
@@ -125,6 +139,7 @@
     font-size: 17px;
     cursor: pointer;
   }
+
   .progress-container {
     display: flex;
     align-items: center;

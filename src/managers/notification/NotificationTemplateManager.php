@@ -109,9 +109,10 @@ class NotificationTemplateManager extends AbstractManager {
         
         if($tempalte->getInEmail()) {
             $emails = $userManager->getUniqueValuesFromList($users, 'email');
-            $result = $this->sendEmailNotifications($emails, $tempalte->getName(), $content, $event->getAttachemts());
-            if($result['success']) {
-                foreach($userIds as $userId) {
+
+            $result = $this->sendEmailNotifications($emails, $this->getEmailSubject($tempalte, $event), $content, $event->getAttachemts());
+            if ($result['success']) {
+                foreach ($userIds as $userId) {
                     $notificationManager->createNotification($userId, $tempalte, $content, false, $jobId, 'email');
                 }
             }
@@ -123,7 +124,7 @@ class NotificationTemplateManager extends AbstractManager {
                 $sender = $notificationManager->getPushNotificationSender();
                 $groups = $userGroups ?: [];
                 $users = $groupUserIds ? array_diff($userIds, $groupUserIds) : $userIds;
-                $sender->sendNotificationsToUsersAndGroups($groups, $users, ['event' => $event->getEventClass(), 'level' => $tempalte->getLevel()]);
+                $sender->sendNotificationsToUsersAndGroups($groups, $users, ['event' => $event->getEventClass(), 'params' => $event->getParams(), 'level' => $tempalte->getLevel()]);
             }
             
             if($job) {
@@ -138,6 +139,21 @@ class NotificationTemplateManager extends AbstractManager {
                 $notificationManager->createNotification($userId, $tempalte, $content, false, $jobId, 'system');
             }
         }
+    }
+
+    /**
+     * Return email subject
+     * @param AbstractCmsDto $template
+     * @param $event
+     * @return string
+     */
+    public function getEmailSubject(NotificationTemplateDto $template, $event): string
+    {
+        if ($event->getEmailSubject()) {
+            return $event->getEmailSubject();
+        }
+
+        return $template->getName();
     }
 
 

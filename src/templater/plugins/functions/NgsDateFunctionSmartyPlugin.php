@@ -47,6 +47,7 @@ class NgsDateFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $templateParams = [
             'name' => $params['name'],
             'sage_sync' => isset($params['sync_with_sage']) && $params['sync_with_sage'],
+            'h2_sync' => isset($params['sync_with_h2']) && $params['sync_with_h2'],
             'helpText' => $helpText,
             'displayName' => isset($params['display_name']) ? $params['display_name'] : $this->getDisplayName($params['name']),
             'innerDate' => $innerDate,
@@ -69,6 +70,7 @@ class NgsDateFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
     protected function getFunctionTemplate(array $params): string
     {
         $syncSage = $params['sage_sync'] ? '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>' : '';
+        $syncSage .= $params['h2_sync'] ? '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Catalog master field</div></i>' : '';
 
         return '<div' . $params['container_id'] . ' class="form-item date-form-item' .$params['class_to_form_item'] .'">
                     <div class="input-field'. $params['class_to_input_field'] .'">

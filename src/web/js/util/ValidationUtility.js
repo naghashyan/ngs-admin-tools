@@ -62,8 +62,21 @@ let ValidationUtility = {
                 }
                 params.ngsValidate = true;
                 params.validator = validator;
-
+                let companyInput = document.getElementById('products_company_id_input');
+                let companyId = null;
+                if(companyInput) {
+                    companyId = +companyInput.choices.getValue().value;
+                }
+                else {
+                    companyInput = document.getElementById('value_of_company_id');
+                    if(companyInput) {
+                        companyId = +companyInput.value;
+                    }
+                }
                 params.itemId = id;
+                if(companyId) {
+                     params.companyId = companyId;
+                }
                 if(additionalParams) {
                     for(let attribute in additionalParams) {
                         if(!additionalParams.hasOwnProperty(attribute)) {
@@ -72,7 +85,6 @@ let ValidationUtility = {
                         params[attribute] = additionalParams[attribute];
                     }
                 }
-
                 NGS.load(loadName, params, function(resp) {
                     if(!resp.valid) {
                         resolve({success: false, message: resp.message, validator: validator.class});
@@ -128,7 +140,7 @@ let ValidationUtility = {
      */
     addValidator(key, validatorObject) {
         if(this.supportedValidators[key]) {
-            return;
+            throw new Error("validator already exists");
         }
 
         this.supportedValidators[key] = validatorObject;

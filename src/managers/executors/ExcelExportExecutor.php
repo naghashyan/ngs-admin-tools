@@ -35,7 +35,7 @@ class ExcelExportExecutor extends AbstractJobExecutor
      * returns current job name
      * @return string
      */
-    public function getJobName(): string
+    public function getJobName() :string
     {
         return "Excel export job";
     }
@@ -300,15 +300,15 @@ class ExcelExportExecutor extends AbstractJobExecutor
                     continue;
                 }
                 $value = $item->$getter();
-                if ($value && str_contains($value, ',')) {
-                    $value = '"' . $value . '"';
-                }
+             
                 $result[] = $value;
             }
         }
 
         return $result;
     }
+
+
 
 
     /**

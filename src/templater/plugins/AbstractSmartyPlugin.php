@@ -329,7 +329,10 @@ abstract class AbstractSmartyPlugin
         $syncIcon = '';
 
         if($params['sync_icon_should_be']) {
-            $syncIcon = '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>';
+            $syncIcon .= '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>';
+        }
+        if($params['sync_h2_icon_should_be']) {
+            $syncIcon .= '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Catalog master field</div></i>';
         }
 
         $res = '';

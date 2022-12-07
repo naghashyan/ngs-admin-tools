@@ -79,7 +79,7 @@ class LoggerFactory
         if (!file_exists($file)) {
             @touch($file);
         }
-        chown($file, 'www-data');
+        chown($file, NGS()->get('NGS_PROJECT_OWNER'));
         return $file;
     }
 }

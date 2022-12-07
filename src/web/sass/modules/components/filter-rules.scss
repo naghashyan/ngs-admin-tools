@@ -384,6 +384,8 @@
   }
 
   .criteria-items-box {
+    overflow: auto;
+
     .choices__inner{
       padding: 0;
     }
@@ -477,7 +479,7 @@
     & > .remove-criteria-container {
       position: absolute;
       top: 7px;
-      right: -3px;
+      right: 0;
       margin-right: 0;
     }
 
@@ -496,7 +498,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: -7px;
 
       &:hover {
         i {

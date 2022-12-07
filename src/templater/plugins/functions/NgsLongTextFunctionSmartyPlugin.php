@@ -54,7 +54,8 @@ class NgsLongTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             $paramsForTranslations = [
                 'field_name' => $params['name'],
                 'display_name' => $params['display_name'],
-                'sync_icon_should_be' => isset($params['sync_with_sage']) && $params['sync_with_sage']
+                'sync_icon_should_be' => isset($params['sync_with_sage']) && $params['sync_with_sage'],
+                'sync_h2_icon_should_be' => isset($params['sync_with_h2']) && $params['sync_with_h2']
             ];
             $translateInputs = $this->getTranslateInputsForField('ngsLongText', $paramsForTranslations);
         }
@@ -62,6 +63,7 @@ class NgsLongTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $templateParams = [
             'name' => $params['name'],
             'sage_sync' => isset($params['sync_with_sage']) && $params['sync_with_sage'],
+            'h2_sync' => isset($params['sync_with_h2']) && $params['sync_with_h2'],
             'displayName' => isset($params['display_name']) ? $params['display_name'] : $this->getDisplayName($params['name']),
             'innerText' => $innerText,
             'helpText' => $helpText,
@@ -87,6 +89,7 @@ class NgsLongTextFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
     protected function getFunctionTemplate(array $params): string
     {
         $syncSage = $params['sage_sync'] ? '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>' : '';
+        $syncSage .= $params['h2_sync'] ? '<i class="icon-master-icon master-field-icon"><div class="tooltip">Catalog master field</div></i>' : '';
         $originalLanguage = $params['isTranslatable'] ? ' language-id="original" ' : ' ';
 
         return '<div ' . $params['container_id'] . ' class="form-item richtext' . $params['class_to_form_item'] . '">

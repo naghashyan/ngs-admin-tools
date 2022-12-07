@@ -1,10 +1,9 @@
 import Choices from "../lib/choices.min.js";
+import CookiesUtils from "./CookiesUtils.js";
 
 export default class FilterManager {
 
     static instances = {};
-    static notShowedFilters = [];
-    static SHOW_FILTERS_COUNT = 5;
 
     static createDefaultFilter() {
         return {
@@ -26,14 +25,14 @@ export default class FilterManager {
      * @param preselectedFilter
      */
     constructor(filterBoxId, filterableModel, preselectedFilter) {
-        this.notShowedFilters = [];
+        this.notShowedFilters = {};
 
         if (FilterManager.instances[filterBoxId]) {
 
             if (filterBoxId === 'mainFilter') {
                 let oldElement = document.getElementById(filterBoxId);
                 if (!oldElement) {
-                       return;
+                    return;
                 }
                 let newElement = oldElement.cloneNode(true);
                 oldElement.parentNode.replaceChild(newElement, oldElement);
@@ -44,13 +43,6 @@ export default class FilterManager {
 
         this.filterBoxId = filterBoxId;
 
-        //todo: what is this for?
-        let filterInitEvent = new CustomEvent('ngsFilterInit', {
-            detail: {
-                id: filterBoxId
-            }
-        });
-        document.dispatchEvent(filterInitEvent);
 
         this.filterChangeHandler = null;
         this.possibleFilters = filterableModel.possibleFilters;
@@ -412,7 +404,9 @@ export default class FilterManager {
                 return;
             }
 
-            let filterItems = this.collectDataOfAllCriterias(allGroupsOfAndAssocCriteriaRows);
+            let uniqueNumber = filterMainControlPanel.getAttribute('criteria-box-number');
+
+            let filterItems = this.collectDataOfAllCriterias(allGroupsOfAndAssocCriteriaRows, uniqueNumber);
             this.addCriteriaToExistingOnes({or: filterItems}, true, filterMainControlPanel.getAttribute('criteria-box-number'));
 
             this.toggleFilterControlPanelButtonClass();
@@ -430,7 +424,7 @@ export default class FilterManager {
      * @param andAssocCriteriaItemsGroups
      * @returns {[]}
      */
-    collectDataOfAllCriterias(andAssocCriteriaItemsGroups) {
+    collectDataOfAllCriterias(andAssocCriteriaItemsGroups, uniqueName) {
         let res = [];
 
         for (let i = 0; i < andAssocCriteriaItemsGroups.length; i++) {
@@ -480,18 +474,20 @@ export default class FilterManager {
             res.push(filterItem);
         }
 
-        this.notShowedFilters.forEach(item => {
-            if (item.and && item.and.length) {
-                item.and.forEach(filterItem => {
-                    if (!filterItem.hasOwnProperty('conditionValue')) {
-                        filterItem.conditionValue = "equal";
-                    }
-                })
-            }
+        if (uniqueName) {
+            this.notShowedFilters[uniqueName].forEach(item => {
+                if (item.and && item.and.length) {
+                    item.and.forEach(filterItem => {
+                        if (!filterItem.hasOwnProperty('conditionValue')) {
+                            filterItem.conditionValue = "equal";
+                        }
+                    })
+                }
 
-            res.push(item)
+                res.push(item)
+            });
+        }
 
-        });
 
         return res;
     }
@@ -629,7 +625,7 @@ export default class FilterManager {
 
         let newFilterItemNameContainer = document.createElement('button');
         newFilterItemNameContainer.classList.add('filter-name-container', 'f_filter-name-container');
-        if((!filterItems.or && !filterItems.and) && filterItems.conditionType === 'not_in') {
+        if ((!filterItems.or && !filterItems.and) && filterItems.conditionType === 'not_in') {
             //the deleted items filter, should not be shown in UI
             newFilterItem.classList.add('is_hidden');
         }
@@ -854,9 +850,9 @@ export default class FilterManager {
 
                 if (filterItemsData.or.length > 2) {
                     showFilters = filterItemsData.or.splice(0, 2);
-                    this.notShowedFilters = filterItemsData.or;
+                    this.notShowedFilters[uniqueName] = filterItemsData.or;
                 } else {
-                    this.notShowedFilters = [];
+                    this.notShowedFilters[uniqueName] = [];
                     showFilters = filterItemsData.or;
                 }
 
@@ -877,7 +873,7 @@ export default class FilterManager {
 
                 let loadMoreCreteria = filterMainControlPanel.querySelector('.f_load-more-criteria');
 
-                if (this.notShowedFilters.length) {
+                if (this.notShowedFilters[uniqueName].length) {
 
                     loadMoreCreteria.parentElement.style.display = 'block';
 
@@ -887,7 +883,7 @@ export default class FilterManager {
                     }
 
                     loadMoreCreteria.addEventListener('click', () => {
-                        this._initLoadMoreCriteria(loadMoreCreteria, filterMainControlPanel, 2);
+                        this._initLoadMoreCriteria(loadMoreCreteria, filterMainControlPanel, 2, uniqueName);
                     })
                 }
 
@@ -921,14 +917,14 @@ export default class FilterManager {
     }
 
 
-    _initLoadMoreCriteria(targetElement, filterMainControlPanelBox, showFilterCount) {
+    _initLoadMoreCriteria(targetElement, filterMainControlPanelBox, showFilterCount, uniqueName) {
         let showFiltersArray = [];
 
-        if (this.notShowedFilters.length > showFilterCount) {
-            showFiltersArray = this.notShowedFilters.splice(0, showFilterCount)
+        if (this.notShowedFilters[uniqueName].length > showFilterCount) {
+            showFiltersArray = this.notShowedFilters[uniqueName].splice(0, showFilterCount)
         } else {
-            showFiltersArray = this.notShowedFilters;
-            this.notShowedFilters = [];
+            showFiltersArray = this.notShowedFilters[uniqueName];
+            this.notShowedFilters[uniqueName] = [];
             targetElement.style.display = 'none';
         }
 
@@ -1074,7 +1070,7 @@ export default class FilterManager {
             justOneCriteriaRow.appendChild(this._createSelectCondition(filterItem.conditionValue));
             let possibleValues = this._getPossibleValuesByFieldId(filterItem.fieldName);
 
-            justOneCriteriaRow.appendChild(this._createSelectValue(possibleValues, filterItem.searchValue));
+            justOneCriteriaRow.appendChild(this._createSelectValue(possibleValues, filterItem, filterItem.searchValue));
         } else if (filterItem.conditionType === 'number') {
             justOneCriteriaRow.appendChild(this._createNumberCondition(filterItem.conditionValue));
             justOneCriteriaRow.appendChild(this._createNumberValue(filterItem.searchValue));
@@ -1333,13 +1329,13 @@ export default class FilterManager {
 
         removeAndAssocRowsContainerBtn.addEventListener('click', (evt) => {
             evt.stopPropagation();
+            let allCriteriaRowsContainer = document.querySelector('#' + this.filterBoxId + ' .f_all-criteria-rows-container');
+            let indexOfCriteria = andAssocRowsContainer.getAttribute('data-index-of-criteria');
 
-            if (!this.notShowedFilters.length && this._getCountOfAndAssocCriteriasGroupsAtMoment() === 1) {
+            if (this._getCountOfAndAssocCriteriasGroupsAtMoment() === 1) {
                 return;
             }
 
-            let allCriteriaRowsContainer = document.querySelector('#' + this.filterBoxId + ' .f_all-criteria-rows-container');
-            let indexOfCriteria = andAssocRowsContainer.getAttribute('data-index-of-criteria');
             let orDelimiterOfCurrentCriteria = allCriteriaRowsContainer.querySelector('.f_or-delimiter[data-index-of-delimiter="' + (indexOfCriteria - 1) + '"]');
 
             if (orDelimiterOfCurrentCriteria) {
@@ -1353,14 +1349,17 @@ export default class FilterManager {
             this._updateIndexesOfAndAssocCriteriaGroups();
             this._toggleAddGroupOfAndAssocCriteriaBtn();
 
-            if (this.notShowedFilters.length && this._getCountOfAndAssocCriteriasGroupsAtMoment() >= 1) {
-                let filterMainControlPanel = document.querySelector('.f_filter-main-control-panel-box');
-                if (!filterMainControlPanel) {
-                    return;
-                }
+            let filterMainControlPanel = document.querySelector('.f_filter-main-control-panel-box');
 
+            if (!filterMainControlPanel) {
+                return;
+            }
+
+            let uniqueName = filterMainControlPanel.getAttribute('criteria-box-number');
+
+            if (this.notShowedFilters[uniqueName].length && this._getCountOfAndAssocCriteriasGroupsAtMoment() > 1) {
                 let loadMoreCreteria = filterMainControlPanel.querySelector('.f_load-more-criteria');
-                this._initLoadMoreCriteria(loadMoreCreteria, filterMainControlPanel, 1);
+                this._initLoadMoreCriteria(loadMoreCreteria, filterMainControlPanel, 1, uniqueName);
             }
 
         });
@@ -1551,7 +1550,7 @@ export default class FilterManager {
         } else if (type === 'select') {
             let possibleValues = this._getPossibleValuesByFieldId(fieldId);
             elementsToAdd.push(this._createSelectCondition());
-            elementsToAdd.push(this._createSelectValue(possibleValues));
+            elementsToAdd.push(this._createSelectValue(possibleValues, fieldId));
         } else {
             let isTinyMceField = type === 'long_text';
             elementsToAdd.push(this._createTextCondition(isTinyMceField));
@@ -1651,11 +1650,12 @@ export default class FilterManager {
         conditionBox.setAttribute('data-ngs-type', 'text');
         conditionBox.classList.add('f_select-condition', 'select-condition', 'ngs-choice', 'f_criteria-item-to-validate');
 
-        let possibleConditionSelects = [['like', 'Like'], ['not_like', 'Not like']];
+        let possibleConditionSelects = [['like', 'Contains'], ['not_like', 'Not contains'], ['begins_width', 'Begins with'], ['ends_width', ' Ends with']];
 
         if (!isTinyMce) {
             possibleConditionSelects = possibleConditionSelects.concat([['equal', 'Equal'], ['not_equal', 'Not equal']]);
         }
+
 
         possibleConditionSelects.forEach(possibleCondition => {
             conditionBox.appendChild(this._createOptionTag(possibleCondition[0], possibleCondition[1], fieldType));
@@ -1678,6 +1678,7 @@ export default class FilterManager {
         if (fieldValue) {
             inputBox.setAttribute('value', fieldValue);
         }
+
 
         inputBoxContainer.appendChild(inputBox);
 
@@ -1790,7 +1791,7 @@ export default class FilterManager {
      * @returns {HTMLSelectElement}
      * @private
      */
-    _createSelectValue(possibleValues, value = null) {
+    _createSelectValue(possibleValues, filterId, value = null) {
         let valueBox = document.createElement("select");
         valueBox.setAttribute('data-ngs-type', 'select');
         valueBox.classList.add('f_criteria-item-to-validate', 'f_condition-value', 'select-condition', 'ngs-choice');
@@ -1804,6 +1805,22 @@ export default class FilterManager {
         possibleValues.forEach(possibleValue => {
             valueBox.appendChild(this._createOptionTag(possibleValue.id, possibleValue.value, "" + value));
         });
+
+        if (filterId && typeof (filterId) === 'string') {
+            let userInfo = CookiesUtils.getUserInfoFromCookie();
+
+            if(!userInfo){
+                return valueBox;
+            }
+
+            let currentUser = userInfo.id;
+
+            if (currentUser && (filterId.includes('created_by') || filterId.includes('updated_by'))) {
+                let currentUserOption = valueBox.querySelector(`option[value="${currentUser}"]`);
+                currentUserOption.selected = true;
+            }
+
+        }
 
         return valueBox;
     }
@@ -1870,8 +1887,37 @@ export default class FilterManager {
             searchEnabled: searchable,
             renderChoiceLimit: 150,
             searchResultLimit: 150,
-            shouldSort: !selectItem.getAttribute('data-do-not-sort')
+            shouldSort: !selectItem.getAttribute('data-do-not-sort'),
         });
+
+
+        const containerOuter = selectItem.choices.containerOuter.element;
+        const dropdown = selectItem.choices.dropdown.element;
+        const containerRec = containerOuter.getBoundingClientRect();
+
+        dropdown.style.position = "fixed";
+        dropdown.style.left = `${containerRec.x}px`;
+        dropdown.style.top = `${containerRec.y+containerRec.height }px`;
+        dropdown.style.width = `${containerOuter.offsetWidth}px`;
+
+        const container = selectItem.closest('.f_all-criteria-rows-and-add-btn-container');
+
+        if (!container) {
+
+            return;
+        }
+
+        container.addEventListener("scroll", function () {
+            selectItem.choices.hideDropdown();
+        });
+
+        selectItem.closest('.choices').addEventListener('click',()=>{
+            const containerOuter = selectItem.choices.containerOuter.element;
+            const dropdown = selectItem.choices.dropdown.element;
+            const containerRec = containerOuter.getBoundingClientRect();
+            dropdown.style.top = `${containerRec.y +containerRec.height  }px`;
+        });
+
     }
 
     /**

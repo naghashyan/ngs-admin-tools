@@ -223,5 +223,6 @@ class NgsSmartyTemplater extends \ngs\templater\NgsSmartyTemplater
         $this->registerNgsPlugin(NgsPaginationFunctionSmartyPlugin::class);
         $this->registerNgsPlugin(NgsViewDateFunctionSmartyPlugin::class);
         $this->registerNgsPlugin(NgsViewTextareaFunctionSmartyPlugin::class);
+      
     }
 }

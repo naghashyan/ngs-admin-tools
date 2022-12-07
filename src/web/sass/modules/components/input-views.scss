@@ -62,15 +62,23 @@
     .checkbox-item {
       margin-top: 5px;
       margin-bottom: 0;
+
+      label {
+        font-size: 15px;
+        line-height: 17px;
+        font-weight: 600;
+      }
     }
 
     .input-field {
       height: auto;
+      padding-right: 40px;
 
       label {
-        font-size: 12px;
-        line-height: 16px;
-        margin-bottom: 3px;
+        font-size: 15px;
+        line-height: 17px;
+        margin-bottom: 6px;
+        font-weight: 600;
       }
     }
     .icons-box {

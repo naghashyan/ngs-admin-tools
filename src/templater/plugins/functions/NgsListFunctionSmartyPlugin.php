@@ -37,13 +37,13 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
      */
     public function index($params, $template): ?string
     {
-        if (isset($params['primary_key']) && $params['primary_key']) {
+        if(isset($params['primary_key']) && $params['primary_key']) {
             $this->primaryKey = $params['primary_key'];
         }
-        if (!isset($params['is_colored'])) {
+        if(!isset($params['is_colored'])) {
             $params['is_colored'] = false;
         }
-        if (!isset($params['attributes_to_set'])) {
+        if(!isset($params['attributes_to_set'])) {
             $params['attributes_to_set'] = false;
         }
 
@@ -60,8 +60,8 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
      */
     protected function getFunctionTemplate(array $params): string
     {
-        $class = isset($params['class_form_item']) ? " " . $params['class_form_item'] : "";
-        $id = isset($params['id']) ? 'id="' . $params['id'] . '" ' : " ";
+        $class = isset($params['class_form_item']) ? " " .$params['class_form_item'] : "";
+        $id = isset($params['id']) ? 'id="' . $params['id'] .'" ' : " ";
         $header = $this->createTableHeader($params['sort_params'], $params['columns'], $params['has_checkbox'], $params['actions']);
 
         $paramsForTableContent = [
@@ -76,7 +76,7 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
 
         $content = $this->createTableContent($paramsForTableContent);
 
-        return '<div ' . $id . ' class="f_table table bordered_t action_t' . $class . '">' . $header . $content . '</div>';
+        return '<div '.$id. ' class="f_table table bordered_t action_t' .$class .'">' . $header . $content . '</div>';
     }
 
 
@@ -198,17 +198,17 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $isItemSystemSet = $dto->getSystem();
 
         $colorClass = " ";
-        if ($paramsForTableContentRow['is_colored'] && $paramsForTableContentRow['is_colored']['get_color_class_from']) {
+        if ($paramsForTableContentRow['is_colored'] && $paramsForTableContentRow['is_colored']['get_color_class_from']){
             $getter = 'get' . $this->underlinesToCamelCase($paramsForTableContentRow['is_colored']['get_color_class_from']);
             $colorClass = " " . $dto->$getter();
         }
 
         $additionalAttributes = " ";
-        if ($paramsForTableContentRow['attributes_to_set']) {
+        if($paramsForTableContentRow['attributes_to_set']) {
             foreach ($paramsForTableContentRow['attributes_to_set'] as $key => $attribute) {
                 $getter = 'get' . $this->underlinesToCamelCase($attribute);
                 $attributeValue = $dto->$getter();
-                if (!$attributeValue) {
+                if(!$attributeValue) {
                     $attributeValue = "null";
                 }
                 $additionalAttributes .= " " . $key . "='" . $attributeValue . "' ";
@@ -216,7 +216,7 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         }
 
 
-        $result = '<ul class="table-row f_table_row' . $colorClass . '"' . $additionalAttributes . ' data-im-id="' . $primaryKeyValue . '" data-im-index="' . $index . '">';
+        $result = '<ul class="table-row f_table_row' .$colorClass. '"' . $additionalAttributes . ' data-im-id="' . $primaryKeyValue . '" data-im-index="' . $index . '">';
         if ($paramsForTableContentRow['has_checkbox']) {
             $result .= $this->getCheckboxContent();
         }
@@ -228,7 +228,7 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
             $indexOfColumnAsAttribute = ' data-content-row-column-index="' . $indexOfColumn . '" ';
 
             $customAttributesToColumn = '';
-            if (isset($column['custom_attributes_to_column']) && !empty($column['custom_attributes_to_column'])) {
+            if(isset($column['custom_attributes_to_column']) && !empty($column['custom_attributes_to_column'])) {
                 foreach ($column['custom_attributes_to_column'] as $attributeName => $attributeValue) {
                     $customAttributesToColumn .= $attributeName . '="' . $attributeValue . '" ';
                 }
@@ -257,12 +257,14 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                                     </label>
                                 </div>
                             </li>';
-            } else if (isset($column['is_image']) && $column['is_image']) {
-                $result .= '<li class="image"><img src="' . $dto->$fieldGetter() . '"></li>';
-            } else if (isset($column['is_view_checkbox']) && $column['is_view_checkbox']) {
+            }
+            else if(isset($column['is_image']) && $column['is_image']) {
+                $result .=  '<li class="image"><img src="'. $dto->$fieldGetter() . '"></li>';
+            }
+            else if(isset($column['is_view_checkbox']) && $column['is_view_checkbox']) {
                 $checked = strip_tags($dto->$fieldGetter()) ? ' checked ' : ' ';
 
-                $result .= '<li' . $customAttributesToColumn . $indexOfColumnAsAttribute . ' class="f_' . $fieldCamelCaseName . '">
+                $result .=  '<li' . $customAttributesToColumn . $indexOfColumnAsAttribute . ' class="f_' . $fieldCamelCaseName . '">
                                 <div class="checkbox-item ">
                                     <label>
                                         <input type="checkbox"' . $checked . 'class="filled-in check-item" disabled="">
@@ -270,16 +272,17 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                                     </label>
                                 </div>
                                 </li>';
-            } else {
+            }
+            else {
                 $innerText = '';
-                if (isset($column['custom_param_to_getter']) && $column['custom_param_to_getter']) {
+                if(isset($column['custom_param_to_getter']) && $column['custom_param_to_getter']) {
                     $innerText = $dto->$fieldGetter($column['custom_param_to_getter']);
-                    if ($withoutTags) {
+                    if($innerText && $withoutTags) {
                         $innerText = strip_tags($innerText);
                     }
-                } else {
+                }else {
                     $innerText = $dto->$fieldGetter();
-                    if ($innerText && $withoutTags) {
+                    if($withoutTags  && $innerText) {
                         $innerText = strip_tags($innerText);
                     }
                 }
@@ -307,8 +310,8 @@ class NgsListFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
                     }
                 }
 
-                if (!$isItemSystemSet) {
-                    $actionsField .= '<button type="button" title="' . $actionName . '" class="button btn-link outline with-small-icon ' . $actionName . '-btn f_' . $actionName . '_btn ' . $dangerClass . '"
+                if(!$isItemSystemSet) {
+                    $actionsField .= '<button type="button" title="' . $actionName .'" class="button btn-link outline with-small-icon ' . $actionName . '-btn f_' . $actionName . '_btn ' . $dangerClass . '"
                                     data-im-id="' . $primaryKeyValue . '">' . $icon . '
                             </button>';
                 }

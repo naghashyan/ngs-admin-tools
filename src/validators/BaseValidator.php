@@ -121,10 +121,13 @@ abstract class BaseValidator
         $this->customTextForError = $customTextForError;
     }
 
-
-
-
     private function isFieldEmpty($value):bool {
+        if($this instanceof BooleanValidator) {
+            if($value !== false && $value !== true) {
+                return true;
+            }
+            return false;
+        }
         if($value === '0' || $value === 0) {
             return false;
         }
@@ -134,10 +137,5 @@ abstract class BaseValidator
 
         return false;
     }
-
-
-
-
-
 }
 

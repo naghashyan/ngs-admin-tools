@@ -344,7 +344,7 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
 
     protected function modifyNgsListBinParams(NgsCmsParamsBin $paramsBin): NgsCmsParamsBin
     {
-        return $paramsBin;
+        return $this->getManager()->modifyNgsListBinParams($paramsBin);
     }
 
     private function addSortingParams()
@@ -406,7 +406,6 @@ abstract class AbstractCmsListLoad extends AbstractCmsLoad
             $ngsRuleManager->getRuleClassInfo($rule);
             return $rule;
         } catch (\Exception $exp) {
-            $this->getLogger()->info('no rule found for filter ' . $tableName . ': ' . $exp->getMessage());
             return null;
         }
     }

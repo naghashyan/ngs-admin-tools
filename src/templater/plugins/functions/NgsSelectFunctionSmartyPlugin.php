@@ -66,6 +66,7 @@ class NgsSelectFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
         $templateParams = [
             'name' => $name,
             'sage_sync' => isset($params['sync_with_sage']) && $params['sync_with_sage'],
+            'h2_sync' => isset($params['sync_with_h2']) && $params['sync_with_h2'],
             'displayName' => isset($params['display_name']) ? $params['display_name'] : $this->getDisplayName($params['name']),
             'helpText' => $helpText,
             'options' => $options,
@@ -202,6 +203,7 @@ class NgsSelectFunctionSmartyPlugin extends AbstractFunctionSmartyPlugin
 
     private function addInputFieldInnerHTML($viewMode, $params){
         $syncSage = $params['sage_sync'] ? '<i class="icon-sage-logo-svg syncable-field-icon"><div class="tooltip">Sage field</div></i>' : '';
+        $syncSage .= $params['h2_sync'] ? '<i class="icon-master-icon master-field-icon"><div class="tooltip">Catalog master field</div></i>' : '';
         $placeholder = !$params['without_placeholder'] ? ' <option value="">Please select</option> ' : ' ';
 
         if(!$viewMode){

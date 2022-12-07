@@ -1,7 +1,6 @@
 // ToDo
 
 .icons-box {
-
   top: 31px;
   right: 10px;
   z-index: 495;
@@ -9,6 +8,10 @@
   position: absolute;
   display: flex;
   align-content: center;
+
+  &:hover {
+    z-index: 500;
+  }
 
   .icon-tooltip {
     font-size: 20px;

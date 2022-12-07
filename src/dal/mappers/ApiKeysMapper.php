@@ -15,8 +15,8 @@
 
 namespace ngs\AdminTools\dal\mappers;
 
-use ngs\AdminTools\dal\dto\ApiKeysDto;
 use ngs\dal\mappers\AbstractMysqlMapper;
+use ngs\AdminTools\dal\dto\ApiKeysDto;
 
 class ApiKeysMapper extends AbstractMysqlMapper
 {
@@ -26,17 +26,16 @@ class ApiKeysMapper extends AbstractMysqlMapper
     private static ?self $instance = null;
     private string $tableName = 'api_keys';
 
-
     /**
      *
      * Returns an singleton instance of this class
      *
-     * @return self
+     * @return ApiKeysMapper
      */
-    public static function getInstance(): self
+    public static function getInstance(): ApiKeysMapper
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new ApiKeysMapper();
         }
         return self::$instance;
     }

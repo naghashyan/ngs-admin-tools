@@ -634,12 +634,13 @@ class NgsRuleManager extends AbstractManager
             $selectFields = array_merge($selectFields, $this->getDtoFieldsInfo($relativeCmsMapArray, $relativeTableAlias, $relation['selectFields'], true));
         }
 
+
+
         $result = [];
         $managerClass = $ruleClassInfo['managerClass'];
         /** @var AbstractCmsManager $manager */
         $manager = $managerClass::getInstance();
-        $possibleValues = $manager->getSelectionPossibleValues($mainDto);
-
+        $possibleValues = $manager->getSelectionPossibleValues($mainDto, true);
         foreach ($selectFields as $info) {
             $filterItem = [
                 'id' => $info['key'],
@@ -707,15 +708,21 @@ class NgsRuleManager extends AbstractManager
                 $dividedFilter = [];
                 $search = isset($conditions['search']) ? $conditions['search'] : null;
 
-                $whereCondition = $this->getWhereConditionFromRuleCondition(true, $functionalFields, $filter, $search, null, $params);
+                $whereCondition = $search ? $this->getSearchCondition($search, $params) : '';
                 if($whereCondition) {
                     $ruleWhereConditions[] = "(" . $whereCondition . ")";
                 }
-
-
-                $havingCondition = $this->getWhereConditionFromRuleCondition(false, $functionalFields, $filter, $search, null, $params);
-                if($havingCondition) {
-                    $ruleHavingConditions[] = "(" . $havingCondition . ")";
+                if(!$this->filterHasFunctionalField($filter, $functionalFields)) {
+                    $whereCondition = $this->getHavingConditionFromRuleCondition($filter, 'and', $params);
+                    if($whereCondition) {
+                        $ruleWhereConditions[] = "(" . $whereCondition . ")";
+                    }
+                }
+                else {
+                    $havingCondition = $this->getHavingConditionFromRuleCondition($filter, 'and', $params);
+                    if($havingCondition) {
+                        $ruleHavingConditions[] = "(" . $havingCondition . ")";
+                    }
                 }
             }
 
@@ -784,28 +791,30 @@ class NgsRuleManager extends AbstractManager
      * @param string $whereConditions
      * @param string $havingConditions
      */
-    private function filterFromSelectFieldsWichAreNotInWhereCondition(string $selectPart, string $whereConditions, string $havingConditions) {
+    private function filterFromSelectFieldsWichAreNotInWhereCondition(string $selectPart, string $whereConditions, string $havingConditions)
+    {
         $selectPart = substr($selectPart, 7); //remove first part SELECT
         $selectParts = explode('FROM', $selectPart); //remove FROM part, so left only selects
         $fromPart = $selectParts[count($selectParts) - 1];
         $selectPart = implode('FROM', array_slice($selectParts, 0, count($selectParts) - 1));
         $selectPart = trim($selectPart);
-        $allSelects = explode(',', $selectPart);
+        $allSelects = explode(', ', $selectPart);
         $whereConditions = str_replace('`', '', $whereConditions);
         $havingConditions = str_replace('`', '', $havingConditions);
 
+
         $leftSelects = [];
-        foreach($allSelects as $selectIndex => $select) {
+        foreach ($allSelects as $selectIndex => $select) {
             $selectParts = explode("AS", $select);
             $usedInCondition = false;
-            foreach($selectParts as $selectPart) {
+            foreach ($selectParts as $selectPart) {
                 $selectPart = trim($selectPart);
-                if(strpos($whereConditions, $selectPart) !== false || strpos($havingConditions, $selectPart) !== false) {
+                if (strpos($whereConditions, $selectPart) !== false || strpos($havingConditions, $selectPart) !== false) {
                     $usedInCondition = true;
                     break;
                 }
             }
-            if($usedInCondition || $selectIndex === 0) {
+            if ($usedInCondition || $selectIndex === 0) {
                 $leftSelects[] = $select;
             }
         }
@@ -824,27 +833,28 @@ class NgsRuleManager extends AbstractManager
      * @param array $ruleClassInfo
      * @return array
      */
-    private function getRuleFunctionalFields(array $ruleClassInfo) {
+    private function getRuleFunctionalFields(array $ruleClassInfo)
+    {
         $result = [];
         $mainSelectFields = $ruleClassInfo['selectFields'];
 
-        if(is_array($mainSelectFields)) {
-            foreach($mainSelectFields as $selectField) {
-                if(isset($selectField['functional']) && $selectField['functional']) {
+        if (is_array($mainSelectFields)) {
+            foreach ($mainSelectFields as $selectField) {
+                if (isset($selectField['functional']) && $selectField['functional']) {
                     $result[] = $selectField['alias'];
                 }
             }
         }
 
 
-        if(isset($ruleClassInfo['relations'])) {
+        if (isset($ruleClassInfo['relations'])) {
             $relations = $ruleClassInfo['relations'];
-            foreach($relations as $relation) {
+            foreach ($relations as $relation) {
                 $relationSelectFields = $relation['selectFields'];
 
-                if(is_array($relationSelectFields)) {
-                    foreach($relationSelectFields as $selectField) {
-                        if(isset($selectField['functional']) && $selectField['functional']) {
+                if (is_array($relationSelectFields)) {
+                    foreach ($relationSelectFields as $selectField) {
+                        if (isset($selectField['functional']) && $selectField['functional']) {
                             $result[] = $selectField['alias'];
                         }
                     }
@@ -994,10 +1004,9 @@ class NgsRuleManager extends AbstractManager
                 $fieldWithAlias = $selection . ' AS ' . $finalAlias;
             }
 
-            if(isset($selection['functional']) && $selection['functional']) {
+            if (isset($selection['functional']) && $selection['functional']) {
                 $result[] = $fieldWithAlias;
-            }
-            else {
+            } else {
                 $result[] = $tableAlias . '.' . $fieldWithAlias;
             }
         }
@@ -1027,13 +1036,13 @@ class NgsRuleManager extends AbstractManager
                     $dbField = $selection['field_name'];
                     $fieldAlias = $selection['alias'];
 
-                    if(isset($selection['not_filterable']) && $selection['not_filterable']) {
+                    if (isset($selection['not_filterable']) && $selection['not_filterable']) {
                         continue;
                     }
                     $type = isset($selection['type']) ? $selection['type'] : $cmsMapArray[$dbField]['type'];
                     $displayName = isset($selection['display_name']) && $selection['display_name'] ? $selection['display_name'] : $fieldAlias;
                     $key = '`' . $tableAlias . '`.`' . $dbField . '`';
-                    if(isset($selection['functional']) && $selection['functional']) {
+                    if (isset($selection['functional']) && $selection['functional']) {
                         $key = $fieldAlias;
                     }
 
@@ -1052,7 +1061,7 @@ class NgsRuleManager extends AbstractManager
                 if ($selectFieldItem === "*") {
                     foreach ($cmsMapArray as $dbField => $info) {
                         $type = $cmsMapArray[$dbField]['type'];
-                        if(!isset($info['filterable']) || !$info['filterable']) {
+                        if (!isset($info['filterable']) || !$info['filterable']) {
                             continue;
                         }
                         $displayName = $info['display_name'];
@@ -1109,95 +1118,111 @@ class NgsRuleManager extends AbstractManager
 
 
     /**
+     * indicates if current filter has functional key
+     *
+     * @param array $filter
+     * @param array $functionalFields
+     *
+     * @return bool
+     */
+    private function filterHasFunctionalField(array $filter, array $functionalFields) :bool
+    {
+        if(!$functionalFields || !$filter) {
+            return false;
+        }
+
+        if (isset($filter['or'])) {
+            return $this->filterHasFunctionalField($filter['or'], $functionalFields);
+        } else if (isset($filter['and'])) {
+            return $this->filterHasFunctionalField($filter['and'], $functionalFields);
+        } else if ($filter) {
+            foreach ($filter as $filterItem) {
+                if (isset($filterItem['or']) || isset($filterItem['and'])) {
+                    $hasFunctional = $this->filterHasFunctionalField($filterItem, $functionalFields);
+                    if($hasFunctional) {
+                        return true;
+                    }
+                } else {
+                    if(in_array($filterItem['fieldName'], $functionalFields)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
      * creates where condition using condition from the rule
      *
-     * @param bool $forWhere
-     * @param array $functionalFields
      * @param array $filter
-     * @param array $search
      * @param null $operator
+     * @param array $params
      *
      * @return string
      */
-    private function getWhereConditionFromRuleCondition(bool $forWhere, array $functionalFields, ?array $filter, ?array $search, ?string $operator, array &$params)
+    private function getHavingConditionFromRuleCondition(?array $filter, ?string $operator, array &$params)
     {
         $result = '';
 
-        $searchCondition = '';
-        if($search && $forWhere) {
-            $searchCondition = $this->getSearchCondition($search, $params);
+        if(!$filter) {
+            return $result;
         }
 
-        if($filter) {
-            if (isset($filter['or'])) {
-                $filterCondition = $this->getWhereConditionFromRuleCondition($forWhere, $functionalFields, $filter['or'], null, 'or', $params);
-                if($filterCondition) {
-                    $result = ' ( ' . $filterCondition . ' ) ';
-                }
-            } else if (isset($filter['and'])) {
-                $filterCondition = $this->getWhereConditionFromRuleCondition($forWhere, $functionalFields, $filter['and'], null,  'and', $params);
-                if($filterCondition) {
-                    $result = ' ( ' . $filterCondition . ' ) ';
-                }
-            } else if ($filter) {
-                $delim = '';
+        if (isset($filter['or'])) {
+            $filterCondition = $this->getHavingConditionFromRuleCondition($filter['or'], 'or', $params);
+            if ($filterCondition) {
+                $result = ' ( ' . $filterCondition . ' ) ';
+            }
+        } else if (isset($filter['and'])) {
+            $filterCondition = $this->getHavingConditionFromRuleCondition($filter['and'], 'and', $params);
+            if ($filterCondition) {
+                $result = ' ( ' . $filterCondition . ' ) ';
+            }
+        } else if ($filter) {
+            $delim = '';
 
-                foreach ($filter as $filterItem) {
-                    if (isset($filterItem['or'])) {
-                        $filterCondition = $this->getWhereConditionFromRuleCondition($forWhere, $functionalFields, $filterItem, null, 'or', $params);
-                        if($filterCondition) {
-                            $result .= $delim . $filterCondition;
-                            $delim = ' ' . $operator . ' ';
-                        }
-                    } else if (isset($filterItem['and'])) {
-                        $filterCondition = $this->getWhereConditionFromRuleCondition($forWhere, $functionalFields, $filterItem, null, 'and', $params);
-                        if($filterCondition) {
-                            $result .= $delim . $filterCondition;
-                            $delim = ' ' . $operator . ' ';
-                        }
+            foreach ($filter as $filterItem) {
+                if (isset($filterItem['or'])) {
+                    $filterCondition = $this->getHavingConditionFromRuleCondition($filterItem, 'or', $params);
+                    if ($filterCondition) {
+                        $result .= $delim . $filterCondition;
+                        $delim = ' ' . $operator . ' ';
+                    }
+                } else if (isset($filterItem['and'])) {
+                    $filterCondition = $this->getHavingConditionFromRuleCondition($filterItem, 'and', $params);
+                    if ($filterCondition) {
+                        $result .= $delim . $filterCondition;
+                        $delim = ' ' . $operator . ' ';
+                    }
+                } else {
+                    if ($result) {
+                        $result .= $operator . ' ';
+                    }
+
+                    $result .= $this->getFieldName($filterItem);
+
+                    if ($filterItem['conditionType'] == 'number') {
+                        $result .= $this->getConditionAndSearchValueForNumberField($result, $filterItem, $params);
                     } else {
-                        if(($forWhere && !in_array($filterItem['fieldName'], $functionalFields)) || (!$forWhere && in_array($filterItem['fieldName'], $functionalFields))) {
-                            if ($result) {
-                                $result .= $operator . ' ';
-                            }
 
-                            $result .= $this->getFieldName($filterItem);
+                        $condition = $this->getConditionByType($filterItem);
 
-                            if ($filterItem['conditionType'] == 'number') {
-
-                                $result .= $this->getConditionAndSearchValueForNumberField($result, $filterItem, $params);
-                            } else {
-
-                                $condition = $this->getConditionByType($filterItem);
-                                if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) &&
-                                    ($filterItem['searchValue'] === 'is_null' || $filterItem['searchValue'] === 'is_not_null')) {
-                                    $result .= $condition;
-                                } else {
-                                    $searchValue = $this->getSearchValueByType($filterItem, $params);
-                                    $result .= $condition . $searchValue;
-                                }
-                            }
+                        if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) &&
+                            ($filterItem['searchValue'] === 'is_null' || $filterItem['searchValue'] === 'is_not_null')) {
+                            $result .= $condition;
+                        } else {
+                            $searchValue = $this->getSearchValueByType($filterItem, $params);
+                            $result .= $condition . $searchValue;
                         }
                     }
                 }
             }
         }
 
-        $finalCondition = '';
-
-        if($searchCondition) {
-            $finalCondition = $searchCondition . ' ';
-        }
-
-        if ($result) {
-            if ($finalCondition) {
-                $finalCondition .= ' AND (' . $result . ')';
-            } else {
-                $finalCondition = $result;
-            }
-        }
-
-        return $finalCondition;
+        return $result;
     }
 
 
@@ -1209,29 +1234,29 @@ class NgsRuleManager extends AbstractManager
      *
      * @return string
      */
-    private function getSearchCondition($search, array &$params) {
+    private function getSearchCondition($search, array &$params)
+    {
         $searchResult = '';
-        if($search && $search['searchableFields'] && $search['searchKeys']) {
+        if ($search && $search['searchableFields'] && $search['searchKeys']) {
             $searchResult .= '(';
             $searchDelim = '';
-            foreach($search['searchKeys'] as $searchKey) {
-                foreach($search['searchableFields'] as $searchableField) {
+            foreach ($search['searchKeys'] as $searchKey) {
+                foreach ($search['searchableFields'] as $searchableField) {
                     $fullMatch = false;
-                    if(is_array($searchableField)) {
+                    if (is_array($searchableField)) {
                         $fullMatch = isset($searchableField['fullMatch']) && $searchableField['fullMatch'];
                         $searchableField = $searchableField['field'];
                     }
                     $searchResult .= $searchDelim;
 
-                    if($fullMatch) {
+                    if ($fullMatch) {
                         $params[] = $searchKey;
                         $searchResult .= $searchableField . ' = ? ';
-                    }
-                    else {
+                    } else {
                         $params[] = "%$searchKey%";
                         $searchResult .= $searchableField . ' LIKE ? ';
                     }
-                    if(!$searchDelim) {
+                    if (!$searchDelim) {
                         $searchDelim = ' OR ';
                     }
                 }
@@ -1249,8 +1274,9 @@ class NgsRuleManager extends AbstractManager
      * @param $filterItem
      * @return mixed
      */
-    private function getFieldName($filterItem) {
-        if($filterItem['conditionType'] == 'date' && $filterItem['conditionValue'] === 'equal') {
+    private function getFieldName($filterItem)
+    {
+        if ($filterItem['conditionType'] == 'date' && $filterItem['conditionValue'] === 'equal') {
             return "SUBSTRING(" . $filterItem['fieldName'] . ", 1, 10)"; //only date part
         }
         return $filterItem['fieldName'];
@@ -1282,12 +1308,12 @@ class NgsRuleManager extends AbstractManager
                 $params[] = $filterItem['searchValue'];
                 $params[] = $filterItem['searchValue'] - self::$epsilion;
                 $params[] = $filterItem['searchValue'] + self::$epsilion;
-                return ' - ' . self::$epsilion . ' > ? OR (' .  $result . ' > ? AND ' . $result . ' < ? ) ';
+                return ' - ' . self::$epsilion . ' > ? OR (' . $result . ' > ? AND ' . $result . ' < ? ) ';
             case 'less_or_equal' :
                 $params[] = $filterItem['searchValue'];
                 $params[] = $filterItem['searchValue'] - self::$epsilion;
                 $params[] = $filterItem['searchValue'] + self::$epsilion;
-                return ' + ' . self::$epsilion . ' < ? OR (' .  $result . ' > ? AND ' . $result . ' < ? ) ';
+                return ' + ' . self::$epsilion . ' < ? OR (' . $result . ' > ? AND ' . $result . ' < ? ) ';
         }
     }
 
@@ -1302,11 +1328,10 @@ class NgsRuleManager extends AbstractManager
     private function getConditionByType($filterItem)
     {
         $condition = '';
-        if($filterItem['conditionType'] === 'select' && isset($filterItem['conditionValue']) && $filterItem['conditionValue'] === 'not_equal') {
-            if($filterItem['searchValue'] === 'is_null') {
+        if ($filterItem['conditionType'] === 'select' && isset($filterItem['conditionValue']) && $filterItem['conditionValue'] === 'not_equal') {
+            if ($filterItem['searchValue'] === 'is_null') {
                 $filterItem['searchValue'] === 'is_not_null';
-            }
-            else if($filterItem['searchValue'] === 'is_not_null') {
+            } else if ($filterItem['searchValue'] === 'is_not_null') {
                 $filterItem['searchValue'] === 'is_null';
             }
         }
@@ -1315,7 +1340,7 @@ class NgsRuleManager extends AbstractManager
         } else if ($filterItem['conditionType'] === 'select' && isset($filterItem['searchValue']) && $filterItem['searchValue'] === 'is_not_null') {
             return ' IS NOT NULL';
         }
-        
+
         if ($filterItem['conditionType'] == 'text') {
             $condition = $this->getTextCondition($filterItem['conditionValue']);
         } else if ($filterItem['conditionType'] == 'date') {
@@ -1347,7 +1372,7 @@ class NgsRuleManager extends AbstractManager
             $condition = ' =';
         } else if ($conditionValue === 'not_equal') {
             $condition = ' !=';
-        } else if ($conditionValue === 'like') {
+        } else if ($conditionValue === 'like' || $conditionValue === 'begins_width' || $conditionValue === 'ends_width') {
             $condition = ' LIKE';
         } else if ($conditionValue === 'not_like') {
             $condition = ' NOT LIKE';
@@ -1420,8 +1445,8 @@ class NgsRuleManager extends AbstractManager
             return ' ? ';
         } else if ($filterItem['conditionType'] === 'in' || $filterItem['conditionType'] === 'not_in') {
             $searchValueWithParams = [];
-            if(is_array($filterItem['searchValue'])) {
-                foreach($filterItem['searchValue'] as $searchValueItem) {
+            if (is_array($filterItem['searchValue'])) {
+                foreach ($filterItem['searchValue'] as $searchValueItem) {
                     $params[] = $searchValueItem;
                     $searchValueWithParams[] = '?';
                 }
@@ -1429,16 +1454,18 @@ class NgsRuleManager extends AbstractManager
                 return ' (' . implode(',', $searchValueWithParams) . ') ';
             }
             $params[] = $filterItem['searchValue'];
-            return  " ? ";
+            return " ? ";
         }
 
         $searchValue = $filterItem['searchValue'];
 
         if (isset($filterItem['conditionValue']) && ($filterItem['conditionValue'] === 'like' || $filterItem['conditionValue'] === 'not_like')) {
             $params[] = "%" . $filterItem['searchValue'] . "%";
-
-        }
-        else {
+        } elseif (isset($filterItem['conditionValue']) && $filterItem['conditionValue'] === 'begins_width') {
+            $params[] = $filterItem['searchValue'] . "%";
+        } elseif (isset($filterItem['conditionValue']) && $filterItem['conditionValue'] === 'ends_width') {
+            $params[] = "%" . $filterItem['searchValue'];
+        } else {
             $params[] = $filterItem['searchValue'];
         }
         return " ? ";
@@ -1471,7 +1498,8 @@ class NgsRuleManager extends AbstractManager
      * @param AbstractCmsDto $dto
      * @return array
      */
-    public function filterOnlyItemRules(array $rules, AbstractCmsDto $dto) {
+    public function filterOnlyItemRules(array $rules, AbstractCmsDto $dto)
+    {
         $itemDataByRule = [];
         $filteredRules = [];
         foreach ($rules as $rule) {
@@ -1496,7 +1524,7 @@ class NgsRuleManager extends AbstractManager
      */
     public function prioritizeRules(array $rules, AbstractCmsDto $dto)
     {
-        if(!$rules) {
+        if (!$rules) {
             return [];
         }
 
@@ -1521,7 +1549,7 @@ class NgsRuleManager extends AbstractManager
             $key .= strval($dtoToChange->$getterMethod());
             $result[$key] = $rule;
         }
-        
+
         if (strtolower($orderType) === 'desc') {
             krsort($result);
         } else {

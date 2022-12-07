@@ -17,7 +17,7 @@ class FilterDto extends AbstractDto
     protected $updated;
 
     /** @var string */
-    public $tableName = 'saved_filters';
+    public string $tableName = 'saved_filters';
 
     // Map of DB value to Field value
     protected $mapArray = [

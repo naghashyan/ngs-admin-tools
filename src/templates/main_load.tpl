@@ -26,50 +26,11 @@
                     </div>
                     <div class="right-box">
                         {block name="cms-main-header-page-actions"}
-                            {*todo: need to move from here*}
-                            <div class="notifi-box">
-                                <a title="Notification" href="javascript:void(0);" class="small with-icon button light notify-icon f_notification-icon is_bullet">
-                                    <i class="icon-notifi"></i>
-                                    <span class="notifi-count f_notifi-count"></span>
-                                </a>
+                           
 
-                                <div id="unread_notifications_container" class="unread-notifications bgweb3">
-                                    <div class="unread-notifications-title border">
-                                        <a class="back-button-popup f_notification-icon" href="javascript:void(0);">
-                                            <i class="icon-svg17l"></i>
-                                        </a>
-                                        <div class="t2">Notifications</div>
+                            {block name="cms-main-notifications"}
 
-                                        <div class="notification-more-btn dropdown">
-                                            <button class="button medium-button with-icon dropdown-toggle f_delete-all-notifications-btn" type="button">
-                                                <i class="icon-svg155"></i>
-                                            </button>
-                                            <div class="dropdown-box notifications-action-container">
-                                                <a href="javascript:void(0)" class="f_bulk-action" data-type="delete">Delete</a>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="unread_notifications_content" class="notification-content"></div>
-                                </div>
-
-                                <template id="notificationTemplate">
-                                    <div class="notification-container border f_notification">
-                                        <div class="title-container">
-                                            <h3 class="t5 title f_title"></h3>
-                                            <p class="f_notification-dateTime"></p>
-                                        </div>
-
-                                        <h4 class="t6 content f_content"></h4>
-                                        <div class="progress-container extrasmall f_progress" data-percent="0">
-                                            <div class="progress-bar">
-                                                <div class="progress-bar-inner f_progress-inner"></div>
-                                            </div>
-                                        </div>
-                                        <span class="remove-notification f_remove-notification"><i class="icon-svg257"></i></span>
-                                    </div>
-                                </template>
-                            </div>
+                            {/block}
                             <div id="profile-box-menu" class="profile-box from-right">
                                 <a href="javascript:void(0);" class="account-item dropdown-toogle">
                             <span class="circle">
@@ -167,6 +128,18 @@
                                                            class="filled-in check-item f_check-item">
                                                     <span></span>
                                                     Export products per Catalog Supplier
+                                                </label>
+                                            </div>
+
+                                            <div class="space"></div>
+
+                                            <div class="checkbox-item export-checkbox-item">
+                                                <label for="productImages" class="export-product-images f_export-images"
+                                                       style="display: none;">
+                                                    <input type="checkbox" name="product-images" id="productImages"
+                                                           class="filled-in check-item f_check-item">
+                                                    <span></span>
+                                                    Export products images
                                                 </label>
                                             </div>
 

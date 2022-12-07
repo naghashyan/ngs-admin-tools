@@ -30,12 +30,12 @@ class UserGroupMapper extends AbstractMysqlMapper
     /**
      * Returns an singleton instance of this class
      *
-     * @return self
+     * @return UserGroupMapper
      */
-    public static function getInstance(): self
+    public static function getInstance(): UserGroupMapper
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new UserGroupMapper();
         }
         return self::$instance;
     }
@@ -78,6 +78,7 @@ class UserGroupMapper extends AbstractMysqlMapper
     {
         return $this->fetchRow(sprintf($this->GET_USER_GROUP_BY_ID, $this->getTableName()), ['id' => $id]);
     }
+
 
 
     /**

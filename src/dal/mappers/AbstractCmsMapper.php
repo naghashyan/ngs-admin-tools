@@ -82,12 +82,19 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     /** @var string  */
     private $DELETE_ITEM_BY_ID = 'DELETE FROM %s WHERE `id`=:itemId';
     /** @var string  */
+    private $DELETE_DRAFT_ITEM_BY_ID = 'DELETE FROM %s WHERE `id`=:itemId AND `status` = "draft"';
+    /** @var string  */
     private $SOFT_DELETE_ITEM_BY_ID = 'UPDATE %s SET `status` = "deleted" WHERE `id`=:itemId';
 
-    public function deleteItemById($itemId)
+    public function deleteItemById($itemId, bool $forceDelete = false)
     {
         $query = $this->DELETE_ITEM_BY_ID;
-        if($this->doSoftDelete()) {
+        if($this->doSoftDelete() && !$forceDelete) {
+            $sqlQuery = sprintf($this->DELETE_DRAFT_ITEM_BY_ID, $this->getTableName());
+            $res = $this->executeUpdate($sqlQuery, ['itemId' => $itemId]);
+            if (!is_numeric($res)) {
+                return false;
+            }
             $query = $this->SOFT_DELETE_ITEM_BY_ID;
         }
         $sqlQuery = sprintf($query, $this->getTableName());
@@ -101,6 +108,8 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     /** @var string  */
     private $DELETE_ITEMS_BY_IDS = 'DELETE FROM %s WHERE `id` IN (%s)';
     /** @var string  */
+    private $DELETE_DRAFT_ITEMS_BY_IDS = 'DELETE FROM %s WHERE `id` IN (%s) AND `status` = "draft"';
+    /** @var string  */
     private $SOFT_DELETE_ITEMS_BY_IDS = 'UPDATE %s SET `status` = "deleted" WHERE `id` IN (%s)';
 
     public function deleteItemsByIds(array $ids)
@@ -108,9 +117,20 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
         if (!$ids) {
             return true;
         }
-        $idsQuery = implode(",", $ids);
+        if(!is_numeric($ids[0])) {
+            $idsQuery = '"' . implode('", "', $ids) . '"';
+        }
+        else {
+            $idsQuery = implode(",", $ids);
+        }
+
         $query = $this->DELETE_ITEMS_BY_IDS;
         if($this->doSoftDelete()) {
+            $sqlQuery = sprintf($this->DELETE_DRAFT_ITEMS_BY_IDS, $this->getTableName(), $idsQuery);
+            $res = $this->executeUpdate($sqlQuery, []);
+            if (!is_numeric($res)) {
+                return false;
+            }
             $query = $this->SOFT_DELETE_ITEMS_BY_IDS;
         }
         $sqlQuery = sprintf($query, $this->getTableName(), $idsQuery);
@@ -119,6 +139,34 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             return true;
         }
         return false;
+    }
+
+    /**
+     * @var string
+     */
+    private $GET_IDS_BY_PARAMS = 'SELECT DISTINCT(%s.id) as id FROM %s %s %s %s';
+    public function getIdsByParams(NgsCmsParamsBin $paramsBin) :array
+    {
+        $joinCondition = $paramsBin->getJoinCondition();
+        if($paramsBin->getGroupBy()) {
+            $groupBy = $paramsBin->getGroupBy();
+        }else {
+            $groupBy = '';
+        }
+        $whereConditionResult = $this->getWhereCondition($paramsBin);
+        $tableName = $this->getTableName();
+        $sql = $this->GET_IDS_BY_PARAMS;
+        $sqlQuery = sprintf($sql, $tableName, $tableName,
+            $joinCondition, $whereConditionResult['condition'], $groupBy);
+        $bindArray = $whereConditionResult['params'];
+
+        $cache = ['cache' => false, 'ttl' => 3600, 'force' => false];
+        $result = $this->fetchRows($sqlQuery, $bindArray, $cache, true);
+        if(!$result) {
+            return [];
+        }
+
+        return array_column($result, 'id');
     }
 
     /**
@@ -205,7 +253,6 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             $bindArray[] = (int)$paramsBin->getOffset();
             $bindArray[] = (int)$paramsBin->getLimit();
         }
-
         if(!$forSelect) {
 
             $res = $this->fetchRows($sqlQuery, $bindArray);
@@ -228,10 +275,18 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
         $params = [
             'fieldValue' => $fieldValue
         ];
+        $dto = $this->createDto();
         if (!$expectId) {
-            $sqlQuery = sprintf($this->GET_LIST_BY_FIELD, $this->getTableName(), $fieldName);
+            if($companyId && method_exists($dto, 'getCompanyId')) {
+                $sqlQuery = sprintf($this->GET_LIST_BY_COMPANY_AND_FIELD_EXPECT_ID, $this->getTableName(), $fieldName);
+                $params['companyId'] = $companyId;
+                $params['itemId'] = -1;
+            }
+            else {
+                $sqlQuery = sprintf($this->GET_LIST_BY_FIELD, $this->getTableName(), $fieldName);
+            }
         } else {
-            $dto = $this->createDto();
+
             if($companyId && method_exists($dto, 'getCompanyId')) {
                 $sqlQuery = sprintf($this->GET_LIST_BY_COMPANY_AND_FIELD_EXPECT_ID, $this->getTableName(), $fieldName);
                 $params['companyId'] = $companyId;
@@ -263,6 +318,18 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             $whereConditionResult = $this->getWhereCondition($paramsBin);
             $query = $this->DELETE_BY_PARAMS;
             if($this->doSoftDelete()) {
+                $deleteDraftCondition = $whereConditionResult['condition'];
+                if(!trim($deleteDraftCondition)) {
+                    $deleteDraftCondition = 'WHERE status = "draft"';
+                }
+                else {
+                    $deleteDraftCondition .= ' AND status = "draft"';
+                }
+                $sqlQuery = sprintf($this->DELETE_BY_PARAMS, $this->getTableName(), $deleteDraftCondition);
+                $res = $this->executeUpdate($sqlQuery, $whereConditionResult['params']);
+                if (!is_numeric($res)) {
+                    return false;
+                }
                 $query = $this->SOFT_DELETE_BY_PARAMS;
             }
             $sqlQuery = sprintf($query, $this->getTableName(), $whereConditionResult['condition']);
@@ -280,7 +347,11 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
     /** @var string  */
     protected $DELETE_BY_FIELD = 'DELETE FROM %s WHERE `%s` = :fieldValue';
     /** @var string  */
+    protected $DELETE_DRAFT_BY_FIELD = 'DELETE FROM %s WHERE `%s` = :fieldValue AND status="draft"';
+    /** @var string  */
     protected $DELETE_BY_FIELD_EXPECT_IDS = 'DELETE FROM %s WHERE `%s` = :fieldValue AND %s.id NOT IN %s';
+    /** @var string  */
+    protected $DELETE_DRAFT_BY_FIELD_EXPECT_IDS = 'DELETE FROM %s WHERE `%s` = :fieldValue AND %s.id NOT IN %s AND status="draft"';
     /** @var string  */
     protected $SOFT_DELETE_BY_FIELD = 'UPDATE %s SET `status` = "deleted" WHERE `%s` = :fieldValue';
     /** @var string  */
@@ -292,6 +363,11 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             if(!$expectIds) {
                 $query = $this->DELETE_BY_FIELD;
                 if($this->doSoftDelete()) {
+                    $sqlQuery = sprintf($this->DELETE_DRAFT_BY_FIELD, $this->getTableName(), $fieldName);
+                    $res = $this->executeUpdate($sqlQuery, ['fieldValue' => $fieldValue]);
+                    if (!is_numeric($res)) {
+                        return false;
+                    }
                     $query = $this->SOFT_DELETE_BY_FIELD;
                 }
                 $sqlQuery = sprintf($query, $this->getTableName(), $fieldName);
@@ -305,6 +381,11 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
                 $tableName = $this->getTableName();
                 $query = $this->DELETE_BY_FIELD_EXPECT_IDS;
                 if($this->doSoftDelete()) {
+                    $sqlQuery = sprintf($this->DELETE_DRAFT_BY_FIELD_EXPECT_IDS, $tableName, $fieldName, $tableName, $notInCondition);
+                    $res = $this->executeUpdate($sqlQuery, ['fieldValue' => $fieldValue]);
+                    if (!is_numeric($res)) {
+                        return false;
+                    }
                     $query = $this->SOFT_DELETE_BY_FIELD_EXPECT_IDS;
                 }
                 $sqlQuery = sprintf($query, $tableName, $fieldName, $tableName, $notInCondition);
@@ -385,13 +466,18 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             $paramsBin->getJoinCondition(), $whereConditionResult['condition']);
 
         $groupBy = '';
-        if($paramsBin->getGroupBy()) {
+        if ($paramsBin->getGroupBy()) {
             $groupBy = $paramsBin->getGroupBy();
             $groupBy = str_replace('GROUP BY ', '', $groupBy);
         }
 
-        if($groupBy) {
-            $sqlQuery = str_replace('COUNT(*)', 'COUNT(DISTINCT(' . $groupBy . '))', $sqlQuery);
+        if ($groupBy) {
+            if (str_contains($groupBy, ',')) {
+                $sqlQuery = str_replace('COUNT(*)', 'COUNT(DISTINCT ' . $groupBy . ') ', $sqlQuery);
+            } else {
+                $sqlQuery = str_replace('COUNT(*)', 'COUNT(DISTINCT(' . $groupBy . '))', $sqlQuery);
+            }
+
         }
 
         return $this->fetchField($sqlQuery, 'count', $whereConditionResult['params']);
@@ -455,7 +541,7 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             return $items;
 
         } catch (\Exception $exp) {
-            $this->getLogger()->error("failed to get list: " . $exp->getMessage());
+            $this->getLogger()->error("failed to get list: " . $exp->getMessage(), ['sql' => $sql, 'params' => $params]);
             return [];
         }
     }
@@ -477,7 +563,6 @@ abstract class AbstractCmsMapper extends AbstractMysqlMapper
             return (int)$res;
 
         } catch (\Exception $exp) {
-
             return 0;
         }
     }

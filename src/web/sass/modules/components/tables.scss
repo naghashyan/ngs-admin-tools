@@ -204,8 +204,50 @@ table {
       }
     }
 
+    &:last-child {
+      &:not(:nth-child(2)) {
+        &:not(:first-child) {
+          & > li {
+            border-bottom: 0;
+
+            &:first-child {
+              &.image {
+                img {
+                  -webkit-transform-origin : 0 100%;
+                  -moz-transform-origin : 0 100%;
+                  -o-transform-origin : 0 100%;
+                  -ms-transform-origin : 0 100%;
+                  transform-origin : 0 100%;
+                }
+              }
+            }
+            &.image {
+              img {
+                -webkit-transform-origin : 50% 100%;
+                -moz-transform-origin : 50% 100%;
+                -o-transform-origin : 50% 100%;
+                -ms-transform-origin : 50% 100%;
+                transform-origin : 50% 100%;
+              }
+            }
+          }
+        }
+      }
+    }
     &:first-child {
       & > li {
+        &:first-child {
+          &.image {
+            img {
+              -webkit-transform-origin : 0 0;
+              -moz-transform-origin : 0 0;
+              -o-transform-origin : 0 0;
+              -ms-transform-origin : 0 0;
+              transform-origin : 0 0;
+            }
+          }
+        }
+
         &.image {
           img {
             -webkit-transform-origin : 50% 0%;
@@ -213,21 +255,6 @@ table {
             -o-transform-origin : 50% 0%;
             -ms-transform-origin : 50% 0%;
             transform-origin : 50% 0%;
-          }
-        }
-      }
-    }
-    &:last-child {
-      & > li {
-        border-bottom: 0;
-
-        &.image {
-          img {
-            -webkit-transform-origin : 50% 100%;
-            -moz-transform-origin : 50% 100%;
-            -o-transform-origin : 50% 100%;
-            -ms-transform-origin : 50% 100%;
-            transform-origin : 50% 100%;
           }
         }
       }
@@ -347,6 +374,18 @@ table {
       font-size: 14px;
       font-weight: 400;
       min-width: 40px;
+
+      &:first-child {
+        &.image {
+          img {
+            -webkit-transform-origin : 0 50%;
+            -moz-transform-origin : 0 50%;
+            -o-transform-origin : 0 50%;
+            -ms-transform-origin : 0 50%;
+            transform-origin : 0 50%;
+          }
+        }
+      }
 
       .elipsis-box {
         white-space: nowrap;

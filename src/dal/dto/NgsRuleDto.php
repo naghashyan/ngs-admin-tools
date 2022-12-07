@@ -29,7 +29,7 @@ class NgsRuleDto extends AbstractDto
     private $additionalWhereConditions = [];
 
     /** @var string */
-    public $tableName = 'ngs_rules';
+    public string $tableName = 'ngs_rules';
 
     // Map of DB value to Field value
     protected $mapArray = [

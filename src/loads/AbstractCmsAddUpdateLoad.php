@@ -158,8 +158,14 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
      */
     public final function load(): void
     {
-        $this->beforeCmsLoad();
         $manager = $this->getManager();
+        if($this->getItemId() && $this->getItemId() > 0) {
+            $itemDto = $manager->getItemById($this->getItemId(), $this->getParamsBin($this->getItemId()));
+            if(!$itemDto) {
+                $this->onNotFound();
+            }
+        }
+        $this->beforeCmsLoad();
         $itemDto = null;
         $fieldsType = 'add';
         if ($this->getItemObject()) {
@@ -167,7 +173,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             $itemDto->fillDtoFromArray($this->getItemObject());
             $fieldsType = 'edit';
         } else if ($this->getItemId() && $this->getItemId() > 0) {
-            $itemDto = $manager->getItemById($this->getItemId(), $this->getParamsBin($this->getItemId()));
+            $itemDto = $itemDto ?: $manager->getItemById($this->getItemId(), $this->getParamsBin($this->getItemId()));
             $fieldsType = 'edit';
         } else {
             $itemDto = $manager->createDto();
@@ -202,9 +208,10 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
             $this->addParam('entitiesMainIdentifiers', $manager->getEntitiesMainIdentifiers($itemDto));
         }
 
+        
         $validators = $this->getValidators($fieldsType);
         $this->addJsonParam('fieldValidators', $validators);
-        $this->addJsonParam('hasDraftSupport', $manager->hasDraftSupport());
+        $this->addJsonParam('hasDraftSupport', $manager->hasDraftSupport($itemDto));
         $this->getLogger()->info($fieldsType . ' load started ' . ($itemDto && $itemDto->getId() ? $itemDto->getId() : ""));
         $this->initializeAddEditFieldsMethods($manager->createDto(), $fieldsType);
         $visibleFields = $this->getAddEditFieldsMethods();
@@ -260,6 +267,13 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         $this->getEventManager()->dispatch($afterLoadEvent);
         $this->getLogger()->info($fieldsType . ' load finished ' . ($itemDto && $itemDto->getId() ? $itemDto->getId() : ""));
 
+    }
+
+    /**
+     * redirects when item by id not found
+     */
+    protected function onNotFound() {
+        $this->redirectTo('');
     }
 
     /**
@@ -341,7 +355,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
         } else {
             $fieldNames = $this->args()->fieldNames;
             foreach ($fieldNames as $fieldName) {
-                $fieldValidators = $validators[$fieldName];
+                $fieldValidators = isset($validators[$fieldName]) ? $validators[$fieldName] : ValidateUtil::getVirtualFieldValidator($validators, $fieldName, $neededValidator['class']);
                 if (!$fieldValidators) {
                     $this->addParam('valid', true);
                     return;
@@ -359,7 +373,6 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
                 }
             }
         }
-
 
         $validators = ValidateUtil::prepareValidators($fieldsWithValidators, $this->args(), null);
         $result = ValidateUtil::validateRequestData($validators);
@@ -393,32 +406,7 @@ abstract class AbstractCmsAddUpdateLoad extends AbstractCmsLoad
     public function getValidators(string $type = "add")
     {
         $manager = $this->getManager();
-
-        if ($type === "add") {
-            $load = $manager->getAddLoad();
-        } else {
-            $load = $manager->getEditLoad();
-        }
-
-        if (!$load) {
-            return null;
-        }
-        $load = StringUtil::getClassNameFromText($load, "load");
-        $loadObject = new $load();
-        $action = StringUtil::getClassNameFromText($loadObject->getSaveAction(), "action");
-        if (class_exists($action)) {
-            $dto = null;
-            if ($this->getItemId() && (int)$this->getItemId() > 0) {
-                $dto = $manager->getItemById($this->getItemId());
-            }
-            $actionObject = new $action();
-            $actionObject->initializeAddEditFieldsMethods($type, $dto);
-            $validators = $actionObject->getValidators($this->getItemId());
-            return $validators;
-        } else {
-            return $this->getValidatorsForLoadsWhichHaveNoAction($type);
-        }
-
+        return $manager->getValidators($type, null);
     }
 
     /**

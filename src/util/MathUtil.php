@@ -41,6 +41,9 @@ class MathUtil
      * @throws \Exception
      */
     public static function getValueByFormula(string $formula, array $params){
+        if(!$formula) {
+            return 0;
+        }
         $filteredParams = self::prepareFormulaAndParams($formula, $params);
         $precision = 2;
         $parser = new FormulaParser($filteredParams['formula'], $precision);

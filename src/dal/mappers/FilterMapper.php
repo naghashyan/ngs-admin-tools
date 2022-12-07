@@ -30,12 +30,12 @@ class FilterMapper extends AbstractMysqlMapper
     /**
      * Returns an singleton instance of this class
      *
-     * @return self
+     * @return FilterMapper
      */
-    public static function getInstance(): self
+    public static function getInstance(): FilterMapper
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new FilterMapper();
         }
         return self::$instance;
     }
@@ -103,17 +103,16 @@ class FilterMapper extends AbstractMysqlMapper
     private $GET_USER_PRESELECTED_FILTER = 'SELECT * FROM `%s` WHERE `user_id` = :userId AND `item_type`=:itemType AND preselected=1 ORDER BY `id` DESC';
     private $GET_GENERAL_PRESELECTED_FILTER = 'SELECT * FROM `%s` WHERE `user_id` IS NULL AND `item_type`=:itemType AND preselected=1 ORDER BY `id` DESC';
 
-    public function getEntityPreselectedFilter(int $userId, string $itemType)
-    {
+    public function getEntityPreselectedFilter(int $userId, string $itemType) {
         $sqlQuery = sprintf($this->GET_USER_PRESELECTED_FILTER, $this->getTableName());
         $preselectedFilter = $this->fetchRow($sqlQuery, ['userId' => $userId, 'itemType' => $itemType]);
-        if ($preselectedFilter) {
+        if($preselectedFilter) {
             return $preselectedFilter;
         }
 
         $sqlQuery = sprintf($this->GET_GENERAL_PRESELECTED_FILTER, $this->getTableName());
         $preselectedFilter = $this->fetchRow($sqlQuery, ['itemType' => $itemType]);
-        if ($preselectedFilter) {
+        if($preselectedFilter) {
             return $preselectedFilter;
         }
 
@@ -128,8 +127,8 @@ class FilterMapper extends AbstractMysqlMapper
         $sqlQuery = sprintf($this->GET_USER_SAVED_FILTER_BY_NAME, $this->getTableName());
         return $this->fetchRow($sqlQuery, ['userId' => $userId, 'name' => $name, 'itemType' => $itemType]);
     }
-
-
+    
+    
     private $GET_SAVED_FILTER_BY_NAME = 'SELECT * FROM `%s` WHERE `name` = :name';
 
     /**
