@@ -19,10 +19,10 @@
     "php": ">=8.0",
     "naghashyan/ngs-php-framework": "^4",
     "phpoffice/phpspreadsheet": "^1.2",
-    "monolog/monolog": "^2.8",
+    "monolog/monolog": "^3.5",
     "denissimon/formula-parser": "^2.7",
     "lcobucci/jwt": "*",
-    "pubnub/pubnub": "^5"
+    "pubnub/pubnub": "^6.1"
   },
   "autoload": {
     "psr-4": {
